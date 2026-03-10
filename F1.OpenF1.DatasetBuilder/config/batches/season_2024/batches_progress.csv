@@ -1,0 +1,2 @@
+batch_id,status,started_at,finished_at,config,meetings,log,error
+batch_01,completed,2026-03-09T21:27:49.154544,2026-03-09T21:27:56.744980,config\batches\season_2024\batch_01.yaml,1228,1229,1230,config\batches\season_2024\logs\batch_01.log,None

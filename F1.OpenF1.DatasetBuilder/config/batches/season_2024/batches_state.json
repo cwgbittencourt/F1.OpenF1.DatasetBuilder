@@ -1,0 +1,27 @@
+{
+  "batches": {
+    "batch_01": {
+      "status": "completed",
+      "started_at": "2026-03-09T21:27:49.154544",
+      "config": "config\\batches\\season_2024\\batch_01.yaml",
+      "meetings": [
+        "1228",
+        "1229",
+        "1230"
+      ],
+      "log": "config\\batches\\season_2024\\logs\\batch_01.log",
+      "finished_at": "2026-03-09T21:27:56.744980"
+    },
+    "batch_02": {
+      "status": "running",
+      "started_at": "2026-03-09T21:28:56.753027",
+      "config": "config\\batches\\season_2024\\batch_02.yaml",
+      "meetings": [
+        "1231",
+        "1232",
+        "1233"
+      ],
+      "log": "config\\batches\\season_2024\\logs\\batch_02.log"
+    }
+  }
+}

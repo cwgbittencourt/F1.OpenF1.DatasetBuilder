@@ -1,0 +1,361 @@
+Documentacao do Sistema OpenF1 Dataset Builder
+Esta documentacao descreve arquitetura, modulos, fluxo de dados, configuracao, operacao e detalhes dos jobs e da API. O README de uso rapido fica em `F1.OpenF1.DatasetBuilder/README.md`.
+
+**Visao Geral**
+A solucao coleta dados da API OpenF1, organiza em camadas bronze/silver/gold, valida qualidade, publica no MLflow e executa jobs de modelagem e relatorios analiticos. Ha tambem uma API FastAPI para orquestrar a geracao de relatorios sob demanda.
+
+**Arquitetura Funcional**
+Fluxo macro:
+1. Descoberta dinamica de meetings, sessions e drivers.
+2. Coleta de endpoints por unidade de processamento.
+3. Persistencia em bronze (raw).
+4. Normalizacao em silver.
+5. Engenharia de atributos e gold (dataset analitico).
+6. Validacao de qualidade.
+7. Publicacao de artefatos e metricas no MLflow.
+8. Consolidados, modelagem, rankings e relatorios.
+
+**Diagramas E Fluxos**
+Fluxo macro do pipeline:
+```text
+OpenF1 API
+  -> Descoberta (meetings/sessions/drivers)
+    -> Coleta por unidade
+      -> Bronze (raw)
+        -> Silver (normalizado)
+          -> Gold (features por volta)
+            -> Validacao
+              -> Publicacao (MLflow + artefatos)
+                -> Consolidacao/Modelagem/Relatorios
+```
+
+Fluxo macro do pipeline (Mermaid):
+```mermaid
+flowchart TD
+  A[OpenF1 API] --> B[Descoberta]
+  B --> C[Coleta por unidade]
+  C --> D[Bronze]
+  D --> E[Silver]
+  E --> F[Gold]
+  F --> G[Validacao]
+  G --> H[Publicacao MLflow + Artefatos]
+  H --> I[Consolidacao]
+  I --> J[Modelagem]
+  I --> K[Relatorios/Rankings]
+```
+
+Fluxo por unidade de processamento:
+```text
+(season, meeting_key, session_key, driver_number)
+  -> coleta laps
+  -> coleta car_data
+  -> coleta location
+  -> coleta stints
+  -> escreve bronze (4 datasets)
+  -> normaliza (silver)
+  -> gera features e gold
+  -> valida qualidade
+  -> registra MLflow
+  -> checkpoint completed
+```
+
+Fluxo da API `/driver-profiles`:
+```text
+POST /driver-profiles
+  -> verifica dados gold (season/meeting/session)
+  -> se faltando: executa pipeline e consolida gold
+  -> gera driver_profiles.csv
+  -> gera rankings e texto
+  -> opcional: gera LLM e merge
+  -> responde com paths de artifacts
+```
+
+Fluxo da API `/driver-profiles` (Mermaid):
+```mermaid
+flowchart TD
+  A[POST /driver-profiles] --> B[Check gold data]
+  B -->|missing| C[Run pipeline]
+  C --> D[Consolidate gold]
+  B -->|exists| E[Generate driver_profiles]
+  D --> E
+  E --> F[Generate rankings]
+  F --> G[Generate text report]
+  G --> H{Include LLM?}
+  H -->|yes| I[Generate LLM + merge]
+  H -->|no| J[Skip LLM]
+  I --> K[Return artifacts]
+  J --> K
+```
+
+Paralelismo e checkpoints:
+```text
+Runner
+  -> build_processing_units()
+  -> cria N workers (max_parallel_drivers)
+    -> para cada unidade:
+      -> consulta checkpoint
+      -> se status=completed: skip
+      -> status=running
+      -> processa pipeline da unidade
+      -> status=completed
+      -> se erro: status=failed
+```
+
+Paralelismo e checkpoints (Mermaid):
+```mermaid
+flowchart TD
+  A[Runner] --> B[build_processing_units]
+  B --> C{max_parallel_drivers}
+  C --> D[Worker pool]
+  D --> E[Fetch checkpoint]
+  E -->|completed| F[Skip unit]
+  E -->|not completed| G[Set status=running]
+  G --> H[Process unit pipeline]
+  H --> I[Set status=completed]
+  H -->|error| J[Set status=failed]
+```
+
+Retry, backoff e rate limiting:
+```text
+OpenF1Client.get()
+  -> wait(min_request_interval_ms)
+  -> request
+    -> 429: cooldown + retry
+    -> 5xx: backoff + retry
+    -> 404: retorna vazio
+    -> 200: retorna dados
+  -> apos N tentativas: erro
+```
+
+Retry, backoff e rate limiting (Mermaid):
+```mermaid
+flowchart TD
+  A[OpenF1Client.get] --> B[RateLimiter.wait]
+  B --> C[HTTP request]
+  C -->|200| D[Return JSON]
+  C -->|404| E[Return empty list]
+  C -->|429| F[Cooldown]
+  C -->|5xx or exception| G[Backoff]
+  F --> H{Attempts left?}
+  G --> H
+  H -->|yes| B
+  H -->|no| I[Raise error]
+```
+
+**Componentes Principais**
+- `clients/`: clientes HTTP para OpenF1 e MLflow.
+- `discovery/`: descoberta de meetings, sessions e drivers.
+- `collectors/`: coleta de endpoints brutos.
+- `processors/`: normalizacao e limpeza basica.
+- `feature_engineering/`: agregacoes por volta e features.
+- `validators/`: validacao de qualidade do gold.
+- `publishers/`: escrita de datasets e publicacao no MLflow.
+- `orchestration/`: runner, paralelismo e checkpoints.
+- `modeling/`: utilitarios de dataset e pre-processamento.
+- `jobs/`: scripts de pipeline, modelagem e relatorios.
+- `api/`: FastAPI para orquestracao de relatorios.
+
+**Unidade De Processamento**
+Unidade logica: `(season, meeting_key, session_key, driver_number)`.
+Isso permite reprocessar apenas um piloto em uma sessao especifica, com checkpoint independente.
+
+**Orquestracao E Resiliencia**
+Arquivos principais: `f1_dataset/src/orchestration/runner.py`, `f1_dataset/src/orchestration/checkpoint_store.py`.
+Mecanismos:
+- Paralelismo controlado por `execution.max_parallel_drivers`.
+- Rate limiting por `execution.min_request_interval_ms`.
+- Retry e backoff exponencial por `execution.retry_attempts` e `execution.retry_backoff_seconds`.
+- Cooldown em caso de HTTP 429 por `execution.rate_limit_cooldown_seconds`.
+- Checkpoints por unidade processada para retomar execucoes.
+
+**Camadas De Dados**
+Bronze:
+- Dados crus por endpoint (`laps`, `car_data`, `location`, `stints`).
+- Uso principal: auditoria e replay.
+Silver:
+- JSON achatado, tipos e datas padronizadas.
+Gold:
+- Dataset analitico por volta, pronto para modelagem.
+
+**Modelo Gold**
+Colunas base:
+- Identificadores e contexto: `season`, `meeting_key`, `meeting_name`, `session_key`, `session_name`, `driver_number`, `driver_name`, `team_name`.
+- Volta e alvo: `lap_number`, `lap_duration`, `duration_sector_1`, `duration_sector_2`, `duration_sector_3`.
+- Indicadores adicionais: `i1_speed`, `i2_speed`, `st_speed`, `is_pit_out_lap`.
+
+Features de telemetria:
+- `avg_speed`, `max_speed`, `min_speed`, `speed_std`.
+- `avg_rpm`, `max_rpm`, `min_rpm`, `rpm_std`.
+- `avg_throttle`, `max_throttle`, `min_throttle`, `throttle_std`.
+
+Features de controle do carro:
+- `full_throttle_pct`, `brake_pct`, `brake_events`, `hard_brake_events`.
+- `drs_pct`, `gear_changes`.
+
+Features de trajetoria:
+- `distance_traveled`, `trajectory_length`, `trajectory_variation`.
+
+Flags e cobertura de dados:
+- `telemetry_points`, `trajectory_points`, `has_telemetry`, `has_trajectory`.
+
+Contexto de stint:
+- `stint_number`, `compound`, `stint_lap_start`, `stint_lap_end`.
+- `tyre_age_at_start`, `tyre_age_at_lap`.
+
+**Validacao De Qualidade**
+Arquivo: `f1_dataset/src/validators/quality.py`.
+Metricas:
+- `rows`: total de linhas do gold.
+- `null_pct`: percentual medio de nulos.
+- `valid_laps`: voltas com `lap_number` valido.
+- `discarded_laps`: linhas descartadas por falta de `lap_number`.
+Uso: garantir completude minima antes de publicar e modelar.
+
+**Publicacao E MLflow**
+Arquivo: `f1_dataset/src/publishers/mlflow_publisher.py`.
+Registros principais:
+- Parametros da execucao (temporada, meeting, session, driver).
+- Metricas de qualidade do gold.
+- Artefatos: parquet/csv, relatorio de qualidade, amostras e logs.
+Objetivo: rastreabilidade, reproducibilidade e comparacao entre execucoes.
+
+**Jobs Do Sistema**
+Pipeline e consolidacao:
+- `build_openf1_dataset.py`: executa o pipeline completo por unidades.
+- `process_meeting.py`: processa um meeting especifico (apoio).
+- `consolidate_gold_dataset.py`: consolida gold em um unico arquivo.
+
+Modelagem e analytics:
+- `train_lap_time_regression.py`: regressao de tempo de volta.
+- `train_lap_time_ranking.py`: regressao + ranking de pilotos.
+- `train_relative_position.py`: predicao de rank_percentile.
+- `train_stint_delta_pace.py`: delta de pace entre stints.
+- `train_tyre_degradation.py`: degradacao de pneus.
+- `train_lap_quality_classifier.py`: classificacao de qualidade de volta.
+- `train_lap_anomaly.py`: deteccao de anomalias por volta.
+- `train_driver_style_clustering.py`: clustering de estilo de pilotagem.
+- `train_circuit_segmentation.py`: segmentacao de circuitos.
+- `compare_lap_time_runs.py`: comparacao dos modelos de lap time no MLflow.
+- `compare_extended_experiments.py`: comparacao de experimentos estendidos.
+
+Relatorios e rankings:
+- `driver_profiles_report.py`: gera metricas consolidadas por piloto.
+- `driver_profiles_rankings.py`: rankings por metrica.
+- `driver_profiles_overall_ranking.py`: ranking geral por score composto.
+- `driver_profiles_text_report.py`: resumo textual baseado em percentis.
+- `generate_driver_performance_llm.py`: texto por piloto via MLflow Gateway.
+
+**Metricas Modelagem**
+Regressoes (`train_lap_time_regression`, `train_lap_time_ranking`, `train_relative_position`, `train_stint_delta_pace`, `train_tyre_degradation`):
+- `mae`, `rmse`, `r2`, `mape`.
+Motivo: medir erro absoluto, penalizar erros grandes, variancia explicada e erro relativo.
+
+Ranking de lap time (`train_lap_time_ranking`):
+- `rank_spearman_mean`, `rank_ndcg_mean`, `rank_meeting_count`, `rank_driver_mean`.
+Motivo: avaliar concordancia de ordenacao e qualidade do ranking por corrida.
+
+Classificacao (`train_lap_quality_classifier`):
+- `accuracy`, `precision`, `recall`, `f1`, `roc_auc`.
+Motivo: medir performance global, equilibrio entre classes e poder discriminativo.
+
+Anomalias (`train_lap_anomaly`):
+- `rows`, `anomaly_count`, `anomaly_rate`, `score_min`, `score_max`, `score_mean`.
+Motivo: quantificar incidencia e distribuicao do score.
+
+Clustering (`train_driver_style_clustering`, `train_circuit_segmentation`):
+- `clusters`, `rows`, `silhouette`, `davies_bouldin`.
+Motivo: avaliar coesao e separacao dos grupos.
+
+**Metricas Pilotos**
+Saida principal: `driver_profiles.csv`.
+Metricas agregadas por piloto:
+- Ritmo e consistencia: `lap_mean`, `lap_std`, `lap_mean_delta_to_meeting_mean`, `lap_mean_z_to_meeting_mean`, `meeting_lap_mean_avg`.
+- Qualidade e estabilidade: `lap_quality_good_rate`, `lap_quality_bad_rate`, `anomaly_rate`.
+- Desgaste e stints: `degradation_mean`, `degradation_p95`, `degradation_slope`, `delta_pace_mean`, `delta_pace_median`, `delta_pace_std`, `delta_pace_count`.
+- Posicionamento relativo: `rank_percentile_mean`, `rank_percentile_median`.
+- Confiabilidade: `finish_rate`, `lap_completion_mean`, `dnf_rate`.
+- Resultados: `points_total`, `points_race`, `points_sprint`, `races_count`, `sprints_count`, `results_count`.
+- Contexto adicional: `laps_total`, `meetings_total`, `pit_out_rate`, `driver_style_cluster`, `dominant_circuit_cluster`, `dominant_circuit_cluster_pct`.
+Uso: alimentar rankings, comparacoes, textos e pontuacao geral.
+
+**API FastAPI**
+Arquivo: `f1_dataset/src/api/app.py`.
+Endpoints:
+- `GET /health`: healthcheck.
+- `POST /driver-profiles`: gera relatorios e rankings para um recorte especifico.
+Fluxo do endpoint:
+1. Garante dados no gold para o recorte solicitado.
+2. Consolida gold.
+3. Gera `driver_profiles.csv`, ranking geral e texto.
+4. Opcional: gera texto via LLM e mescla com ranking.
+Saidas: caminhos dos CSVs gerados em artifacts.
+
+**Configuracao**
+Arquivo principal: `config/config.yaml`.
+Exemplo minimo:
+```yaml
+seasons:
+  - 2023
+session_name: Race
+drivers:
+  include: []
+  exclude: []
+meetings:
+  mode: all
+  include: []
+execution:
+  max_parallel_drivers: 1
+  max_http_connections: 10
+  min_request_interval_ms: 300
+  retry_attempts: 4
+  retry_backoff_seconds: 2
+  rate_limit_cooldown_seconds: 30
+output:
+  formats:
+    - parquet
+    - csv
+  register_mlflow: true
+paths:
+  data_dir: ./f1_dataset/data
+  logs_dir: ./f1_dataset/data/logs
+  checkpoints_dir: ./f1_dataset/data/checkpoints
+  artifacts_dir: ./f1_dataset/data/artifacts
+mlflow:
+  tracking_uri: ""
+  experiment_name: OpenF1Dataset
+api:
+  base_url: https://api.openf1.org/v1
+```
+
+Overrides por variaveis de ambiente:
+- `DATA_DIR`, `LOG_DIR`, `CHECKPOINT_DIR`, `ARTIFACTS_DIR`.
+- `REGISTER_MLFLOW`, `MLFLOW_TRACKING_URI`, `MLFLOW_EXPERIMENT`.
+- `OPENF1_BASE_URL`.
+
+**Diretorios E Artefatos**
+- Dados: `f1_dataset/data/bronze`, `silver`, `gold`.
+- Logs: `f1_dataset/data/logs`.
+- Checkpoints: `f1_dataset/data/checkpoints`.
+- Artefatos: `f1_dataset/data/artifacts`.
+- MLflow local (quando aplicavel): `f1_dataset/data/artifacts/mlruns`.
+
+**Execucao**
+Pipeline:
+```bash
+python -m jobs.build_openf1_dataset --config ./config/config.yaml
+```
+Consolidacao:
+```bash
+python -m jobs.consolidate_gold_dataset
+```
+Jobs de modelagem e relatorios seguem a mesma convencao `python -m jobs.<nome>`.
+
+**Observabilidade**
+- Logs por job em `data/logs`.
+- Checkpoints por unidade em `data/checkpoints`.
+- MLflow registra parametros, metricas e artefatos.
+
+**Falhas E Reprocessamento**
+- Falhas sao registradas no checkpoint com status `failed`.
+- Para reprocessar, remova o checkpoint da unidade ou altere o filtro de entrada.
+- O pipeline ignora unidades com status `completed`.

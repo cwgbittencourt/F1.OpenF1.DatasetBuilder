@@ -1,0 +1,14 @@
+{
+  "status": "completed",
+  "updated_at": "2026-03-10T04:17:06.034922Z",
+  "payload": {
+    "season": 2024,
+    "meeting_key": 1239,
+    "meeting_name": "Austrian Grand Prix",
+    "session_key": 9550,
+    "session_name": "Race",
+    "driver_number": 23,
+    "driver_name": "Alexander ALBON",
+    "team_name": "Williams"
+  }
+}

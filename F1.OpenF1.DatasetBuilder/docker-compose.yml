@@ -1,0 +1,43 @@
+services:
+  openf1-dataset:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openf1-dataset
+    env_file:
+      - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./f1_dataset/data:/app/data
+      - ./f1_dataset/data/logs:/app/logs
+      - ./f1_dataset/data/checkpoints:/app/checkpoints
+      - ./f1_dataset/data/artifacts:/app/artifacts
+      - ./config:/app/config
+    command: ["python", "-m", "jobs.build_openf1_dataset"]
+    networks:
+      - infra_default
+  openf1-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openf1-api
+    env_file:
+      - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./f1_dataset/data:/app/data
+      - ./f1_dataset/data/logs:/app/logs
+      - ./f1_dataset/data/checkpoints:/app/checkpoints
+      - ./f1_dataset/data/artifacts:/app/artifacts
+      - ./config:/app/config
+    command: ["uvicorn", "api.app:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "7077:8000"
+    networks:
+      - infra_default
+
+networks:
+  infra_default:
+    external: true
