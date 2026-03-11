@@ -51,6 +51,48 @@ def _mode(series: pd.Series) -> str | float:
     return series.iloc[0]
 
 
+def _split_list(value: str | None) -> list[str]:
+    if not value:
+        return []
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
+def _first_available(df: pd.DataFrame, candidates: list[str]) -> str | None:
+    for name in candidates:
+        if name in df.columns:
+            return name
+    return None
+
+
+def _circuit_speed_class(df: pd.DataFrame) -> pd.DataFrame:
+    speed_col = _first_available(df, ["avg_speed", "st_speed", "i2_speed", "i1_speed"])
+    if not speed_col:
+        return pd.DataFrame(columns=["meeting_key", "circuit_speed_class"])
+
+    meeting_speed = (
+        df.groupby("meeting_key")[speed_col]
+        .mean()
+        .reset_index(name="meeting_avg_speed")
+    )
+    if meeting_speed.empty:
+        return pd.DataFrame(columns=["meeting_key", "circuit_speed_class"])
+
+    q1 = meeting_speed["meeting_avg_speed"].quantile(1 / 3)
+    q2 = meeting_speed["meeting_avg_speed"].quantile(2 / 3)
+
+    def _label(value: float) -> str | None:
+        if pd.isna(value):
+            return None
+        if value <= q1:
+            return "low"
+        if value <= q2:
+            return "medium"
+        return "high"
+
+    meeting_speed["circuit_speed_class"] = meeting_speed["meeting_avg_speed"].apply(_label)
+    return meeting_speed[["meeting_key", "circuit_speed_class"]]
+
+
 def _lap_quality_labels(df: pd.DataFrame) -> pd.DataFrame:
     group_cols = ["meeting_key", "session_key", "driver_number", "stint_number"]
     working = df.copy()
@@ -362,6 +404,16 @@ def main() -> None:
         default=None,
         help="Filtra por session_name (ex: Race, Sprint, ou all).",
     )
+    parser.add_argument(
+        "--drivers-include",
+        default=None,
+        help="Lista de pilotos a incluir (separados por virgula).",
+    )
+    parser.add_argument(
+        "--drivers-exclude",
+        default=None,
+        help="Lista de pilotos a excluir (separados por virgula).",
+    )
     parser.add_argument("--random-state", type=int, default=42)
     args = parser.parse_args()
 
@@ -381,6 +433,15 @@ def main() -> None:
     if session_name_filter and session_name_filter.lower() != "all":
         df = df[df["session_name"].astype(str).str.lower() == session_name_filter.lower()]
 
+    include = {name.lower() for name in _split_list(args.drivers_include)}
+    exclude = {name.lower() for name in _split_list(args.drivers_exclude)}
+    if include or exclude:
+        names = df["driver_name"].astype(str).str.lower()
+        if include:
+            df = df[names.isin(include)]
+        if exclude:
+            df = df[~names.isin(exclude)]
+
     base = (
         df.groupby(["driver_number", "driver_name"], as_index=False)
         .agg(
@@ -397,6 +458,28 @@ def main() -> None:
         .rename(columns={"team_name": "team_name"})
     )
     base = base.merge(team_mode, on=["driver_number", "driver_name"], how="left")
+    if "meeting_date_start" in df.columns:
+        meeting_dates = (
+            df.groupby(["driver_number", "driver_name"])["meeting_date_start"]
+            .apply(_mode)
+            .reset_index()
+            .rename(columns={"meeting_date_start": "meeting_date_start"})
+        )
+        base = base.merge(meeting_dates, on=["driver_number", "driver_name"], how="left")
+        parsed = pd.to_datetime(df["meeting_date_start"], errors="coerce", utc=True)
+        df = df.assign(meeting_day=parsed.dt.day, meeting_month=parsed.dt.month)
+        meeting_days = (
+            df.groupby(["driver_number", "driver_name"])["meeting_day"]
+            .apply(_mode)
+            .reset_index()
+        )
+        meeting_months = (
+            df.groupby(["driver_number", "driver_name"])["meeting_month"]
+            .apply(_mode)
+            .reset_index()
+        )
+        base = base.merge(meeting_days, on=["driver_number", "driver_name"], how="left")
+        base = base.merge(meeting_months, on=["driver_number", "driver_name"], how="left")
 
     # Finish rate and lap completion (accounts for lapped finishers)
     driver_laps = (
@@ -648,6 +731,46 @@ def main() -> None:
             how="left",
         )
 
+    # Circuit speed class (low/medium/high)
+    speed_classes = _circuit_speed_class(df)
+    if not speed_classes.empty:
+        driver_meetings = (
+            df[["driver_number", "meeting_key"]].drop_duplicates().merge(
+                speed_classes, on="meeting_key", how="left"
+            )
+        )
+        class_counts = (
+            driver_meetings.groupby(["driver_number", "circuit_speed_class"])
+            .size()
+            .reset_index(name="class_count")
+        )
+        class_totals = (
+            class_counts.groupby("driver_number")["class_count"]
+            .sum()
+            .reset_index(name="class_total")
+        )
+        class_counts = class_counts.merge(class_totals, on="driver_number")
+        class_counts["class_pct"] = class_counts["class_count"] / class_counts["class_total"]
+
+        dominant_speed = (
+            class_counts.sort_values(["driver_number", "class_pct"], ascending=[True, False])
+            .groupby("driver_number")
+            .head(1)
+            .rename(
+                columns={
+                    "circuit_speed_class": "dominant_circuit_speed_class",
+                    "class_pct": "dominant_circuit_speed_class_pct",
+                }
+            )
+        )
+        base = base.merge(
+            dominant_speed[
+                ["driver_number", "dominant_circuit_speed_class", "dominant_circuit_speed_class_pct"]
+            ],
+            on="driver_number",
+            how="left",
+        )
+
     run_timestamp = datetime.now(tz=timezone.utc).strftime("%Y%m%d_%H%M%S")
     artifacts_dir = (
         Path(settings.paths.artifacts_dir)
@@ -667,6 +790,14 @@ def main() -> None:
     (artifacts_dir / "summary.json").write_text(
         json.dumps(summary, indent=2), encoding="utf-8"
     )
+    schema = {
+        "columns": [
+            {"name": col, "dtype": str(base[col].dtype)} for col in base.columns
+        ],
+        "rows": int(base.shape[0]),
+    }
+    schema_path = artifacts_dir / "driver_profiles_schema.json"
+    schema_path.write_text(json.dumps(schema, indent=2), encoding="utf-8")
 
     tracking_uri = settings.mlflow.tracking_uri
     if not tracking_uri and settings.output.register_mlflow:
@@ -689,6 +820,7 @@ def main() -> None:
             )
             mlflow.log_artifact(str(csv_path))
             mlflow.log_artifact(str(artifacts_dir / "summary.json"))
+            mlflow.log_artifact(str(schema_path))
             logging.getLogger(__name__).info(
                 "Relatorio registrado no MLflow: %s", run.info.run_id
             )

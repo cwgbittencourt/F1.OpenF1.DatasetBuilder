@@ -145,7 +145,22 @@ def main() -> None:
                     data_dir,
                 )
 
-                if not has_data_for_filter(data_dir, season, meeting_key, session_name):
+                required_columns = [
+                    "meeting_date_start",
+                    "weather_date",
+                    "track_temperature",
+                    "air_temperature",
+                    "circuit_speed_class",
+                ]
+                required_non_null = ["meeting_date_start"]
+                if not has_data_for_filter(
+                    data_dir,
+                    season,
+                    meeting_key,
+                    session_name,
+                    required_columns=required_columns,
+                    required_non_null=required_non_null,
+                ):
                     status_payload["meetings"].append(
                         {
                             "meeting_key": str(meeting_key),

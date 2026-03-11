@@ -33,6 +33,11 @@ def main() -> None:
     _setup_logging(settings.paths.logs_dir)
 
     logging.getLogger(__name__).info("Iniciando pipeline com config: %s", config_path)
+    logging.getLogger(__name__).info(
+        "Meetings filter: mode=%s include=%s",
+        settings.meetings.mode,
+        settings.meetings.include,
+    )
     run_pipeline(settings)
 
 

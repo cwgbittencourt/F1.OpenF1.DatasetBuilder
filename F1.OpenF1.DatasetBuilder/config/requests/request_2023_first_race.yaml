@@ -1,0 +1,8 @@
+seasons:
+  - 2023
+
+session_name: Race
+
+meetings:
+  mode: first_of_season
+  include: []

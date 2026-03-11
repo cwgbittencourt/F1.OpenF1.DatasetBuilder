@@ -2,7 +2,7 @@ Documentacao do Sistema OpenF1 Dataset Builder
 Esta documentacao descreve arquitetura, modulos, fluxo de dados, configuracao, operacao e detalhes dos jobs e da API. O README de uso rapido fica em `F1.OpenF1.DatasetBuilder/README.md`.
 
 **Visao Geral**
-A solucao coleta dados da API OpenF1, organiza em camadas bronze/silver/gold, valida qualidade, publica no MLflow e executa jobs de modelagem e relatorios analiticos. Ha tambem uma API FastAPI para orquestrar a geracao de relatorios sob demanda.
+A solucao coleta dados da API OpenF1, organiza em camadas bronze/silver/gold, valida qualidade, publica no MLflow e executa jobs de modelagem e relatorios analiticos. Ha tambem uma API FastAPI para orquestrar a geracao de relatorios e importacao de temporadas com status e logs.
 
 **Arquitetura Funcional**
 Fluxo macro:
@@ -13,7 +13,7 @@ Fluxo macro:
 5. Engenharia de atributos e gold (dataset analitico).
 6. Validacao de qualidade.
 7. Publicacao de artefatos e metricas no MLflow.
-8. Consolidados, modelagem, rankings e relatorios.
+8. Consolidacao, modelagem, rankings e relatorios.
 
 **Diagramas E Fluxos**
 Fluxo macro do pipeline:
@@ -51,7 +51,8 @@ Fluxo por unidade de processamento:
   -> coleta car_data
   -> coleta location
   -> coleta stints
-  -> escreve bronze (4 datasets)
+  -> coleta weather
+  -> escreve bronze (5 datasets)
   -> normaliza (silver)
   -> gera features e gold
   -> valida qualidade
@@ -85,6 +86,31 @@ flowchart TD
   H -->|no| J[Skip LLM]
   I --> K[Return artifacts]
   J --> K
+```
+
+Fluxo da API `/import-season`:
+```text
+POST /import-season
+  -> cria job_id e arquivos de status/log
+  -> executa importacao em background
+  -> para cada meeting: garante gold, gera relatorios, opcional LLM
+  -> atualiza status com progresso por meeting
+```
+
+Fluxo da API `/import-season` (Mermaid):
+```mermaid
+flowchart TD
+  A[POST /import-season] --> B[Create job files]
+  B --> C[Spawn background process]
+  C --> D[Iterate meetings]
+  D --> E[Ensure gold data]
+  E --> F[Generate reports]
+  F --> G{Include LLM?}
+  G -->|yes| H[Generate LLM]
+  G -->|no| I[Skip LLM]
+  H --> J[Update status]
+  I --> J
+  J --> K[Complete job]
 ```
 
 Paralelismo e checkpoints:
@@ -153,7 +179,7 @@ flowchart TD
 - `orchestration/`: runner, paralelismo e checkpoints.
 - `modeling/`: utilitarios de dataset e pre-processamento.
 - `jobs/`: scripts de pipeline, modelagem e relatorios.
-- `api/`: FastAPI para orquestracao de relatorios.
+- `api/`: FastAPI para orquestracao de relatorios e jobs.
 
 **Unidade De Processamento**
 Unidade logica: `(season, meeting_key, session_key, driver_number)`.
@@ -170,7 +196,7 @@ Mecanismos:
 
 **Camadas De Dados**
 Bronze:
-- Dados crus por endpoint (`laps`, `car_data`, `location`, `stints`).
+- Dados crus por endpoint (`laps`, `car_data`, `location`, `stints`, `weather`).
 - Uso principal: auditoria e replay.
 Silver:
 - JSON achatado, tipos e datas padronizadas.
@@ -179,7 +205,7 @@ Gold:
 
 **Modelo Gold**
 Colunas base:
-- Identificadores e contexto: `season`, `meeting_key`, `meeting_name`, `session_key`, `session_name`, `driver_number`, `driver_name`, `team_name`.
+- Identificadores e contexto: `season`, `meeting_key`, `meeting_name`, `meeting_date_start`, `session_key`, `session_name`, `driver_number`, `driver_name`, `team_name`.
 - Volta e alvo: `lap_number`, `lap_duration`, `duration_sector_1`, `duration_sector_2`, `duration_sector_3`.
 - Indicadores adicionais: `i1_speed`, `i2_speed`, `st_speed`, `is_pit_out_lap`.
 
@@ -202,6 +228,9 @@ Contexto de stint:
 - `stint_number`, `compound`, `stint_lap_start`, `stint_lap_end`.
 - `tyre_age_at_start`, `tyre_age_at_lap`.
 
+Clima por volta (quando disponivel):
+- `track_temperature`, `air_temperature`, `weather_date`.
+
 **Validacao De Qualidade**
 Arquivo: `f1_dataset/src/validators/quality.py`.
 Metricas:
@@ -222,8 +251,9 @@ Objetivo: rastreabilidade, reproducibilidade e comparacao entre execucoes.
 **Jobs Do Sistema**
 Pipeline e consolidacao:
 - `build_openf1_dataset.py`: executa o pipeline completo por unidades.
-- `process_meeting.py`: processa um meeting especifico (apoio).
+- `process_meeting.py`: processa um meeting especifico.
 - `consolidate_gold_dataset.py`: consolida gold em um unico arquivo.
+- `batch_import_season.py`: gera configs por batches e opcionalmente executa o pipeline.
 
 Modelagem e analytics:
 - `train_lap_time_regression.py`: regressao de tempo de volta.
@@ -244,6 +274,7 @@ Relatorios e rankings:
 - `driver_profiles_overall_ranking.py`: ranking geral por score composto.
 - `driver_profiles_text_report.py`: resumo textual baseado em percentis.
 - `generate_driver_performance_llm.py`: texto por piloto via MLflow Gateway.
+- `import_season_job.py`: executor do job assincrono criado pela API.
 
 **Metricas Modelagem**
 Regressoes (`train_lap_time_regression`, `train_lap_time_ranking`, `train_relative_position`, `train_stint_delta_pace`, `train_tyre_degradation`):
@@ -276,19 +307,19 @@ Metricas agregadas por piloto:
 - Confiabilidade: `finish_rate`, `lap_completion_mean`, `dnf_rate`.
 - Resultados: `points_total`, `points_race`, `points_sprint`, `races_count`, `sprints_count`, `results_count`.
 - Contexto adicional: `laps_total`, `meetings_total`, `pit_out_rate`, `driver_style_cluster`, `dominant_circuit_cluster`, `dominant_circuit_cluster_pct`.
+- Contexto de corrida: `meeting_date_start`, `dominant_circuit_speed_class`, `dominant_circuit_speed_class_pct`.
 Uso: alimentar rankings, comparacoes, textos e pontuacao geral.
 
 **API FastAPI**
 Arquivo: `f1_dataset/src/api/app.py`.
 Endpoints:
 - `GET /health`: healthcheck.
-- `POST /driver-profiles`: gera relatorios e rankings para um recorte especifico.
-Fluxo do endpoint:
-1. Garante dados no gold para o recorte solicitado.
-2. Consolida gold.
-3. Gera `driver_profiles.csv`, ranking geral e texto.
-4. Opcional: gera texto via LLM e mescla com ranking.
-Saidas: caminhos dos CSVs gerados em artifacts.
+- `POST /driver-profiles`: gera relatorios e rankings para um meeting. Aceita `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `include_llm`, `llm_endpoint`.
+- `POST /import-season`: cria job assincrono por temporada. Aceita `season`, `session_name` (Race ou Sprint), `include_llm`, `llm_endpoint`.
+- `GET /jobs/{job_id}`: status do job.
+- `GET /jobs/{job_id}/logs?lines=200`: ultimas linhas do log.
+Saidas do `/driver-profiles`: caminhos para `driver_overall_ranking.csv`, `driver_profiles_text.csv` e, se solicitado, `driver_profiles_llm.csv` e `driver_overall_ranking_llm.csv`.
+Saidas do `/import-season`: `job_id` e arquivos de status com progresso por meeting.
 
 **Configuracao**
 Arquivo principal: `config/config.yaml`.
@@ -297,12 +328,15 @@ Exemplo minimo:
 seasons:
   - 2023
 session_name: Race
+
 drivers:
   include: []
   exclude: []
+
 meetings:
   mode: all
   include: []
+
 execution:
   max_parallel_drivers: 1
   max_http_connections: 10
@@ -310,31 +344,44 @@ execution:
   retry_attempts: 4
   retry_backoff_seconds: 2
   rate_limit_cooldown_seconds: 30
+
 output:
   formats:
     - parquet
     - csv
   register_mlflow: true
+
 paths:
   data_dir: ./f1_dataset/data
   logs_dir: ./f1_dataset/data/logs
   checkpoints_dir: ./f1_dataset/data/checkpoints
   artifacts_dir: ./f1_dataset/data/artifacts
+
 mlflow:
   tracking_uri: ""
   experiment_name: OpenF1Dataset
+
 api:
   base_url: https://api.openf1.org/v1
 ```
+
+Modos de meetings:
+- `all`: processa todos os meetings da temporada.
+- `first_of_season`: processa apenas o primeiro meeting (o runner interrompe apos o primeiro).
+- `by_key`: filtra por `meeting_key`.
+- `by_name`: filtra por `meeting_name`.
 
 Overrides por variaveis de ambiente:
 - `DATA_DIR`, `LOG_DIR`, `CHECKPOINT_DIR`, `ARTIFACTS_DIR`.
 - `REGISTER_MLFLOW`, `MLFLOW_TRACKING_URI`, `MLFLOW_EXPERIMENT`.
 - `OPENF1_BASE_URL`.
+- `CONFIG_PATH`, `CONFIG_DIR`.
+- `JOBS_DIR`.
+- `MLFLOW_GATEWAY_ENDPOINT`.
 
 **Diretorios E Artefatos**
 - Dados: `f1_dataset/data/bronze`, `silver`, `gold`.
-- Logs: `f1_dataset/data/logs`.
+- Logs: `f1_dataset/data/logs` e `f1_dataset/data/logs/jobs`.
 - Checkpoints: `f1_dataset/data/checkpoints`.
 - Artefatos: `f1_dataset/data/artifacts`.
 - MLflow local (quando aplicavel): `f1_dataset/data/artifacts/mlruns`.
@@ -348,10 +395,15 @@ Consolidacao:
 ```bash
 python -m jobs.consolidate_gold_dataset
 ```
+API:
+```bash
+uvicorn api.app:app --host 0.0.0.0 --port 8000
+```
 Jobs de modelagem e relatorios seguem a mesma convencao `python -m jobs.<nome>`.
 
 **Observabilidade**
 - Logs por job em `data/logs`.
+- Logs de jobs assincronos da API em `data/logs/jobs`.
 - Checkpoints por unidade em `data/checkpoints`.
 - MLflow registra parametros, metricas e artefatos.
 

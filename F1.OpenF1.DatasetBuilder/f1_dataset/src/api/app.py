@@ -25,6 +25,12 @@ class DriverProfilesRequest(BaseModel):
     llm_endpoint: Optional[str] = Field(
         None, description="Override do endpoint do MLflow Gateway"
     )
+    drivers_include: list[str] = Field(
+        default_factory=list, description="Lista de pilotos para incluir (nome completo)"
+    )
+    drivers_exclude: list[str] = Field(
+        default_factory=list, description="Lista de pilotos para excluir (nome completo)"
+    )
 
 
 class DriverProfilesResponse(BaseModel):
@@ -79,6 +85,8 @@ def generate_driver_profiles(payload: DriverProfilesRequest) -> DriverProfilesRe
     data_dir = Path(env.get("DATA_DIR", "/app/data"))
     base_dir = artifacts_dir / "modeling" / "driver_profiles"
 
+    if not str(payload.meeting_key).strip():
+        raise HTTPException(status_code=400, detail="meeting_key e obrigatorio.")
     if payload.session_name.lower() not in {"race", "sprint", "all"}:
         raise HTTPException(status_code=400, detail="session_name deve ser Race, Sprint ou all")
 
@@ -90,8 +98,25 @@ def generate_driver_profiles(payload: DriverProfilesRequest) -> DriverProfilesRe
             payload.session_name,
             config_path,
             data_dir,
+            drivers_include=payload.drivers_include,
+            drivers_exclude=payload.drivers_exclude,
         )
-        if not has_data_for_filter(data_dir, payload.season, payload.meeting_key, payload.session_name):
+        required_columns = [
+            "meeting_date_start",
+            "weather_date",
+            "track_temperature",
+            "air_temperature",
+            "circuit_speed_class",
+        ]
+        required_non_null = ["meeting_date_start"]
+        if not has_data_for_filter(
+            data_dir,
+            payload.season,
+            payload.meeting_key,
+            payload.session_name,
+            required_columns=required_columns,
+            required_non_null=required_non_null,
+        ):
             raise HTTPException(
                 status_code=404,
                 detail=(
@@ -100,22 +125,24 @@ def generate_driver_profiles(payload: DriverProfilesRequest) -> DriverProfilesRe
                 ),
             )
 
-        run_cmd(
-            [
-                "python",
-                "-m",
-                "jobs.driver_profiles_report",
-                "--config",
-                config_path,
-                "--season",
-                str(payload.season),
-                "--meeting-key",
-                str(payload.meeting_key),
-                "--session-name",
-                payload.session_name,
-            ],
-            env,
-        )
+        report_cmd = [
+            "python",
+            "-m",
+            "jobs.driver_profiles_report",
+            "--config",
+            config_path,
+            "--season",
+            str(payload.season),
+            "--meeting-key",
+            str(payload.meeting_key),
+            "--session-name",
+            payload.session_name,
+        ]
+        if payload.drivers_include:
+            report_cmd += ["--drivers-include", ", ".join(payload.drivers_include)]
+        if payload.drivers_exclude:
+            report_cmd += ["--drivers-exclude", ", ".join(payload.drivers_exclude)]
+        run_cmd(report_cmd, env)
 
         run_cmd(
             [
@@ -149,6 +176,7 @@ def generate_driver_profiles(payload: DriverProfilesRequest) -> DriverProfilesRe
                 "MLFLOW_GATEWAY_ENDPOINT",
                 "http://mlflow:5000/gateway/gemini/mlflow/invocations",
             )
+            llm_output_dir = base_dir / "llm_reports" / datetime.now().strftime("%Y%m%d_%H%M%S")
             run_cmd(
                 [
                     "python",
@@ -156,10 +184,16 @@ def generate_driver_profiles(payload: DriverProfilesRequest) -> DriverProfilesRe
                     "jobs.generate_driver_performance_llm",
                     "--endpoint",
                     llm_endpoint,
+                    "--ranking-csv",
+                    str(ranking_csv),
+                    "--profiles-text-csv",
+                    str(text_csv),
+                    "--output-dir",
+                    str(llm_output_dir),
                 ],
                 env,
             )
-            llm_csv = latest_file(base_dir, "driver_profiles_llm.csv")
+            llm_csv = llm_output_dir / "driver_profiles_llm.csv"
             merged_csv = _merge_llm(ranking_csv, llm_csv, base_dir)
 
         artifacts = {

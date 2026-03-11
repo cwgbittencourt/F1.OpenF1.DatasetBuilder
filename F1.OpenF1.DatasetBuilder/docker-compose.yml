@@ -1,5 +1,7 @@
 services:
   openf1-dataset:
+    profiles:
+      - pipeline
     build:
       context: .
       dockerfile: Dockerfile

@@ -179,7 +179,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Gera texto por piloto via MLflow Gateway.")
     parser.add_argument(
         "--base-dir",
-        default="F1.OpenF1.DatasetBuilder/f1_dataset/data/artifacts/modeling/driver_profiles",
+        default="",
         help="Diretorio base de artifacts.",
     )
     parser.add_argument("--ranking-csv", default="", help="Caminho para driver_overall_ranking.csv")
@@ -195,7 +195,8 @@ def main() -> None:
     parser.add_argument("--sleep-base", type=float, default=1.5, help="Backoff base (s).")
     args = parser.parse_args()
 
-    base_dir = Path(args.base_dir)
+    default_base = Path(os.getenv("ARTIFACTS_DIR", "/app/artifacts")) / "modeling" / "driver_profiles"
+    base_dir = Path(args.base_dir) if args.base_dir else default_base
     ranking_csv = Path(args.ranking_csv) if args.ranking_csv else _latest_file(base_dir, "driver_overall_ranking.csv")
     profiles_csv = (
         Path(args.profiles_text_csv)

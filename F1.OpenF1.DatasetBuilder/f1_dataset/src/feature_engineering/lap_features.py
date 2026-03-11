@@ -11,6 +11,7 @@ class LapContext:
     season: int
     meeting_key: int | str
     meeting_name: str
+    meeting_date_start: str | None
     session_key: int | str
     session_name: str
     driver_number: int | str
@@ -24,12 +25,20 @@ def build_lap_dataset(
     loc_df: pd.DataFrame,
     context: LapContext,
     stints_df: pd.DataFrame | None = None,
+    weather_df: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     if laps_df.empty:
         return pd.DataFrame()
 
     laps_df = laps_df.copy()
     laps_df = _ensure_lap_timestamps(laps_df)
+    laps_df = _attach_weather(laps_df, weather_df)
+    laps_df = _attach_circuit_speed_class(laps_df, car_df)
+    if context.meeting_date_start is None:
+        inferred = _infer_meeting_date(laps_df)
+        if inferred:
+            context.meeting_date_start = inferred
+    meeting_day, meeting_month = _extract_day_month(context.meeting_date_start)
     car_df = _prepare_timeseries(car_df)
     loc_df = _prepare_timeseries(loc_df)
     stints_df = _prepare_stints(stints_df)
@@ -43,7 +52,7 @@ def build_lap_dataset(
         car_slice = _slice_by_time(car_df, start, end)
         loc_slice = _slice_by_time(loc_df, start, end)
 
-        row = _lap_base_row(lap, context)
+        row = _lap_base_row(lap, context, meeting_day, meeting_month)
         row.update(_stint_info(stints_df, lap.get("lap_number")))
         row.update(_car_metrics(car_slice))
         row.update(_location_metrics(loc_slice))
@@ -91,11 +100,19 @@ def _slice_by_time(df: pd.DataFrame, start: pd.Timestamp, end: pd.Timestamp) -> 
     return df.loc[(df["date"] >= start) & (df["date"] <= end)]
 
 
-def _lap_base_row(lap: pd.Series, context: LapContext) -> dict[str, Any]:
+def _lap_base_row(
+    lap: pd.Series,
+    context: LapContext,
+    meeting_day: int | None,
+    meeting_month: int | None,
+) -> dict[str, Any]:
     return {
         "season": context.season,
         "meeting_key": context.meeting_key,
         "meeting_name": context.meeting_name,
+        "meeting_date_start": context.meeting_date_start,
+        "meeting_day": meeting_day,
+        "meeting_month": meeting_month,
         "session_key": context.session_key,
         "session_name": context.session_name,
         "driver_number": context.driver_number,
@@ -110,6 +127,10 @@ def _lap_base_row(lap: pd.Series, context: LapContext) -> dict[str, Any]:
         "i2_speed": lap.get("i2_speed"),
         "st_speed": lap.get("st_speed"),
         "is_pit_out_lap": lap.get("is_pit_out_lap"),
+        "weather_date": lap.get("weather_date"),
+        "track_temperature": lap.get("track_temperature"),
+        "air_temperature": lap.get("air_temperature"),
+        "circuit_speed_class": lap.get("circuit_speed_class"),
     }
 
 
@@ -180,6 +201,96 @@ def _quality_flags(car_df: pd.DataFrame, loc_df: pd.DataFrame) -> dict[str, Any]
         "has_telemetry": bool(len(car_df) > 0),
         "has_trajectory": bool(len(loc_df) > 0),
     }
+
+
+def _attach_weather(laps_df: pd.DataFrame, weather_df: pd.DataFrame | None) -> pd.DataFrame:
+    if weather_df is None or weather_df.empty:
+        return laps_df
+    if "date" not in weather_df.columns or "lap_start" not in laps_df.columns:
+        return laps_df
+
+    weather_cols = [col for col in ["track_temperature", "air_temperature"] if col in weather_df.columns]
+    if not weather_cols:
+        return laps_df
+
+    weather = weather_df[["date"] + weather_cols].dropna(subset=["date"]).copy()
+    for col in weather_cols:
+        weather[col] = pd.to_numeric(weather[col], errors="coerce")
+    if weather.empty:
+        return laps_df
+    weather = weather.sort_values("date").rename(columns={"date": "weather_date"})
+
+    laps_out = laps_df.copy()
+    valid = laps_out["lap_start"].notna()
+    if not valid.any():
+        return laps_out
+
+    laps_valid = laps_out.loc[valid].sort_values("lap_start")
+    merged = pd.merge_asof(
+        laps_valid,
+        weather,
+        left_on="lap_start",
+        right_on="weather_date",
+        direction="nearest",
+        tolerance=pd.Timedelta("10min"),
+    )
+
+    laps_out.loc[merged.index, "weather_date"] = merged["weather_date"]
+    for col in weather_cols:
+        laps_out.loc[merged.index, col] = merged[col]
+
+    return laps_out
+
+
+def _attach_circuit_speed_class(laps_df: pd.DataFrame, car_df: pd.DataFrame) -> pd.DataFrame:
+    if car_df is None or car_df.empty or "speed" not in car_df.columns:
+        return laps_df
+    speed = pd.to_numeric(car_df["speed"], errors="coerce").dropna()
+    if speed.empty:
+        return laps_df
+
+    q1 = speed.quantile(1 / 3)
+    q2 = speed.quantile(2 / 3)
+    if pd.isna(q1) or pd.isna(q2):
+        return laps_df
+
+    def _label(value: float) -> str | None:
+        if pd.isna(value):
+            return None
+        if value <= q1:
+            return "low"
+        if value <= q2:
+            return "medium"
+        return "high"
+
+    laps_out = laps_df.copy()
+    laps_out["circuit_speed_class"] = _label(float(speed.mean()))
+    return laps_out
+
+
+def _infer_meeting_date(laps_df: pd.DataFrame) -> str | None:
+    if "lap_start" not in laps_df.columns:
+        return None
+    lap_start = laps_df["lap_start"].dropna()
+    if lap_start.empty:
+        return None
+    value = lap_start.min()
+    try:
+        return value.isoformat()
+    except Exception:
+        return str(value)
+
+
+def _extract_day_month(value: Any) -> tuple[int | None, int | None]:
+    if value is None or (isinstance(value, float) and pd.isna(value)):
+        return None, None
+    try:
+        ts = pd.to_datetime(value, errors="coerce", utc=True)
+    except Exception:
+        return None, None
+    if pd.isna(ts):
+        return None, None
+    return int(ts.day), int(ts.month)
 
 
 def _prepare_stints(df: pd.DataFrame | None) -> pd.DataFrame:

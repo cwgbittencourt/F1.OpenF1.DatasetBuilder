@@ -75,8 +75,13 @@ def build_preprocessor(
             or pd.api.types.is_categorical_dtype(series)
         )
 
+    datetime_cols = [
+        col for col in features.columns if pd.api.types.is_datetime64_any_dtype(features[col])
+    ]
     categorical_cols = [col for col in features.columns if is_categorical(features[col])]
-    numeric_cols = [col for col in features.columns if col not in categorical_cols]
+    numeric_cols = [
+        col for col in features.columns if col not in categorical_cols and col not in datetime_cols
+    ]
 
     numeric_transformer = Pipeline(
         steps=[("imputer", SimpleImputer(strategy="median"))]
