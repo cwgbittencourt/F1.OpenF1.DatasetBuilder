@@ -10,6 +10,7 @@ import mlflow
 import numpy as np
 import pandas as pd
 
+from clients.mlflow_tags import with_run_context
 from config.settings import ensure_paths, load_settings
 
 
@@ -58,7 +59,12 @@ def _percentile_rank(series: pd.Series) -> pd.Series:
 
 
 def _build_text_row(row: pd.Series, strengths: list[str], weaknesses: list[str], other: list[str]) -> str:
+    meetings_total = row.get("meetings_total", np.nan)
+    scope_label = "temporada" if pd.notna(meetings_total) and float(meetings_total) > 1 else "corrida"
     header = f"Piloto {row['driver_name']} (Equipe {row['team_name']})"
+    scope_note = (
+        f"Escopo {scope_label} ({int(meetings_total)} meetings)." if pd.notna(meetings_total) else "Escopo n/a."
+    )
     if "lap_mean_delta_to_meeting_mean" in row and pd.notna(row.get("meeting_lap_mean_avg", np.nan)):
         base = (
             f"{header}: ritmo relativo {row['lap_mean_delta_to_meeting_mean']:.3f}s "
@@ -84,6 +90,15 @@ def _build_text_row(row: pd.Series, strengths: list[str], weaknesses: list[str],
             f" pontos {row['points_total']:.0f} "
             f"(race {row.get('points_race', 0):.0f}, sprint {row.get('points_sprint', 0):.0f})."
         )
+    if "stint_performance_delta_mean" in row and pd.notna(row.get("stint_performance_delta_mean", np.nan)):
+        base += (
+            f" performance no stint {row.get('stint_performance_delta_mean', np.nan):.3f}s "
+            f"(tendencia {row.get('stint_performance_delta_slope', np.nan):.3f}s/volta)."
+        )
+    if "tyre_wear_slope" in row and pd.notna(row.get("tyre_wear_slope", np.nan)):
+        base += (
+            f" desgaste do pneu {row.get('tyre_wear_slope', np.nan):.3f}s/volta."
+        )
     strengths_txt = "Pontos fortes: " + (", ".join(strengths) if strengths else "sem destaques fortes.")
     weaknesses_txt = "Pontos fracos: " + (", ".join(weaknesses) if weaknesses else "sem fragilidades fortes.")
     other_txt = "Outras valencias: " + (", ".join(other) if other else "na media no restante.")
@@ -94,7 +109,51 @@ def _build_text_row(row: pd.Series, strengths: list[str], weaknesses: list[str],
         if pd.notna(row.get("dominant_circuit_cluster_pct", np.nan))
         else "Circuitos(cluster dominante)=n/a"
     )
-    return f"{base} {strengths_txt} {weaknesses_txt} {other_txt} {style}. {circuit}."
+    speed_class = (
+        f"Velocidade dominante={row.get('dominant_circuit_speed_class', np.nan)} "
+        f"({row.get('dominant_circuit_speed_class_pct', np.nan):.2f})"
+        if pd.notna(row.get("dominant_circuit_speed_class_pct", np.nan))
+        else "Velocidade dominante=n/a"
+    )
+    if pd.notna(row.get("track_temperature_mean", np.nan)):
+        track_cond = (
+            f"Pista {row.get('track_temperature_mean', np.nan):.2f}C "
+            f"(min {row.get('track_temperature_min', np.nan):.2f}C, "
+            f"max {row.get('track_temperature_max', np.nan):.2f}C, "
+            f"std {row.get('track_temperature_std', np.nan):.2f}C)"
+        )
+    else:
+        track_cond = "Pista n/a"
+    if pd.notna(row.get("air_temperature_mean", np.nan)):
+        air_cond = (
+            f"Ar {row.get('air_temperature_mean', np.nan):.2f}C "
+            f"(min {row.get('air_temperature_min', np.nan):.2f}C, "
+            f"max {row.get('air_temperature_max', np.nan):.2f}C, "
+            f"std {row.get('air_temperature_std', np.nan):.2f}C)"
+        )
+    else:
+        air_cond = "Ar n/a"
+    if pd.notna(row.get("track_temperature_mean", np.nan)) or pd.notna(
+        row.get("air_temperature_mean", np.nan)
+    ):
+        track_mean = (
+            f"{row.get('track_temperature_mean', np.nan):.2f}C"
+            if pd.notna(row.get("track_temperature_mean", np.nan))
+            else "n/a"
+        )
+        air_mean = (
+            f"{row.get('air_temperature_mean', np.nan):.2f}C"
+            if pd.notna(row.get("air_temperature_mean", np.nan))
+            else "n/a"
+        )
+        thermal_context = f"Contexto termico: pista media {track_mean}, ar medio {air_mean}."
+    else:
+        thermal_context = "Contexto termico: n/a."
+    conditions = f"Condicoes: {speed_class}; {track_cond}; {air_cond}."
+    return (
+        f"{base} {strengths_txt} {weaknesses_txt} {other_txt} "
+        f"{style}. {circuit}. {thermal_context} {conditions} {scope_note}"
+    )
 
 
 def main() -> None:
@@ -130,8 +189,11 @@ def main() -> None:
         "lap_std": ("consistencia", False),
         "lap_quality_good_rate": ("qualidade de volta", True),
         "anomaly_rate": ("estabilidade (anomalias)", False),
-        "degradation_mean": ("degradacao media", False),
-        "degradation_slope": ("sensibilidade ao desgaste", False),
+        "stint_performance_delta_mean": ("performance no stint (media)", False),
+        "stint_performance_delta_slope": ("performance no stint (tendencia)", False),
+        "tyre_wear_slope": ("desgaste do pneu (tendencia)", False),
+        "track_temperature_std": ("variacao temperatura pista", False),
+        "air_temperature_std": ("variacao temperatura ar", False),
         "delta_pace_median_abs": ("estabilidade entre stints (mediana)", False),
         "rank_percentile_mean": ("posicao relativa media", False),
         "rank_percentile_median": ("posicao relativa mediana", False),
@@ -208,7 +270,7 @@ def main() -> None:
         tracking_uri, settings.mlflow.experiment_name
     ):
         with mlflow.start_run(run_name="driver_profiles_text_report") as run:
-            mlflow.set_tags({"task": "driver_profiles_text_report"})
+            mlflow.set_tags(with_run_context({"task": "driver_profiles_text_report"}))
             mlflow.log_params({"top_k": args.top_k, "source": str(profiles_path)})
             mlflow.log_artifact(str(csv_path))
             logging.getLogger(__name__).info(

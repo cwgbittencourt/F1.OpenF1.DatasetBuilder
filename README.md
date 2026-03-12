@@ -1,8 +1,8 @@
-F1 OpenF1 Dataset Builder - Fases e Metricas
+F1 OpenF1 Dataset Builder - Fases, Metricas e API
 Este README descreve as fases executadas pela solucao (pipeline de dados, modelagem, relatorios e API) e as metricas aplicadas em cada caso, com o motivo de uso.
 
 **Escopo**
-Solucao principal em `F1.OpenF1.DatasetBuilder/` com pipeline OpenF1 -> bronze/silver/gold, publicacao no MLflow, jobs de modelagem/analytics e uma API para acionar relatorios.
+Solucao principal em `F1.OpenF1.DatasetBuilder/` com pipeline OpenF1 -> bronze/silver/gold, publicacao no MLflow, jobs de modelagem/analytics e uma API FastAPI para orquestrar relatorios e importacao de temporadas.
 
 **Fases Da Solucao**
 1. Configuracao e orquestracao
@@ -16,7 +16,7 @@ Metricas: nenhuma.
 Por que: etapa deterministica para selecionar o recorte de dados sem hardcode.
 
 3. Coleta / ingestao
-Descricao: coleta dos endpoints `laps`, `car_data`, `location`, `stints`.
+Descricao: coleta dos endpoints `laps`, `car_data`, `location`, `stints`, `weather`.
 Metricas: nenhuma metrica registrada no MLflow.
 Por que: o foco e capturar dados crus para auditoria e replay; a qualidade e medida posteriormente.
 
@@ -31,7 +31,7 @@ Metricas: nenhuma.
 Por que: a etapa prepara os dados para features; a avaliacao de qualidade ocorre no gold.
 
 6. Engenharia de atributos e Gold
-Descricao: agregacao por volta e enriquecimento com telemetria e trajetoria.
+Descricao: agregacao por volta e enriquecimento com telemetria, trajetoria, dados de stint e clima.
 Metricas de telemetria (por volta): `avg_speed`, `max_speed`, `min_speed`, `speed_std`, `avg_rpm`, `max_rpm`, `min_rpm`, `rpm_std`, `avg_throttle`, `max_throttle`, `min_throttle`, `throttle_std`.
 Por que: capturam ritmo medio e variabilidade de performance durante a volta.
 Metricas de controle do carro: `full_throttle_pct`, `brake_pct`, `brake_events`, `hard_brake_events`, `drs_pct`, `gear_changes`.
@@ -42,6 +42,10 @@ Metricas de cobertura de dados: `telemetry_points`, `trajectory_points`, `has_te
 Por que: indicam se a volta tem dados suficientes para analise confiavel.
 Contexto de stint: `stint_number`, `compound`, `stint_lap_start`, `stint_lap_end`, `tyre_age_at_start`, `tyre_age_at_lap`.
 Por que: necessario para estudos de degradacao e delta de pace.
+Contexto de corrida: `meeting_date_start`.
+Por que: permite recortes temporais por data da corrida.
+Temperatura por volta: `track_temperature`, `air_temperature`.
+Por que: correlaciona desempenho com condicoes de pista.
 
 7. Validacao de qualidade do Gold
 Descricao: checagem de colunas obrigatorias e completude.
@@ -71,12 +75,14 @@ Por que: etapa de uniao e distribuicao, sem avaliacao estatistica.
 
 11. Relatorios e rankings de pilotos
 Descricao: consolidacao de metricas por piloto e geracao de rankings e textos.
-Metricas base por piloto (driver_profiles_report): `laps_total`, `meetings_total`, `lap_mean`, `lap_std`, `finish_rate`, `lap_completion_mean`, `dnf_rate`, `points_total`, `points_race`, `points_sprint`, `races_count`, `sprints_count`, `lap_quality_good_rate`, `lap_quality_bad_rate`, `anomaly_rate`, `degradation_mean`, `degradation_p95`, `degradation_slope`, `delta_pace_mean`, `delta_pace_median`, `delta_pace_std`, `delta_pace_count`, `rank_percentile_mean`, `rank_percentile_median`, `meeting_lap_mean_avg`, `lap_mean_delta_to_meeting_mean`, `lap_mean_z_to_meeting_mean`, `pit_out_rate`, `driver_style_cluster`, `dominant_circuit_cluster`, `dominant_circuit_cluster_pct`.
+Metricas base por piloto (driver_profiles_report): `laps_total`, `meetings_total`, `lap_mean`, `lap_std`, `finish_rate`, `lap_completion_mean`, `dnf_rate`, `points_total`, `points_race`, `points_sprint`, `races_count`, `sprints_count`, `lap_quality_good_rate`, `lap_quality_bad_rate`, `anomaly_rate`, `degradation_mean`, `degradation_p95`, `degradation_slope`, `stint_performance_delta_mean`, `stint_performance_delta_slope`, `tyre_wear_slope`, `delta_pace_mean`, `delta_pace_median`, `delta_pace_std`, `delta_pace_count`, `rank_percentile_mean`, `rank_percentile_median`, `meeting_lap_mean_avg`, `lap_mean_delta_to_meeting_mean`, `lap_mean_z_to_meeting_mean`, `pit_out_rate`, `driver_style_cluster`, `dominant_circuit_cluster`, `dominant_circuit_cluster_pct`, `meeting_date_start`, `dominant_circuit_speed_class`, `dominant_circuit_speed_class_pct`, `track_temperature_mean`, `track_temperature_min`, `track_temperature_max`, `track_temperature_std`, `air_temperature_mean`, `air_temperature_min`, `air_temperature_max`, `air_temperature_std`.
 Por que: cobrem ritmo, consistencia, qualidade, anomalias, desgaste, estabilidade entre stints, posicionamento relativo e confiabilidade.
+Observacao: `stint_performance_delta_*` sao aliases mais indicativos das metricas de performance ao longo do stint (mesmo calculo de `degradation_*`). `tyre_wear_slope` isola o desgaste com base em `tyre_age_at_lap`, excluindo a 1a volta de cada stint.
 Rankings (driver_profiles_rankings/overall_ranking): usam as metricas acima com direcao (maior e melhor ou menor e melhor) para gerar ranking por criterio e score composto.
 Por que: transformar metricas isoladas em comparativos por piloto.
 Relatorio textual (driver_profiles_text_report / generate_driver_performance_llm): converte percentis e metricas em texto, mantendo as mesmas fontes numericas.
 Por que: facilitar consumo humano e gerar narrativa padronizada.
+O LLM explicita condicoes de pista e separa performance no stint de desgaste do pneu.
 
 12. Comparacao de experimentos
 Descricao: consolida comparativos de runs no MLflow (lap time e experimentos extendidos).
@@ -84,13 +90,73 @@ Metricas: reutiliza as metricas ja logadas nos runs do MLflow.
 Por que: facilitar escolha do melhor modelo sem recalcular.
 
 13. API de orquestracao (FastAPI)
-Descricao: endpoint para gerar perfis de pilotos sob demanda, acionando pipeline, consolidacao e relatorios.
+Descricao: endpoints para gerar perfis de pilotos por corrida, importar temporadas em background e consultar status/logs.
 Metricas: nao cria novas metricas; reaproveita as mesmas metricas dos relatorios e do MLflow.
 Por que: a API e camada de automacao, nao de avaliacao estatistica.
 
+**Endpoints Atuais Da API**
+- `GET /health`: healthcheck.
+- `POST /driver-profiles`: gera relatorios e rankings por meeting. Aceita `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `include_llm` e `llm_endpoint`.
+- `POST /driver-profiles/season`: gera relatorios por temporada e multiplas sessoes. Aceita `seasons`, `session_names` (vazio = todas), `include_llm`, `llm_endpoint`, `drivers_include`, `drivers_exclude`. Retorna `artifacts`, `summaries` e `top_drivers` por temporada.
+- `POST /import-season`: cria job assincrono por temporada. Aceita `season`, `session_name` (Race ou Sprint), `include_llm` e `llm_endpoint`.
+- `POST /data-lake/sync`: sincroniza bronze/silver/gold com o MinIO (upload/download).
+- `GET /jobs/{job_id}`: status do job criado em `/import-season`.
+- `GET /jobs/{job_id}/logs?lines=200`: ultimas linhas do log do job.
+
+**Exemplos de chamadas**
+
+```bash
+curl http://localhost:7077/health
+```
+
+```bash
+curl -X POST http://localhost:7077/driver-profiles \
+  -H "Content-Type: application/json" \
+  -d '{"season": 2023, "meeting_key": "1141", "session_name": "Race", "include_llm": true}'
+```
+
+```bash
+curl -X POST http://localhost:7077/driver-profiles/season \
+  -H "Content-Type: application/json" \
+  -d '{"seasons":[2023,2024], "session_names":["Race","Sprint"], "include_llm": false, "drivers_include": [], "drivers_exclude": []}'
+```
+
+```bash
+curl -X POST http://localhost:7077/driver-profiles/season \
+  -H "Content-Type: application/json" \
+  -d '{"seasons":[2023], "session_names":[], "include_llm": false}'
+```
+
+```bash
+curl -X POST http://localhost:7077/import-season \
+  -H "Content-Type: application/json" \
+  -d '{"season": 2023, "session_name": "Race", "include_llm": false}'
+```
+
+```bash
+curl -X POST http://localhost:7077/data-lake/sync \
+  -H "Content-Type: application/json" \
+  -d '{"direction":"upload","subdirs":["bronze","silver","gold"],"cleanup_local":true}'
+```
+
+```bash
+curl -X POST http://localhost:7077/data-lake/sync \
+  -H "Content-Type: application/json" \
+  -d '{"direction":"download","subdirs":["gold"],"only_if_missing":true}'
+```
+
+```bash
+curl http://localhost:7077/jobs/{job_id}
+```
+
+```bash
+curl "http://localhost:7077/jobs/{job_id}/logs?lines=200"
+```
+
 **Artefatos e trilhas**
-- Dados: `F1.OpenF1.DatasetBuilder/f1_dataset/data/bronze`, `silver`, `gold`.
-- Artefatos e relatorios: `F1.OpenF1.DatasetBuilder/f1_dataset/data/artifacts`.
-- Logs e checkpoints: `F1.OpenF1.DatasetBuilder/f1_dataset/data/logs`, `checkpoints`.
+- Dados locais: `F1.OpenF1.DatasetBuilder/f1_dataset/data/bronze`, `silver`, `gold` (temporarios, podem ser limpos apos sync).
+- Data lake (MinIO/S3): bucket/prefix configurados por `DATA_LAKE_BUCKET` + `DATA_LAKE_PREFIX`.
+- Artefatos e relatorios: `F1.OpenF1.DatasetBuilder/f1_dataset/data/artifacts` (temporario; publicado no MLflow).
+- Logs e checkpoints: `F1.OpenF1.DatasetBuilder/f1_dataset/data/logs`, `checkpoints` e `logs/jobs`.
 
 Se quiser detalhes de execucao, veja o README da aplicacao em `F1.OpenF1.DatasetBuilder/README.md`.

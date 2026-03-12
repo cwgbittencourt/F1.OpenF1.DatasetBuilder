@@ -33,7 +33,7 @@ paths:
 
 mlflow:
   tracking_uri: null
-  experiment_name: OpenF1Dataset
+  experiment_name: OpenF1Dataset_v4
 
 api:
   base_url: https://api.openf1.org/v1

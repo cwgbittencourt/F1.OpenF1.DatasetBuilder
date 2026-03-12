@@ -1,10 +1,11 @@
 {
   "status": "completed",
-  "updated_at": "2026-03-09T02:43:24.490903Z",
+  "updated_at": "2026-03-12T18:37:35.791464Z",
   "payload": {
     "season": 2024,
     "meeting_key": 1229,
     "meeting_name": "Bahrain Grand Prix",
+    "meeting_date_start": "2024-02-29T11:30:00+00:00",
     "session_key": 9472,
     "session_name": "Race",
     "driver_number": 3,

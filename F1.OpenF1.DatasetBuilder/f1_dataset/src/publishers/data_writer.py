@@ -16,6 +16,14 @@ def _partition_path(base_dir: str, unit: dict[str, Any]) -> Path:
     return path
 
 
+def _session_partition_path(base_dir: str, unit: dict[str, Any]) -> Path:
+    path = Path(base_dir)
+    path = path / f"season={unit['season']}"
+    path = path / f"meeting_key={unit['meeting_key']}"
+    path = path / f"session_key={unit['session_key']}"
+    return path
+
+
 def write_bronze(records: list[dict[str, Any]], base_dir: str, unit: dict[str, Any], name: str) -> Path:
     path = _partition_path(base_dir, unit)
     path.mkdir(parents=True, exist_ok=True)
@@ -25,8 +33,26 @@ def write_bronze(records: list[dict[str, Any]], base_dir: str, unit: dict[str, A
     return file_path
 
 
+def write_bronze_session(records: list[dict[str, Any]], base_dir: str, unit: dict[str, Any], name: str) -> Path:
+    path = _session_partition_path(base_dir, unit)
+    path.mkdir(parents=True, exist_ok=True)
+    file_path = path / f"{name}.json"
+    with file_path.open("w", encoding="utf-8") as handle:
+        json.dump(records, handle, ensure_ascii=False, default=str)
+    return file_path
+
+
 def write_silver(df: pd.DataFrame, base_dir: str, unit: dict[str, Any], name: str) -> Path:
     path = _partition_path(base_dir, unit)
+    path.mkdir(parents=True, exist_ok=True)
+    file_path = path / f"{name}.parquet"
+    if not df.empty:
+        df.to_parquet(file_path, index=False)
+    return file_path
+
+
+def write_silver_session(df: pd.DataFrame, base_dir: str, unit: dict[str, Any], name: str) -> Path:
+    path = _session_partition_path(base_dir, unit)
     path.mkdir(parents=True, exist_ok=True)
     file_path = path / f"{name}.parquet"
     if not df.empty:

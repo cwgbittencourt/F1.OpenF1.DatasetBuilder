@@ -1,10 +1,11 @@
 {
   "status": "completed",
-  "updated_at": "2026-03-08T19:08:19.558108Z",
+  "updated_at": "2026-03-11T19:07:56.036995Z",
   "payload": {
     "season": 2023,
     "meeting_key": 1143,
     "meeting_name": "Australian Grand Prix",
+    "meeting_date_start": "2023-03-31T02:30:00+00:00",
     "session_key": 7787,
     "session_name": "Race",
     "driver_number": 31,

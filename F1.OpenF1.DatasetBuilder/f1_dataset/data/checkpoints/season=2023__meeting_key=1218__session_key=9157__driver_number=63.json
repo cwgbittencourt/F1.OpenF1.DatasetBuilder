@@ -1,10 +1,11 @@
 {
   "status": "completed",
-  "updated_at": "2026-03-08T20:02:43.741937Z",
+  "updated_at": "2026-03-11T20:23:31.330380Z",
   "payload": {
     "season": 2023,
     "meeting_key": 1218,
     "meeting_name": "Italian Grand Prix",
+    "meeting_date_start": "2023-09-01T11:30:00+00:00",
     "session_key": 9157,
     "session_name": "Race",
     "driver_number": 63,

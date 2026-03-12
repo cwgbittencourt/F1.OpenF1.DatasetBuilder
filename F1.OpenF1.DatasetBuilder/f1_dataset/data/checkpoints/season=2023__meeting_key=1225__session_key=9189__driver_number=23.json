@@ -1,10 +1,11 @@
 {
   "status": "completed",
-  "updated_at": "2026-03-08T20:35:18.322404Z",
+  "updated_at": "2026-03-11T21:11:49.059245Z",
   "payload": {
     "season": 2023,
     "meeting_key": 1225,
     "meeting_name": "Las Vegas Grand Prix",
+    "meeting_date_start": "2023-11-17T04:30:00+00:00",
     "session_key": 9189,
     "session_name": "Race",
     "driver_number": 23,

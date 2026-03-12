@@ -8,10 +8,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from clients.mlflow_artifacts import artifact_uri, find_latest_run, get_tracking_client
 from clients.mlflow_client import MlflowClient
+from clients.mlflow_tags import with_run_context
 from clients.openf1_client import OpenF1Client, RateLimiter
 from config.settings import load_settings
 from discovery.discovery import get_meetings_for_season, get_sessions_for_meeting, select_session
+from orchestration.artifacts_cleanup import cleanup_paths, should_cleanup
+from orchestration.data_lake_sync import should_cleanup_data_lake, sync_data_lake
 from orchestration.import_utils import (
     ensure_data,
     has_data_for_filter,
@@ -90,13 +94,27 @@ def main() -> None:
 
     try:
         settings = load_settings(config_path)
+        if not settings.output.register_mlflow:
+            raise RuntimeError("REGISTER_MLFLOW=false; MLflow/MinIO e necessario para este job.")
         rate_limiter = RateLimiter(settings.execution.min_request_interval_ms / 1000.0)
         client = OpenF1Client(settings, rate_limiter=rate_limiter)
         mlflow_client = MlflowClient(settings)
+        tracking_uri = env.get("MLFLOW_TRACKING_URI") or settings.mlflow.tracking_uri or ""
+        experiment_name = env.get("MLFLOW_EXPERIMENT") or settings.mlflow.experiment_name
+        create_exp = env.get("MLFLOW_CREATE_EXPERIMENT", "true").lower() in {
+            "1",
+            "true",
+            "yes",
+            "on",
+        }
+        tracking_client, experiment_id = get_tracking_client(
+            tracking_uri, experiment_name, create_if_missing=create_exp
+        )
 
         artifacts_dir = Path(env.get("ARTIFACTS_DIR", settings.paths.artifacts_dir))
         data_dir = Path(env.get("DATA_DIR", settings.paths.data_dir))
         base_dir = artifacts_dir / "modeling" / "driver_profiles"
+        run_group = env.get("MLFLOW_RUN_GROUP") or str(job.get("job_id"))
 
         meetings = get_meetings_for_season(client, season)
         meetings = sorted(meetings, key=meeting_start_date)
@@ -113,6 +131,14 @@ def main() -> None:
         for meeting in meetings:
             meeting_key = meeting.get("meeting_key")
             meeting_name = meeting.get("meeting_name", "")
+            env["MLFLOW_RUN_GROUP"] = run_group
+            env["RUN_SEASON"] = str(season)
+            env["RUN_MEETING_KEY"] = str(meeting_key)
+            env["RUN_SESSION_NAME"] = str(session_name)
+            os.environ["MLFLOW_RUN_GROUP"] = run_group
+            os.environ["RUN_SEASON"] = str(season)
+            os.environ["RUN_MEETING_KEY"] = str(meeting_key)
+            os.environ["RUN_SESSION_NAME"] = str(session_name)
             status_payload["current_meeting"] = {
                 "meeting_key": str(meeting_key),
                 "meeting_name": str(meeting_name),
@@ -145,7 +171,22 @@ def main() -> None:
                     data_dir,
                 )
 
-                if not has_data_for_filter(data_dir, season, meeting_key, session_name):
+                required_columns = [
+                    "meeting_date_start",
+                    "weather_date",
+                    "track_temperature",
+                    "air_temperature",
+                    "circuit_speed_class",
+                ]
+                required_non_null = ["meeting_date_start"]
+                if not has_data_for_filter(
+                    data_dir,
+                    season,
+                    meeting_key,
+                    session_name,
+                    required_columns=required_columns,
+                    required_non_null=required_non_null,
+                ):
                     status_payload["meetings"].append(
                         {
                             "meeting_key": str(meeting_key),
@@ -249,22 +290,55 @@ def main() -> None:
                             },
                             metrics={},
                             artifacts=llm_artifacts,
-                            tags={
-                                "task": "driver_profiles_llm",
-                                "season": str(season),
-                                "meeting_key": str(meeting_key),
-                                "meeting_name": str(meeting_name),
-                                "session_name": str(session_name),
-                            },
+                            tags=with_run_context(
+                                {
+                                    "task": "driver_profiles_llm",
+                                    "season": str(season),
+                                    "meeting_key": str(meeting_key),
+                                    "meeting_name": str(meeting_name),
+                                    "session_name": str(session_name),
+                                }
+                            ),
                         )
 
-                artifacts = {
-                    "driver_profiles_csv": str(profiles_csv),
-                    "driver_overall_ranking_csv": str(ranking_csv),
-                    "driver_profiles_text_csv": str(text_csv),
+                artifacts = {}
+                tags = {
+                    "run_group": run_group,
+                    "season": str(season),
+                    "meeting_key": str(meeting_key),
+                    "session_name": str(session_name),
                 }
+                report_run = find_latest_run(
+                    tracking_client,
+                    experiment_id,
+                    {**tags, "task": "driver_profiles_report"},
+                )
+                artifacts["driver_profiles_csv"] = artifact_uri(report_run, "driver_profiles.csv")
+                ranking_run = find_latest_run(
+                    tracking_client,
+                    experiment_id,
+                    {**tags, "task": "driver_profiles_overall_ranking"},
+                )
+                artifacts["driver_overall_ranking_csv"] = artifact_uri(
+                    ranking_run, "driver_overall_ranking.csv"
+                )
+                text_run = find_latest_run(
+                    tracking_client,
+                    experiment_id,
+                    {**tags, "task": "driver_profiles_text_report"},
+                )
+                artifacts["driver_profiles_text_csv"] = artifact_uri(
+                    text_run, "driver_profiles_text.csv"
+                )
                 if llm_csv and llm_csv.exists():
-                    artifacts["driver_profiles_llm_csv"] = str(llm_csv)
+                    llm_run = find_latest_run(
+                        tracking_client,
+                        experiment_id,
+                        {**tags, "task": "driver_profiles_llm"},
+                    )
+                    artifacts["driver_profiles_llm_csv"] = artifact_uri(
+                        llm_run, "driver_profiles_llm.csv"
+                    )
 
                 status_payload["meetings"].append(
                     {
@@ -275,6 +349,15 @@ def main() -> None:
                         "artifacts": artifacts,
                     }
                 )
+                if should_cleanup(env):
+                    cleanup_dirs = {
+                        profiles_csv.parent,
+                        ranking_csv.parent,
+                        text_csv.parent,
+                    }
+                    if llm_csv and llm_csv.exists():
+                        cleanup_dirs.add(llm_csv.parent)
+                    cleanup_paths(cleanup_dirs)
             except Exception as exc:
                 logger.exception("Falha no meeting %s: %s", meeting_key, exc)
                 status_payload["meetings"].append(
@@ -293,6 +376,9 @@ def main() -> None:
         status_payload["status"] = "completed"
         status_payload["finished_at"] = _now_iso()
         status_payload["current_meeting"] = None
+        synced_dirs = sync_data_lake(data_dir, env)
+        if synced_dirs and should_cleanup_data_lake(env):
+            cleanup_paths([data_dir / subdir for subdir in synced_dirs.keys()])
         _write_json_atomic(status_file, status_payload)
         logger.info("Job concluido: %s", job.get("job_id"))
     except Exception as exc:

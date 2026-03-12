@@ -1,0 +1,32 @@
+seasons:
+- 2024
+session_name: Race
+drivers:
+  include: []
+  exclude: []
+meetings:
+  mode: by_key
+  include:
+  - '1230'
+execution:
+  max_parallel_drivers: 1
+  max_http_connections: 5
+  min_request_interval_ms: 600
+  retry_attempts: 5
+  retry_backoff_seconds: 2
+  rate_limit_cooldown_seconds: 60
+output:
+  formats:
+  - parquet
+  - csv
+  register_mlflow: true
+paths:
+  data_dir: ./f1_dataset/data
+  logs_dir: ./f1_dataset/data/logs
+  checkpoints_dir: ./f1_dataset/data/checkpoints
+  artifacts_dir: ./f1_dataset/data/artifacts
+mlflow:
+  tracking_uri: null
+  experiment_name: OpenF1Dataset_v4
+api:
+  base_url: https://api.openf1.org/v1

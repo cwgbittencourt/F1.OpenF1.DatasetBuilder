@@ -16,6 +16,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 from clients.openf1_client import OpenF1Client, RateLimiter
+from clients.mlflow_tags import with_run_context
 from config.settings import ensure_paths, load_settings
 from modeling.dataset import load_consolidated
 from modeling.utils import SECTOR_COLUMNS, build_preprocessor
@@ -49,6 +50,48 @@ def _mode(series: pd.Series) -> str | float:
     if not modes.empty:
         return modes.iloc[0]
     return series.iloc[0]
+
+
+def _split_list(value: str | None) -> list[str]:
+    if not value:
+        return []
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
+def _first_available(df: pd.DataFrame, candidates: list[str]) -> str | None:
+    for name in candidates:
+        if name in df.columns:
+            return name
+    return None
+
+
+def _circuit_speed_class(df: pd.DataFrame) -> pd.DataFrame:
+    speed_col = _first_available(df, ["avg_speed", "st_speed", "i2_speed", "i1_speed"])
+    if not speed_col:
+        return pd.DataFrame(columns=["meeting_key", "circuit_speed_class"])
+
+    meeting_speed = (
+        df.groupby("meeting_key")[speed_col]
+        .mean()
+        .reset_index(name="meeting_avg_speed")
+    )
+    if meeting_speed.empty:
+        return pd.DataFrame(columns=["meeting_key", "circuit_speed_class"])
+
+    q1 = meeting_speed["meeting_avg_speed"].quantile(1 / 3)
+    q2 = meeting_speed["meeting_avg_speed"].quantile(2 / 3)
+
+    def _label(value: float) -> str | None:
+        if pd.isna(value):
+            return None
+        if value <= q1:
+            return "low"
+        if value <= q2:
+            return "medium"
+        return "high"
+
+    meeting_speed["circuit_speed_class"] = meeting_speed["meeting_avg_speed"].apply(_label)
+    return meeting_speed[["meeting_key", "circuit_speed_class"]]
 
 
 def _lap_quality_labels(df: pd.DataFrame) -> pd.DataFrame:
@@ -105,6 +148,40 @@ def _compute_degradation(df: pd.DataFrame) -> pd.DataFrame:
         working["lap_duration"] - working["stint_first_lap_duration"]
     )
     return working
+
+
+def _compute_tyre_wear_slope(df: pd.DataFrame) -> pd.DataFrame:
+    if "tyre_age_at_lap" not in df.columns:
+        return pd.DataFrame(columns=["driver_number", "driver_name", "tyre_wear_slope"])
+    group_cols = ["meeting_key", "session_key", "driver_number", "stint_number"]
+    working = df.copy()
+    working = working[working["lap_duration"].notna()]
+    working = working.sort_values(group_cols + (["lap_number"] if "lap_number" in working.columns else []))
+    if "lap_number" in working.columns:
+        first_lap = working.groupby(group_cols)["lap_number"].transform("min")
+        working = working[working["lap_number"] > first_lap]
+
+    slopes: list[dict[str, float | str]] = []
+    for keys, group in working.groupby(group_cols):
+        sub = group.dropna(subset=["tyre_age_at_lap", "lap_duration"])
+        if len(sub) < 2:
+            continue
+        slope = float(np.polyfit(sub["tyre_age_at_lap"], sub["lap_duration"], 1)[0])
+        slopes.append(
+            {
+                "driver_number": keys[2],
+                "driver_name": str(group["driver_name"].iloc[0]),
+                "tyre_wear_slope": slope,
+            }
+        )
+
+    if not slopes:
+        return pd.DataFrame(columns=["driver_number", "driver_name", "tyre_wear_slope"])
+    slopes_df = pd.DataFrame(slopes)
+    return (
+        slopes_df.groupby(["driver_number", "driver_name"], as_index=False)["tyre_wear_slope"]
+        .mean()
+    )
 
 
 def _stint_delta_pace(df: pd.DataFrame) -> pd.DataFrame:
@@ -271,7 +348,7 @@ def _fetch_results_points(
     settings: Settings,
     seasons: list[int],
     meeting_key: int | str | None = None,
-    session_name_filter: str | None = None,
+    session_name_filter: str | list[str] | None = None,
 ) -> pd.DataFrame:
     race_points = {1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1}
     sprint_points = {1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1}
@@ -280,6 +357,7 @@ def _fetch_results_points(
     client = OpenF1Client(settings, rate_limiter=rate_limiter)
     rows: list[dict[str, object]] = []
 
+    meeting_key_filter = meeting_key
     for season in seasons:
         sessions = client.get("sessions", params={"year": season})
         for session in sessions:
@@ -287,13 +365,21 @@ def _fetch_results_points(
             kind = _session_kind(session_name)
             if not kind:
                 continue
-            if meeting_key is not None and str(session.get("meeting_key")) != str(meeting_key):
+            session_meeting_key = session.get("meeting_key")
+            if meeting_key_filter is not None and str(session_meeting_key) != str(meeting_key_filter):
                 continue
-            if session_name_filter and session_name_filter.lower() != "all":
-                if str(session_name).lower() != session_name_filter.lower():
-                    continue
+            if session_name_filter:
+                if isinstance(session_name_filter, (list, tuple, set)):
+                    normalized = {str(s).lower() for s in session_name_filter if str(s).strip()}
+                    if normalized and "all" not in normalized:
+                        if str(session_name).lower() not in normalized:
+                            continue
+                else:
+                    if str(session_name_filter).lower() != "all":
+                        if str(session_name).lower() != str(session_name_filter).lower():
+                            continue
             session_key = session.get("session_key")
-            meeting_key = session.get("meeting_key")
+            meeting_key = session_meeting_key
             results = client.get("session_result", params={"session_key": session_key})
             if not results:
                 continue
@@ -362,6 +448,21 @@ def main() -> None:
         default=None,
         help="Filtra por session_name (ex: Race, Sprint, ou all).",
     )
+    parser.add_argument(
+        "--session-names",
+        default=None,
+        help="Lista de session_name separadas por virgula (ex: Race,Sprint).",
+    )
+    parser.add_argument(
+        "--drivers-include",
+        default=None,
+        help="Lista de pilotos a incluir (separados por virgula).",
+    )
+    parser.add_argument(
+        "--drivers-exclude",
+        default=None,
+        help="Lista de pilotos a excluir (separados por virgula).",
+    )
     parser.add_argument("--random-state", type=int, default=42)
     args = parser.parse_args()
 
@@ -377,9 +478,28 @@ def main() -> None:
         df = df[df["season"] == args.season]
     if args.meeting_key is not None:
         df = df[df["meeting_key"].astype(str) == str(args.meeting_key)]
+    session_names = _split_list(args.session_names)
+    session_names = [name for name in session_names if name]
     session_name_filter = args.session_name or settings.session_name
-    if session_name_filter and session_name_filter.lower() != "all":
-        df = df[df["session_name"].astype(str).str.lower() == session_name_filter.lower()]
+    session_tag = None
+    if session_names:
+        normalized = {name.lower() for name in session_names if name}
+        if normalized and "all" not in normalized:
+            df = df[df["session_name"].astype(str).str.lower().isin(normalized)]
+        session_tag = ", ".join(session_names)
+    else:
+        if session_name_filter and session_name_filter.lower() != "all":
+            df = df[df["session_name"].astype(str).str.lower() == session_name_filter.lower()]
+        session_tag = session_name_filter
+
+    include = {name.lower() for name in _split_list(args.drivers_include)}
+    exclude = {name.lower() for name in _split_list(args.drivers_exclude)}
+    if include or exclude:
+        names = df["driver_name"].astype(str).str.lower()
+        if include:
+            df = df[names.isin(include)]
+        if exclude:
+            df = df[~names.isin(exclude)]
 
     base = (
         df.groupby(["driver_number", "driver_name"], as_index=False)
@@ -397,6 +517,70 @@ def main() -> None:
         .rename(columns={"team_name": "team_name"})
     )
     base = base.merge(team_mode, on=["driver_number", "driver_name"], how="left")
+    if "meeting_key" in df.columns:
+        meeting_keys = (
+            df.groupby(["driver_number", "driver_name"])["meeting_key"]
+            .apply(_mode)
+            .reset_index()
+            .rename(columns={"meeting_key": "meeting_key"})
+        )
+        base = base.merge(meeting_keys, on=["driver_number", "driver_name"], how="left")
+    if "session_name" in df.columns:
+        session_names_df = (
+            df.groupby(["driver_number", "driver_name"])["session_name"]
+            .apply(_mode)
+            .reset_index()
+            .rename(columns={"session_name": "session_name"})
+        )
+        base = base.merge(session_names_df, on=["driver_number", "driver_name"], how="left")
+    if "meeting_date_start" in df.columns:
+        meeting_dates = (
+            df.groupby(["driver_number", "driver_name"])["meeting_date_start"]
+            .apply(_mode)
+            .reset_index()
+            .rename(columns={"meeting_date_start": "meeting_date_start"})
+        )
+        base = base.merge(meeting_dates, on=["driver_number", "driver_name"], how="left")
+        parsed = pd.to_datetime(df["meeting_date_start"], errors="coerce", utc=True)
+        df = df.assign(meeting_day=parsed.dt.day, meeting_month=parsed.dt.month)
+        meeting_days = (
+            df.groupby(["driver_number", "driver_name"])["meeting_day"]
+            .apply(_mode)
+            .reset_index()
+        )
+        meeting_months = (
+            df.groupby(["driver_number", "driver_name"])["meeting_month"]
+            .apply(_mode)
+            .reset_index()
+        )
+        base = base.merge(meeting_days, on=["driver_number", "driver_name"], how="left")
+        base = base.merge(meeting_months, on=["driver_number", "driver_name"], how="left")
+
+    temp_aggs: dict[str, tuple[str, str]] = {}
+    if "track_temperature" in df.columns:
+        temp_aggs.update(
+            {
+                "track_temperature_mean": ("track_temperature", "mean"),
+                "track_temperature_min": ("track_temperature", "min"),
+                "track_temperature_max": ("track_temperature", "max"),
+                "track_temperature_std": ("track_temperature", "std"),
+            }
+        )
+    if "air_temperature" in df.columns:
+        temp_aggs.update(
+            {
+                "air_temperature_mean": ("air_temperature", "mean"),
+                "air_temperature_min": ("air_temperature", "min"),
+                "air_temperature_max": ("air_temperature", "max"),
+                "air_temperature_std": ("air_temperature", "std"),
+            }
+        )
+    if temp_aggs:
+        temp_stats = (
+            df.groupby(["driver_number", "driver_name"], as_index=False)
+            .agg(**temp_aggs)
+        )
+        base = base.merge(temp_stats, on=["driver_number", "driver_name"], how="left")
 
     # Finish rate and lap completion (accounts for lapped finishers)
     driver_laps = (
@@ -441,7 +625,7 @@ def main() -> None:
             settings,
             seasons,
             meeting_key=args.meeting_key,
-            session_name_filter=session_name_filter,
+            session_name_filter=session_names if session_names else session_name_filter,
         )
     else:
         results_df = pd.DataFrame()
@@ -577,6 +761,14 @@ def main() -> None:
         )
     base = base.merge(pd.DataFrame(slopes), on=["driver_number", "driver_name"], how="left")
 
+    # Tyre wear slope (excluding first lap of each stint)
+    tyre_wear_df = _compute_tyre_wear_slope(df)
+    base = base.merge(tyre_wear_df, on=["driver_number", "driver_name"], how="left")
+
+    # Aliases with clearer naming (keep original columns unchanged)
+    base["stint_performance_delta_mean"] = base["degradation_mean"]
+    base["stint_performance_delta_slope"] = base["degradation_slope"]
+
     # Stint delta pace
     stint_delta_df = _stint_delta_pace(df)
     stint_delta_stats = (
@@ -648,6 +840,46 @@ def main() -> None:
             how="left",
         )
 
+    # Circuit speed class (low/medium/high)
+    speed_classes = _circuit_speed_class(df)
+    if not speed_classes.empty:
+        driver_meetings = (
+            df[["driver_number", "meeting_key"]].drop_duplicates().merge(
+                speed_classes, on="meeting_key", how="left"
+            )
+        )
+        class_counts = (
+            driver_meetings.groupby(["driver_number", "circuit_speed_class"])
+            .size()
+            .reset_index(name="class_count")
+        )
+        class_totals = (
+            class_counts.groupby("driver_number")["class_count"]
+            .sum()
+            .reset_index(name="class_total")
+        )
+        class_counts = class_counts.merge(class_totals, on="driver_number")
+        class_counts["class_pct"] = class_counts["class_count"] / class_counts["class_total"]
+
+        dominant_speed = (
+            class_counts.sort_values(["driver_number", "class_pct"], ascending=[True, False])
+            .groupby("driver_number")
+            .head(1)
+            .rename(
+                columns={
+                    "circuit_speed_class": "dominant_circuit_speed_class",
+                    "class_pct": "dominant_circuit_speed_class_pct",
+                }
+            )
+        )
+        base = base.merge(
+            dominant_speed[
+                ["driver_number", "dominant_circuit_speed_class", "dominant_circuit_speed_class_pct"]
+            ],
+            on="driver_number",
+            how="left",
+        )
+
     run_timestamp = datetime.now(tz=timezone.utc).strftime("%Y%m%d_%H%M%S")
     artifacts_dir = (
         Path(settings.paths.artifacts_dir)
@@ -667,6 +899,14 @@ def main() -> None:
     (artifacts_dir / "summary.json").write_text(
         json.dumps(summary, indent=2), encoding="utf-8"
     )
+    schema = {
+        "columns": [
+            {"name": col, "dtype": str(base[col].dtype)} for col in base.columns
+        ],
+        "rows": int(base.shape[0]),
+    }
+    schema_path = artifacts_dir / "driver_profiles_schema.json"
+    schema_path.write_text(json.dumps(schema, indent=2), encoding="utf-8")
 
     tracking_uri = settings.mlflow.tracking_uri
     if not tracking_uri and settings.output.register_mlflow:
@@ -678,7 +918,14 @@ def main() -> None:
         tracking_uri, settings.mlflow.experiment_name
     ):
         with mlflow.start_run(run_name="driver_profiles_report") as run:
-            mlflow.set_tags({"task": "driver_profiles_report"})
+            tags = {"task": "driver_profiles_report"}
+            if args.season is not None:
+                tags["season"] = str(args.season)
+            if args.meeting_key is not None:
+                tags["meeting_key"] = str(args.meeting_key)
+            if session_tag or session_name_filter:
+                tags["session_name"] = str(session_tag or session_name_filter)
+            mlflow.set_tags(with_run_context(tags))
             mlflow.log_params(
                 {
                     "driver_clusters": args.driver_clusters,
@@ -689,6 +936,7 @@ def main() -> None:
             )
             mlflow.log_artifact(str(csv_path))
             mlflow.log_artifact(str(artifacts_dir / "summary.json"))
+            mlflow.log_artifact(str(schema_path))
             logging.getLogger(__name__).info(
                 "Relatorio registrado no MLflow: %s", run.info.run_id
             )
