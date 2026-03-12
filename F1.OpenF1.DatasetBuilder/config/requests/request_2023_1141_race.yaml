@@ -2,8 +2,7 @@ seasons:
 - 2023
 session_name: Race
 drivers:
-  include:
-  - Max VERSTAPPEN
+  include: []
   exclude: []
 meetings:
   mode: by_key
@@ -28,6 +27,6 @@ paths:
   artifacts_dir: ./f1_dataset/data/artifacts
 mlflow:
   tracking_uri: null
-  experiment_name: OpenF1Dataset
+  experiment_name: OpenF1Dataset_v4
 api:
   base_url: https://api.openf1.org/v1

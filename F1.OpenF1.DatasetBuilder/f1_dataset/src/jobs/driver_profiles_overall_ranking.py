@@ -11,6 +11,7 @@ import mlflow
 import numpy as np
 import pandas as pd
 
+from clients.mlflow_tags import with_run_context
 from config.settings import ensure_paths, load_settings
 
 
@@ -144,6 +145,20 @@ def main() -> None:
         "finish_rate",
         "dnf_rate",
         "lap_completion_mean",
+        "meetings_total",
+        "stint_performance_delta_mean",
+        "stint_performance_delta_slope",
+        "tyre_wear_slope",
+        "dominant_circuit_speed_class",
+        "dominant_circuit_speed_class_pct",
+        "track_temperature_mean",
+        "track_temperature_min",
+        "track_temperature_max",
+        "track_temperature_std",
+        "air_temperature_mean",
+        "air_temperature_min",
+        "air_temperature_max",
+        "air_temperature_std",
     ]:
         if extra in df.columns and extra not in output_cols:
             output_cols.append(extra)
@@ -187,7 +202,7 @@ def main() -> None:
         tracking_uri, settings.mlflow.experiment_name
     ):
         with mlflow.start_run(run_name="driver_profiles_overall_ranking") as run:
-            mlflow.set_tags({"task": "driver_profiles_overall_ranking"})
+            mlflow.set_tags(with_run_context({"task": "driver_profiles_overall_ranking"}))
             mlflow.log_params({"top_n": args.top_n, "source": str(profiles_path)})
             mlflow.log_artifact(str(csv_path))
             mlflow.log_artifact(str(artifacts_dir / "summary.json"))

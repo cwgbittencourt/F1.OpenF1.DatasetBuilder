@@ -1,0 +1,15 @@
+{
+  "status": "completed",
+  "updated_at": "2026-03-11T21:04:40.982520Z",
+  "payload": {
+    "season": 2023,
+    "meeting_key": 1224,
+    "meeting_name": "São Paulo Grand Prix",
+    "meeting_date_start": "2023-11-03T14:30:00+00:00",
+    "session_key": 9205,
+    "session_name": "Race",
+    "driver_number": 20,
+    "driver_name": "Kevin MAGNUSSEN",
+    "team_name": "Haas F1 Team"
+  }
+}

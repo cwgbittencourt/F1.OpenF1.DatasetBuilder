@@ -28,7 +28,7 @@ paths:
   checkpoints_dir: ./f1_dataset/data/checkpoints
   artifacts_dir: ./f1_dataset/data/artifacts
 mlflow:
-  tracking_uri: sqlite:///./f1_dataset/data/artifacts/mlflow.db
-  experiment_name: OpenF1Dataset
+  tracking_uri: null
+  experiment_name: OpenF1Dataset_v4
 api:
   base_url: https://api.openf1.org/v1

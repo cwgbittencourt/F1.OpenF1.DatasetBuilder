@@ -9,6 +9,7 @@ from typing import Any
 import pandas as pd
 import yaml
 
+from orchestration.data_lake_sync import download_data_lake, should_download_data_lake
 
 def run_cmd(args: list[str], env: dict[str, str]) -> None:
     proc = subprocess.run(
@@ -161,6 +162,8 @@ def ensure_data(
     drivers_include: list[str] | None = None,
     drivers_exclude: list[str] | None = None,
 ) -> None:
+    if should_download_data_lake(env):
+        download_data_lake(data_dir, env, only_if_missing=True)
     if required_columns is None:
         required_columns = [
             "meeting_date_start",
@@ -196,6 +199,9 @@ def ensure_data(
             drivers_include=drivers_include,
             drivers_exclude=drivers_exclude,
         )
+        run_env = env.copy()
+        run_env["SYNC_DATA_LAKE"] = "false"
+        run_env["CLEANUP_LOCAL_DATA"] = "false"
         run_cmd(
             [
                 "python",
@@ -204,7 +210,7 @@ def ensure_data(
                 "--config",
                 str(temp_config),
             ],
-            env,
+            run_env,
         )
 
     if session_name.lower() == "all":

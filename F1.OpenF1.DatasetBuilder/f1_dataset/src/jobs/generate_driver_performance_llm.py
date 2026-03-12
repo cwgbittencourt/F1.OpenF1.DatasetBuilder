@@ -42,6 +42,14 @@ def _build_prompt(row: pd.Series, summary_text: str) -> Dict:
             return float(row[key])
         return None
 
+    def _safe_int(key: str) -> int | None:
+        if key in row and pd.notna(row[key]):
+            try:
+                return int(row[key])
+            except Exception:
+                return None
+        return None
+
     delta_pace_abs = None
     if "delta_pace_median_abs" in row:
         delta_pace_abs = float(row["delta_pace_median_abs"])
@@ -73,6 +81,15 @@ def _build_prompt(row: pd.Series, summary_text: str) -> Dict:
         except Exception:
             delta_pace_count = None
 
+    meetings_total = _safe_int("meetings_total")
+    is_multi_meeting = bool(meetings_total and meetings_total > 1)
+    scope_label = "temporada" if is_multi_meeting else "corrida"
+    scope_hint = (
+        f"Escopo: temporada com {meetings_total} meetings analisados."
+        if is_multi_meeting
+        else "Escopo: corrida unica."
+    )
+
     metrics = {
         "overall_rank": int(row["overall_rank"]),
         "overall_score": float(row["overall_score"]),
@@ -83,12 +100,32 @@ def _build_prompt(row: pd.Series, summary_text: str) -> Dict:
         "lap_std": _safe_float("lap_std"),
         "lap_quality_good_rate": _safe_float("lap_quality_good_rate"),
         "anomaly_rate": _safe_float("anomaly_rate"),
-        "degradation_mean": _safe_float("degradation_mean"),
-        "degradation_slope": _safe_float("degradation_slope"),
+        "stint_performance_delta_mean": _safe_float("stint_performance_delta_mean")
+        if "stint_performance_delta_mean" in row
+        else _safe_float("degradation_mean"),
+        "stint_performance_delta_slope": _safe_float("stint_performance_delta_slope")
+        if "stint_performance_delta_slope" in row
+        else _safe_float("degradation_slope"),
+        "tyre_wear_slope": _safe_float("tyre_wear_slope"),
+        "meetings_total": meetings_total,
         "delta_pace_median_abs": delta_pace_abs,
         "delta_pace_count": delta_pace_count,
         "rank_percentile_mean": _safe_float("rank_percentile_mean"),
         "rank_percentile_median": _safe_float("rank_percentile_median"),
+        "dominant_circuit_speed_class": (
+            str(row["dominant_circuit_speed_class"])
+            if "dominant_circuit_speed_class" in row and pd.notna(row["dominant_circuit_speed_class"])
+            else None
+        ),
+        "dominant_circuit_speed_class_pct": _safe_float("dominant_circuit_speed_class_pct"),
+        "track_temperature_mean": _safe_float("track_temperature_mean"),
+        "track_temperature_min": _safe_float("track_temperature_min"),
+        "track_temperature_max": _safe_float("track_temperature_max"),
+        "track_temperature_std": _safe_float("track_temperature_std"),
+        "air_temperature_mean": _safe_float("air_temperature_mean"),
+        "air_temperature_min": _safe_float("air_temperature_min"),
+        "air_temperature_max": _safe_float("air_temperature_max"),
+        "air_temperature_std": _safe_float("air_temperature_std"),
         "finish_rate": finish_rate,
         "lap_completion_mean": lap_completion_mean,
         "points_total": points_total,
@@ -104,21 +141,25 @@ def _build_prompt(row: pd.Series, summary_text: str) -> Dict:
         "2) Ritmo relativo a pista (use lap_mean_delta_to_meeting_mean e meeting_lap_mean_avg; negativo = mais rapido; inclua lap_mean_z_to_meeting_mean)\n"
         "3) Consistencia (variabilidade)\n"
         "4) Qualidade de volta\n"
-        "5) Anomalias\n"
-        "6) Degradacao de pneus (nivel e tendencia)\n"
-        "7) Delta pace (mencione o numero de stints usados)\n"
-        "8) Posicionamento relativo (use rank_percentile_mean e rank_percentile_median)\n"
-        "9) Sintese final (2 a 3 frases, inclua confiabilidade: finish_rate e lap_completion_mean, e pontos: points_total/points_race/points_sprint com contagens)\n"
+        "5) Condicoes de pista (classe de velocidade e temperaturas)\n"
+        "6) Anomalias\n"
+        "7) Degradacao de pneus (desgaste) e performance no stint (relacione com a temperatura da pista como observacao)\n"
+        "8) Delta pace (mencione o numero de stints usados)\n"
+        "9) Posicionamento relativo (use rank_percentile_mean e rank_percentile_median)\n"
+        "10) Sintese final (2 a 3 frases, inclua confiabilidade: finish_rate e lap_completion_mean, e pontos: points_total/points_race/points_sprint com contagens)\n"
         "Padrao de formato (obrigatorio):\n"
         "- Use sempre 2 casas decimais.\n"
         "- Valores em segundos com sufixo 's'.\n"
         "- Percentuais multiplicar por 100 e usar '%'.\n"
+        "- Temperaturas em graus Celsius (C) com 2 casas.\n"
         "- Z-score sempre como 'z=...'.\n"
         "- Se algum valor vier nulo, escreva 'n/a'.\n"
-        "Nao invente fatos fora dos dados fornecidos."
+        f"- O escopo da analise e {scope_label}; evite linguagem de unica corrida quando o escopo for temporada.\n"
+        "Nao invente fatos fora dos dados fornecidos e seja bem claro em suas explicações."
     )
     user = (
         f"Piloto: {row['driver_name']} (#{row['driver_number']}), Equipe: {row['team_name']}.\n"
+        f"{scope_hint}\n"
         f"Resumo tecnico: {summary_text}\n"
         f"Metricas (numeros): {json.dumps(metrics, ensure_ascii=False)}\n"
         "Valores obrigatorios por topico:\n"
@@ -126,10 +167,14 @@ def _build_prompt(row: pd.Series, summary_text: str) -> Dict:
         "- Ritmo relativo a pista: lap_mean_delta_to_meeting_mean (s), meeting_lap_mean_avg (s), lap_mean_z_to_meeting_mean (z=..)\n"
         "- Consistencia: lap_std (s)\n"
         "- Qualidade de volta: lap_quality_good_rate (%)\n"
+        "- Condicoes de pista: dominant_circuit_speed_class, dominant_circuit_speed_class_pct (%), track_temperature_mean/min/max/std (C), air_temperature_mean/min/max/std (C)\n"
         "- Anomalias: anomaly_rate (%)\n"
-        "- Degradacao de pneus: degradation_mean (s), degradation_slope (s/volta)\n"
+        "- Performance no stint: stint_performance_delta_mean (s), stint_performance_delta_slope (s/volta)\n"
+        "- Desgaste do pneu: tyre_wear_slope (s/volta)\n"
+        "- Contexto termico: relacione com track_temperature_mean\n"
         "- Delta pace: delta_pace_median_abs (s), delta_pace_count\n"
         "- Posicionamento relativo: rank_percentile_mean (%), rank_percentile_median (%)\n"
+        "- Escopo: se meetings_total > 1, use linguagem de temporada e mencione o total de meetings.\n"
         "- Confiabilidade (na sintese): finish_rate (%), lap_completion_mean (%)\n"
         "- Pontos (na sintese): points_total, points_race, points_sprint, races_count, sprints_count\n"
         "Gere o texto final seguindo as regras."

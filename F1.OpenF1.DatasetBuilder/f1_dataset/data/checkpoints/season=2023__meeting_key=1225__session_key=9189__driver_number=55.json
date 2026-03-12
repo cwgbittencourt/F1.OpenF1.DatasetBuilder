@@ -1,0 +1,15 @@
+{
+  "status": "completed",
+  "updated_at": "2026-03-11T21:12:53.115854Z",
+  "payload": {
+    "season": 2023,
+    "meeting_key": 1225,
+    "meeting_name": "Las Vegas Grand Prix",
+    "meeting_date_start": "2023-11-17T04:30:00+00:00",
+    "session_key": 9189,
+    "session_name": "Race",
+    "driver_number": 55,
+    "driver_name": "Carlos SAINZ",
+    "team_name": "Ferrari"
+  }
+}

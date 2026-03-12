@@ -40,6 +40,7 @@ from publishers.data_writer import (
 from publishers.mlflow_publisher import MlflowPublisher
 from validators.quality import validate_lap_dataset
 from orchestration.checkpoint_store import CheckpointStore
+from orchestration.artifacts_cleanup import cleanup_paths, should_cleanup
 
 
 @dataclass(frozen=True)
@@ -357,6 +358,9 @@ def _process_unit(
             metrics=metrics,
             artifacts=artifacts,
         )
+
+        if should_cleanup():
+            cleanup_paths([report_path, schema_path])
 
         checkpoint_store.set(unit_id, "completed", unit.as_dict())
     except Exception as exc:

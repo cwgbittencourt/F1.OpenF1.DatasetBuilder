@@ -63,29 +63,33 @@ Fluxo por unidade de processamento:
 Fluxo da API `/driver-profiles`:
 ```text
 POST /driver-profiles
+  -> tenta baixar gold do data lake (quando faltarem)
   -> verifica dados gold (season/meeting/session)
   -> se faltando: executa pipeline e consolida gold
   -> gera driver_profiles.csv
   -> gera rankings e texto
   -> opcional: gera LLM e merge
-  -> responde com paths de artifacts
+  -> sincroniza bronze/silver/gold com o data lake e limpa locais (se habilitado)
+  -> responde com URIs de artifacts no MLflow
 ```
 
 Fluxo da API `/driver-profiles` (Mermaid):
 ```mermaid
 flowchart TD
-  A[POST /driver-profiles] --> B[Check gold data]
-  B -->|missing| C[Run pipeline]
-  C --> D[Consolidate gold]
-  B -->|exists| E[Generate driver_profiles]
-  D --> E
-  E --> F[Generate rankings]
-  F --> G[Generate text report]
-  G --> H{Include LLM?}
-  H -->|yes| I[Generate LLM + merge]
-  H -->|no| J[Skip LLM]
-  I --> K[Return artifacts]
-  J --> K
+  A[POST /driver-profiles] --> B[Download data lake se necessario]
+  B --> C[Check gold data]
+  C -->|missing| D[Run pipeline]
+  D --> E[Consolidate gold]
+  C -->|exists| F[Generate driver_profiles]
+  E --> F
+  F --> G[Generate rankings]
+  G --> H[Generate text report]
+  H --> I{Include LLM?}
+  I -->|yes| J[Generate LLM + merge]
+  I -->|no| K[Skip LLM]
+  J --> L[Sync data lake + cleanup local]
+  K --> L
+  L --> M[Return MLflow artifact URIs]
 ```
 
 Fluxo da API `/import-season`:
@@ -302,12 +306,12 @@ Saida principal: `driver_profiles.csv`.
 Metricas agregadas por piloto:
 - Ritmo e consistencia: `lap_mean`, `lap_std`, `lap_mean_delta_to_meeting_mean`, `lap_mean_z_to_meeting_mean`, `meeting_lap_mean_avg`.
 - Qualidade e estabilidade: `lap_quality_good_rate`, `lap_quality_bad_rate`, `anomaly_rate`.
-- Desgaste e stints: `degradation_mean`, `degradation_p95`, `degradation_slope`, `delta_pace_mean`, `delta_pace_median`, `delta_pace_std`, `delta_pace_count`.
+- Desgaste e stints: `degradation_mean`, `degradation_p95`, `degradation_slope` (performance ao longo do stint), `stint_performance_delta_mean`, `stint_performance_delta_slope` (aliases com nome mais claro), `tyre_wear_slope` (desgaste isolado), `delta_pace_mean`, `delta_pace_median`, `delta_pace_std`, `delta_pace_count`.
 - Posicionamento relativo: `rank_percentile_mean`, `rank_percentile_median`.
 - Confiabilidade: `finish_rate`, `lap_completion_mean`, `dnf_rate`.
 - Resultados: `points_total`, `points_race`, `points_sprint`, `races_count`, `sprints_count`, `results_count`.
 - Contexto adicional: `laps_total`, `meetings_total`, `pit_out_rate`, `driver_style_cluster`, `dominant_circuit_cluster`, `dominant_circuit_cluster_pct`.
-- Contexto de corrida: `meeting_date_start`, `dominant_circuit_speed_class`, `dominant_circuit_speed_class_pct`.
+- Contexto de corrida: `meeting_date_start`, `dominant_circuit_speed_class`, `dominant_circuit_speed_class_pct`, `track_temperature_mean`, `track_temperature_min`, `track_temperature_max`, `track_temperature_std`, `air_temperature_mean`, `air_temperature_min`, `air_temperature_max`, `air_temperature_std`.
 Uso: alimentar rankings, comparacoes, textos e pontuacao geral.
 
 **API FastAPI**
@@ -315,10 +319,63 @@ Arquivo: `f1_dataset/src/api/app.py`.
 Endpoints:
 - `GET /health`: healthcheck.
 - `POST /driver-profiles`: gera relatorios e rankings para um meeting. Aceita `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `include_llm`, `llm_endpoint`.
+- `POST /driver-profiles/season`: gera relatorios por temporada e multiplas sessoes. Aceita `seasons`, `session_names` (vazio = todas), `include_llm`, `llm_endpoint`, `drivers_include`, `drivers_exclude`.
 - `POST /import-season`: cria job assincrono por temporada. Aceita `season`, `session_name` (Race ou Sprint), `include_llm`, `llm_endpoint`.
+- `POST /data-lake/sync`: sincroniza bronze/silver/gold com MinIO (upload/download).
 - `GET /jobs/{job_id}`: status do job.
 - `GET /jobs/{job_id}/logs?lines=200`: ultimas linhas do log.
-Saidas do `/driver-profiles`: caminhos para `driver_overall_ranking.csv`, `driver_profiles_text.csv` e, se solicitado, `driver_profiles_llm.csv` e `driver_overall_ranking_llm.csv`.
+Saidas do `/driver-profiles`: URIs no MLflow para `driver_overall_ranking.csv`, `driver_profiles_text.csv` e, se solicitado, `driver_profiles_llm.csv` e `driver_overall_ranking_llm.csv`.
+Saidas do `/driver-profiles/season`: `artifacts` por temporada (URIs MLflow), `summaries` por temporada e `top_drivers` por temporada.
+
+**Exemplos de chamadas**
+
+```bash
+curl http://localhost:7077/health
+```
+
+```bash
+curl -X POST http://localhost:7077/driver-profiles \
+  -H "Content-Type: application/json" \
+  -d '{"season": 2023, "meeting_key": "1141", "session_name": "Race", "include_llm": true}'
+```
+
+```bash
+curl -X POST http://localhost:7077/driver-profiles/season \
+  -H "Content-Type: application/json" \
+  -d '{"seasons":[2023,2024], "session_names":["Race","Sprint"], "include_llm": false, "drivers_include": [], "drivers_exclude": []}'
+```
+
+```bash
+curl -X POST http://localhost:7077/driver-profiles/season \
+  -H "Content-Type: application/json" \
+  -d '{"seasons":[2023], "session_names":[], "include_llm": false}'
+```
+
+```bash
+curl -X POST http://localhost:7077/import-season \
+  -H "Content-Type: application/json" \
+  -d '{"season": 2023, "session_name": "Race", "include_llm": false}'
+```
+
+```bash
+curl -X POST http://localhost:7077/data-lake/sync \
+  -H "Content-Type: application/json" \
+  -d '{"direction":"upload","subdirs":["bronze","silver","gold"],"cleanup_local":true}'
+```
+
+```bash
+curl -X POST http://localhost:7077/data-lake/sync \
+  -H "Content-Type: application/json" \
+  -d '{"direction":"download","subdirs":["gold"],"only_if_missing":true}'
+```
+
+```bash
+curl http://localhost:7077/jobs/{job_id}
+```
+
+```bash
+curl "http://localhost:7077/jobs/{job_id}/logs?lines=200"
+```
 Saidas do `/import-season`: `job_id` e arquivos de status com progresso por meeting.
 
 **Configuracao**
@@ -373,17 +430,21 @@ Modos de meetings:
 
 Overrides por variaveis de ambiente:
 - `DATA_DIR`, `LOG_DIR`, `CHECKPOINT_DIR`, `ARTIFACTS_DIR`.
-- `REGISTER_MLFLOW`, `MLFLOW_TRACKING_URI`, `MLFLOW_EXPERIMENT`.
+- `REGISTER_MLFLOW`, `MLFLOW_TRACKING_URI`, `MLFLOW_EXPERIMENT`, `MLFLOW_CREATE_EXPERIMENT`.
 - `OPENF1_BASE_URL`.
 - `CONFIG_PATH`, `CONFIG_DIR`.
 - `JOBS_DIR`.
 - `MLFLOW_GATEWAY_ENDPOINT`.
+- `CLEANUP_LOCAL_ARTIFACTS`, `SYNC_DATA_LAKE`, `DOWNLOAD_DATA_LAKE`, `CLEANUP_LOCAL_DATA`.
+- `DATA_LAKE_BUCKET`, `DATA_LAKE_PREFIX`, `DATA_LAKE_S3_ENDPOINT`.
+- `DATA_LAKE_SUBDIRS`, `DATA_LAKE_DOWNLOAD_SUBDIRS`, `DATA_LAKE_CREATE_BUCKET`.
 
 **Diretorios E Artefatos**
-- Dados: `f1_dataset/data/bronze`, `silver`, `gold`.
+- Dados locais: `f1_dataset/data/bronze`, `silver`, `gold` (temporarios, podem ser limpos apos sync).
+- Data lake (MinIO/S3): bucket/prefix configurados por `DATA_LAKE_BUCKET` + `DATA_LAKE_PREFIX`.
 - Logs: `f1_dataset/data/logs` e `f1_dataset/data/logs/jobs`.
 - Checkpoints: `f1_dataset/data/checkpoints`.
-- Artefatos: `f1_dataset/data/artifacts`.
+- Artefatos: `f1_dataset/data/artifacts` (temporario; publicado no MLflow).
 - MLflow local (quando aplicavel): `f1_dataset/data/artifacts/mlruns`.
 
 **Execucao**

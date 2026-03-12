@@ -6,6 +6,8 @@ import os
 from pathlib import Path
 
 from config.settings import ensure_paths, load_settings
+from orchestration.artifacts_cleanup import cleanup_directory_contents, should_cleanup
+from orchestration.data_lake_sync import should_cleanup_data_lake, sync_data_lake
 from orchestration.runner import run_pipeline
 
 
@@ -39,6 +41,12 @@ def main() -> None:
         settings.meetings.include,
     )
     run_pipeline(settings)
+    if should_cleanup():
+        cleanup_directory_contents(Path(settings.paths.artifacts_dir))
+    synced_dirs = sync_data_lake(Path(settings.paths.data_dir))
+    if synced_dirs and should_cleanup_data_lake():
+        for subdir in synced_dirs.keys():
+            cleanup_directory_contents(Path(settings.paths.data_dir) / subdir)
 
 
 if __name__ == "__main__":
