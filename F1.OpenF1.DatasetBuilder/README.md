@@ -16,7 +16,7 @@ docker compose up --build openf1-dataset
 docker compose up --build openf1-api
 ```
 
-O servico da API fica disponivel em `http://localhost:7077`.
+O servico da API fica disponivel em `http://localhost:7077/docs`.
 
 ## API (FastAPI)
 
