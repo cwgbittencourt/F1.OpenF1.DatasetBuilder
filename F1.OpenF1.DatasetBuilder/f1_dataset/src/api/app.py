@@ -851,7 +851,7 @@ def data_lake_sync(payload: DataLakeSyncRequest) -> DataLakeSyncResponse:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
-@app.post("/perguntas-gold", response_model=GoldQuestionsResponse)
+@app.post("/gold/questions", response_model=GoldQuestionsResponse)
 def perguntas_gold(payload: GoldQuestionsRequest) -> GoldQuestionsResponse:
     question = _normalize_text(payload.question)
     if not question:

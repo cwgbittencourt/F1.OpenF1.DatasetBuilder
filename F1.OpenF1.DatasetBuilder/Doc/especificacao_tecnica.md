@@ -122,7 +122,7 @@ api:
 Endpoints atuais:
 - `GET /health`: healthcheck.
 - `GET /gold/meetings`: lista meetings existentes no gold (meeting_key/meeting_name/sessions).
-- `POST /perguntas-gold`: responde perguntas usando o gold consolidado (pt-BR garantido).
+- `POST /gold/questions`: responde perguntas usando o gold consolidado (pt-BR garantido).
 - `POST /train/stint-delta-pace`: treino assincrono do modelo de delta de ritmo (com filtros, MLflow obrigatorio).
 - `POST /driver-profiles`: gera relatorios por meeting. Campos: `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `include_llm`, `llm_endpoint`.
 - `POST /driver-profiles/season`: gera relatorios por temporada (multiplas sessoes). Campos: `seasons`, `session_names`, `include_llm`, `llm_endpoint`, `drivers_include`, `drivers_exclude`.

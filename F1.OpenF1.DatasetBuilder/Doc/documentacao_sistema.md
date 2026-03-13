@@ -92,9 +92,9 @@ flowchart TD
   L --> M[Return MLflow artifact URIs]
 ```
 
-Fluxo da API `/perguntas-gold`:
+Fluxo da API `/gold/questions`:
 ```text
-POST /perguntas-gold
+POST /gold/questions
   -> carrega gold consolidado (download do data lake se necessario)
   -> aplica filtros (season/meeting/session/driver)
   -> monta resumo estatistico do gold filtrado
@@ -360,7 +360,7 @@ Arquivo: `f1_dataset/src/api/app.py`.
 Endpoints:
 - `GET /health`: healthcheck.
 - `GET /gold/meetings`: lista sessions, meeting_key e meeting_name existentes no gold.
-- `POST /perguntas-gold`: responde perguntas usando o gold consolidado (pt-BR garantido).
+- `POST /gold/questions`: responde perguntas usando o gold consolidado (pt-BR garantido).
 - `POST /train/stint-delta-pace`: treino assincrono do modelo de delta de ritmo (com filtros, MLflow obrigatorio).
 - `POST /driver-profiles`: gera relatorios e rankings para um meeting. Aceita `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `include_llm`, `llm_endpoint`.
 - `POST /driver-profiles/season`: gera relatorios por temporada e multiplas sessoes. Aceita `seasons`, `session_names` (vazio = todas), `include_llm`, `llm_endpoint`, `drivers_include`, `drivers_exclude`.
@@ -383,7 +383,7 @@ curl "http://localhost:7077/gold/meetings?season=2024&session_name=Race"
 ```
 
 ```bash
-curl -X POST http://localhost:7077/perguntas-gold \
+curl -X POST http://localhost:7077/gold/questions \
   -H "Content-Type: application/json" \
   -d '{"question":"Faça um resumo da temporada de 2024","season":2024,"session_name":"all"}'
 ```
