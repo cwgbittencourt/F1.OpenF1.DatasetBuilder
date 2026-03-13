@@ -25,7 +25,7 @@ Endpoints:
 - `GET /health/dependencies`: verifica dependências externas (MLflow, MinIO/S3 e OpenF1) e retorna status por dependência. Obs: OpenF1 pode ficar indisponível para não-assinantes em horários de eventos.
 - `GET /gold/meetings`: lista meetings disponíveis no gold consolidado, com `meeting_key`, `meeting_name` e sessões; aceita filtros por `season` e `session_name`. Obs: requer `f1_dataset/data/gold/consolidated.parquet` local; se não existir retorna 404.
 - `POST /gold/questions`: responde perguntas em linguagem natural usando o gold consolidado; aplica filtros e retorna `answer` (pt-BR) e `summary` estatístico do recorte. Obs: requer gold consolidado local e endpoint LLM acessível via `MLFLOW_GATEWAY_ENDPOINT`; falhas no LLM retornam 502.
-- `POST /train/stint-delta-pace`: dispara treino assíncrono do modelo de delta de ritmo entre stints; retorna `job_id` para acompanhamento. Obs: job roda em background e grava logs em `f1_dataset/data/logs/jobs`.
+- `POST /train/stint-delta-pace`: dispara treino assíncrono do modelo de delta de ritmo entre stints; retorna `job_id` para acompanhamento. Obs: job roda em background e grava logs em `f1_dataset/data/logs/jobs`. (Machine Learning)
 - `POST /driver-profiles`: gera relatórios e rankings de pilotos para um meeting específico; garante gold, gera artifacts e retorna URIs no MLflow. Obs: pode executar pipeline se faltarem dados e depende de MLflow disponível.
 - `POST /driver-profiles/season`: gera relatórios por temporada e múltiplas sessões em lote; retorna artifacts e sumários por temporada. Obs: processamento pode demorar em temporadas múltiplas.
 - `POST /import-season`: inicia job assíncrono para importar e processar uma temporada inteira (com opção de LLM); retorna `job_id`. Obs: acompanha via `/jobs` e `/jobs/{job_id}/logs`.
@@ -36,7 +36,7 @@ Endpoints:
 
 Campos principais:
 - `/gold/questions`: `question`, `season`, `meeting_key` (opcional), `session_name` (Race, Sprint ou all), `driver_name` (opcional), `driver_number` (opcional). Resposta sempre em pt-BR.
-- `/train/stint-delta-pace`: `target_mode`, `baseline_laps`, `group_col`, `test_size`, `random_state`, `n_estimators`, `max_depth`, `min_samples_leaf` + filtros (`season`, `meeting_key`, `session_name`, `driver_number`, `constructor`).
+- `/train/stint-delta-pace` (Machine Learning): treina modelo de regressao para delta de ritmo entre stints; `target_mode` (`prev_stint_mean` ou `stint_start_mean`), `baseline_laps` (usado no `stint_start_mean`), `group_col` (split por grupo), `test_size`, `random_state`, `n_estimators`, `max_depth`, `min_samples_leaf` + filtros (`season`, `meeting_key`, `session_name`, `driver_number`, `constructor`).
 - `/driver-profiles`: `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `include_llm`, `llm_endpoint`.
 - `/driver-profiles/season`: `seasons` (lista), `session_names` (lista; vazio = todas), `include_llm`, `llm_endpoint`, `drivers_include`, `drivers_exclude`.
 - `/import-season`: `season`, `session_name` (Race ou Sprint), `include_llm`, `llm_endpoint`, `resume_job_id` (opcional).
@@ -49,6 +49,52 @@ Exemplo de chamada:
 curl -X POST http://localhost:7077/driver-profiles \
   -H "Content-Type: application/json" \
   -d '{"season": 2024, "meeting_key": "1252", "session_name": "Race", "include_llm": false}'
+```
+
+Exemplo de resposta do `/train/stint-delta-pace`:
+```json
+{
+  "status": "queued",
+  "job_id": "6f7b4c0a9c8b4f9f9b0f2f6c7a8d9e10"
+}
+```
+
+Exemplo de acompanhamento em `/jobs/{job_id}`:
+```json
+{
+  "job_id": "6f7b4c0a9c8b4f9f9b0f2f6c7a8d9e10",
+  "job_type": "train_stint_delta_pace",
+  "status": "running",
+  "created_at": "2026-03-13T12:10:15.123456",
+  "filters": {
+    "season": 2024,
+    "meeting_key": null,
+    "session_name": "Race",
+    "driver_number": null,
+    "constructor": "McLaren"
+  },
+  "params": {
+    "target_mode": "stint_start_mean",
+    "baseline_laps": 3,
+    "group_col": "meeting_key",
+    "test_size": 0.2,
+    "random_state": 42,
+    "n_estimators": 300,
+    "max_depth": null,
+    "min_samples_leaf": 1
+  },
+  "log_file": "f1_dataset/data/logs/jobs/6f7b4c0a9c8b4f9f9b0f2f6c7a8d9e10.log",
+  "status_file": "f1_dataset/data/logs/jobs/6f7b4c0a9c8b4f9f9b0f2f6c7a8d9e10.status.json"
+}
+```
+
+Exemplo de logs em `/jobs/{job_id}/logs?lines=200`:
+```json
+{
+  "job_id": "6f7b4c0a9c8b4f9f9b0f2f6c7a8d9e10",
+  "lines": 5,
+  "log": "2026-03-13 12:10:16,021 INFO root - Carregando gold consolidado\n2026-03-13 12:10:18,442 INFO root - Aplicando filtros: season=2024, session_name=Race\n2026-03-13 12:10:21,107 INFO root - Treinando RandomForestRegressor\n2026-03-13 12:10:29,553 INFO root - Metrics: mae=1.23, rmse=2.34, r2=0.78, mape=0.04\n2026-03-13 12:10:30,112 INFO root - Run finalizado"
+}
 ```
 
 Os relatorios por piloto incluem classificacao dominante de circuito por velocidade (`dominant_circuit_speed_class`), performance no stint (`stint_performance_delta_*`), desgaste do pneu (`tyre_wear_slope`) e estatisticas de temperatura.

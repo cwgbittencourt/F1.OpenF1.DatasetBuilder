@@ -103,7 +103,7 @@ POST /gold/questions
   -> retorna answer + summary
 ```
 
-Fluxo da API `/train/stint-delta-pace`:
+Fluxo da API `/train/stint-delta-pace` (Machine Learning):
 ```text
 POST /train/stint-delta-pace
   -> cria job_id e arquivos de status/log
@@ -362,7 +362,7 @@ Endpoints:
 - `GET /health/dependencies`: verifica dependências externas (MLflow, MinIO/S3 e OpenF1) e retorna status por dependência.
 - `GET /gold/meetings`: lista sessions, meeting_key e meeting_name existentes no gold.
 - `POST /gold/questions`: responde perguntas usando o gold consolidado (pt-BR garantido).
-- `POST /train/stint-delta-pace`: treino assincrono do modelo de delta de ritmo (com filtros, MLflow obrigatorio).
+- `POST /train/stint-delta-pace`: treino assincrono do modelo de delta de ritmo (com filtros, MLflow obrigatorio). (Machine Learning)
 - `POST /driver-profiles`: gera relatorios e rankings para um meeting. Aceita `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `include_llm`, `llm_endpoint`.
 - `POST /driver-profiles/season`: gera relatorios por temporada e multiplas sessoes. Aceita `seasons`, `session_names` (vazio = todas), `include_llm`, `llm_endpoint`, `drivers_include`, `drivers_exclude`.
 - `POST /import-season`: cria job assincrono por temporada. Aceita `season`, `session_name` (Race ou Sprint), `include_llm`, `llm_endpoint`, `resume_job_id` (opcional).
@@ -372,6 +372,57 @@ Endpoints:
 - `GET /jobs/{job_id}/logs?lines=200`: ultimas linhas do log.
 Saidas do `/driver-profiles`: URIs no MLflow para `driver_overall_ranking.csv`, `driver_profiles_text.csv` e, se solicitado, `driver_profiles_llm.csv` e `driver_overall_ranking_llm.csv`.
 Saidas do `/driver-profiles/season`: `artifacts` por temporada (URIs MLflow), `summaries` por temporada e `top_drivers` por temporada.
+
+Detalhes do `/train/stint-delta-pace` (Machine Learning):
+Objetivo: treinar um modelo de regressao para prever o delta de ritmo entre stints a partir do gold consolidado.
+Parametros principais: `target_mode` (`prev_stint_mean` ou `stint_start_mean`), `baseline_laps`, `group_col`, `test_size`, `random_state`, `n_estimators`, `max_depth`, `min_samples_leaf` + filtros por `season`, `meeting_key`, `session_name`, `driver_number`, `constructor`.
+Retorno: `job_id` para acompanhar em `/jobs/{job_id}`; logs em `f1_dataset/data/logs/jobs` e artefatos publicados no MLflow.
+
+Exemplo de resposta:
+```json
+{
+  "status": "queued",
+  "job_id": "6f7b4c0a9c8b4f9f9b0f2f6c7a8d9e10"
+}
+```
+
+Exemplo de acompanhamento em `/jobs/{job_id}`:
+```json
+{
+  "job_id": "6f7b4c0a9c8b4f9f9b0f2f6c7a8d9e10",
+  "job_type": "train_stint_delta_pace",
+  "status": "running",
+  "created_at": "2026-03-13T12:10:15.123456",
+  "filters": {
+    "season": 2024,
+    "meeting_key": null,
+    "session_name": "Race",
+    "driver_number": null,
+    "constructor": "McLaren"
+  },
+  "params": {
+    "target_mode": "stint_start_mean",
+    "baseline_laps": 3,
+    "group_col": "meeting_key",
+    "test_size": 0.2,
+    "random_state": 42,
+    "n_estimators": 300,
+    "max_depth": null,
+    "min_samples_leaf": 1
+  },
+  "log_file": "f1_dataset/data/logs/jobs/6f7b4c0a9c8b4f9f9b0f2f6c7a8d9e10.log",
+  "status_file": "f1_dataset/data/logs/jobs/6f7b4c0a9c8b4f9f9b0f2f6c7a8d9e10.status.json"
+}
+```
+
+Exemplo de logs em `/jobs/{job_id}/logs?lines=200`:
+```json
+{
+  "job_id": "6f7b4c0a9c8b4f9f9b0f2f6c7a8d9e10",
+  "lines": 5,
+  "log": "2026-03-13 12:10:16,021 INFO root - Carregando gold consolidado\n2026-03-13 12:10:18,442 INFO root - Aplicando filtros: season=2024, session_name=Race\n2026-03-13 12:10:21,107 INFO root - Treinando RandomForestRegressor\n2026-03-13 12:10:29,553 INFO root - Metrics: mae=1.23, rmse=2.34, r2=0.78, mape=0.04\n2026-03-13 12:10:30,112 INFO root - Run finalizado"
+}
+```
 
 **Exemplos de chamadas**
 

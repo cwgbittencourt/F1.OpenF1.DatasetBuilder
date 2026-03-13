@@ -1899,6 +1899,12 @@ def import_season_resume(payload: ImportSeasonResumeRequest) -> ImportSeasonJobR
     "/train/stint-delta-pace",
     response_model=TrainStintDeltaPaceJobResponse,
     status_code=202,
+    summary="Treino de delta de ritmo (Machine Learning)",
+    description=(
+        "Dispara treino assincrono do modelo de delta de ritmo entre stints e "
+        "retorna job_id para acompanhamento. Requer MLflow configurado. "
+        "(Machine Learning)"
+    ),
 )
 def train_stint_delta_pace_job(
     payload: TrainStintDeltaPaceRequest,

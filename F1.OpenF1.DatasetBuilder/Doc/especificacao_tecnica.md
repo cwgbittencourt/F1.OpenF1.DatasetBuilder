@@ -18,6 +18,17 @@
 - Dockerfile e Docker Compose como caminho oficial de execucao.
 - Visual Studio 2026 como IDE recomendada para desenvolvimento local.
 
+Execucao com Docker Compose (com build):
+```bash
+cd F1.OpenF1.DatasetBuilder
+docker compose up --build openf1-dataset
+```
+
+```bash
+cd F1.OpenF1.DatasetBuilder
+docker compose up --build openf1-api
+```
+
 ## 3. Fonte De Dados
 
 Base URL: `https://api.openf1.org/v1`.
@@ -124,7 +135,7 @@ Endpoints atuais:
 - `GET /health/dependencies`: verifica dependências externas (MLflow, MinIO/S3 e OpenF1) e retorna status por dependência.
 - `GET /gold/meetings`: lista meetings existentes no gold (meeting_key/meeting_name/sessions).
 - `POST /gold/questions`: responde perguntas usando o gold consolidado (pt-BR garantido).
-- `POST /train/stint-delta-pace`: treino assincrono do modelo de delta de ritmo (com filtros, MLflow obrigatorio).
+- `POST /train/stint-delta-pace`: treino assincrono do modelo de delta de ritmo (com filtros, MLflow obrigatorio). (Machine Learning)
 - `POST /driver-profiles`: gera relatorios por meeting. Campos: `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `include_llm`, `llm_endpoint`.
 - `POST /driver-profiles/season`: gera relatorios por temporada (multiplas sessoes). Campos: `seasons`, `session_names`, `include_llm`, `llm_endpoint`, `drivers_include`, `drivers_exclude`.
 - `POST /import-season`: cria job assincrono por temporada. Campos: `season`, `session_name` (Race ou Sprint), `include_llm`, `llm_endpoint`, `resume_job_id` (opcional).
@@ -132,6 +143,73 @@ Endpoints atuais:
 - `POST /data-lake/sync`: sincroniza bronze/silver/gold com MinIO (upload/download).
 - `GET /jobs/{job_id}`: status do job.
 - `GET /jobs/{job_id}/logs?lines=200`: ultimas linhas do log do job.
+
+Detalhes do `/train/stint-delta-pace` (Machine Learning):
+Objetivo: treinar um modelo de regressao para prever o delta de ritmo entre stints usando o gold consolidado.
+Requisitos: gold consolidado local e MLflow configurado para log de parametros, metricas e artefatos.
+Parametros principais: `target_mode` (`prev_stint_mean` para delta entre stints consecutivos; `stint_start_mean` para delta vs media das primeiras voltas do stint), `baseline_laps` (usado no `stint_start_mean`), `group_col` (coluna usada para split por grupo e evitar vazamento), `test_size`, `random_state`, `n_estimators`, `max_depth`, `min_samples_leaf`.
+Filtros opcionais: `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `driver_number`, `constructor`.
+Retorno: `job_id` para acompanhamento via `/jobs/{job_id}` e logs em `f1_dataset/data/logs/jobs`.
+
+Exemplo (com filtros):
+```bash
+curl -X POST http://localhost:7077/train/stint-delta-pace \
+  -H "Content-Type: application/json" \
+  -d '{"season":2024,"session_name":"Race","target_mode":"stint_start_mean","baseline_laps":3,"constructor":"McLaren"}'
+```
+
+Exemplo (minimo, sem filtros):
+```bash
+curl -X POST http://localhost:7077/train/stint-delta-pace \
+  -H "Content-Type: application/json" \
+  -d '{"target_mode":"prev_stint_mean","baseline_laps":3}'
+```
+
+Exemplo de resposta:
+```json
+{
+  "status": "queued",
+  "job_id": "6f7b4c0a9c8b4f9f9b0f2f6c7a8d9e10"
+}
+```
+
+Exemplo de acompanhamento em `/jobs/{job_id}`:
+```json
+{
+  "job_id": "6f7b4c0a9c8b4f9f9b0f2f6c7a8d9e10",
+  "job_type": "train_stint_delta_pace",
+  "status": "running",
+  "created_at": "2026-03-13T12:10:15.123456",
+  "filters": {
+    "season": 2024,
+    "meeting_key": null,
+    "session_name": "Race",
+    "driver_number": null,
+    "constructor": "McLaren"
+  },
+  "params": {
+    "target_mode": "stint_start_mean",
+    "baseline_laps": 3,
+    "group_col": "meeting_key",
+    "test_size": 0.2,
+    "random_state": 42,
+    "n_estimators": 300,
+    "max_depth": null,
+    "min_samples_leaf": 1
+  },
+  "log_file": "f1_dataset/data/logs/jobs/6f7b4c0a9c8b4f9f9b0f2f6c7a8d9e10.log",
+  "status_file": "f1_dataset/data/logs/jobs/6f7b4c0a9c8b4f9f9b0f2f6c7a8d9e10.status.json"
+}
+```
+
+Exemplo de logs em `/jobs/{job_id}/logs?lines=200`:
+```json
+{
+  "job_id": "6f7b4c0a9c8b4f9f9b0f2f6c7a8d9e10",
+  "lines": 5,
+  "log": "2026-03-13 12:10:16,021 INFO root - Carregando gold consolidado\n2026-03-13 12:10:18,442 INFO root - Aplicando filtros: season=2024, session_name=Race\n2026-03-13 12:10:21,107 INFO root - Treinando RandomForestRegressor\n2026-03-13 12:10:29,553 INFO root - Metrics: mae=1.23, rmse=2.34, r2=0.78, mape=0.04\n2026-03-13 12:10:30,112 INFO root - Run finalizado"
+}
+```
 
 Exemplo de resume:
 ```bash
