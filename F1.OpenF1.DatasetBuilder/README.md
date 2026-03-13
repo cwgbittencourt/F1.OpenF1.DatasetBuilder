@@ -28,6 +28,7 @@ Endpoints:
 - `POST /driver-profiles`
 - `POST /driver-profiles/season`
 - `POST /import-season`
+- `POST /import-season/resume`
 - `POST /data-lake/sync`
 - `GET /jobs/{job_id}`
 - `GET /jobs/{job_id}/logs?lines=200`
@@ -37,7 +38,8 @@ Campos principais:
 - `/train/stint-delta-pace`: `target_mode`, `baseline_laps`, `group_col`, `test_size`, `random_state`, `n_estimators`, `max_depth`, `min_samples_leaf` + filtros (`season`, `meeting_key`, `session_name`, `driver_number`, `constructor`).
 - `/driver-profiles`: `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `include_llm`, `llm_endpoint`.
 - `/driver-profiles/season`: `seasons` (lista), `session_names` (lista; vazio = todas), `include_llm`, `llm_endpoint`, `drivers_include`, `drivers_exclude`.
-- `/import-season`: `season`, `session_name` (Race ou Sprint), `include_llm`, `llm_endpoint`.
+- `/import-season`: `season`, `session_name` (Race ou Sprint), `include_llm`, `llm_endpoint`, `resume_job_id` (opcional).
+- `/import-season/resume`: `resume_job_id`, `include_llm` (opcional), `llm_endpoint` (opcional).
 - `/data-lake/sync`: `direction` (upload/download), `subdirs`, `cleanup_local`, `only_if_missing`.
 
 Exemplo de chamada:
@@ -100,6 +102,13 @@ curl -X POST http://localhost:7077/import-season \
   -H "Content-Type: application/json" \
   -d '{"season": 2023, "session_name": "Race", "include_llm": false}'
 ```
+
+```bash
+curl -X POST http://localhost:7077/import-season/resume \
+  -H "Content-Type: application/json" \
+  -d '{"resume_job_id":"SEU_JOB_ID","include_llm": true}'
+```
+Observacao: `/import-season/resume` reutiliza `season` e `session_name` do job anterior e pula meetings com status `ok` ou `skipped`.
 
 ```bash
 curl -X POST http://localhost:7077/data-lake/sync \

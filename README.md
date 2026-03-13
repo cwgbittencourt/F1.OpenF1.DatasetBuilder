@@ -101,7 +101,8 @@ Por que: a API e camada de automacao, nao de avaliacao estatistica.
 - `POST /train/stint-delta-pace`: treino assincrono do modelo de delta de ritmo entre stints (MLflow obrigatorio).
 - `POST /driver-profiles`: gera relatorios e rankings por meeting. Aceita `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `include_llm` e `llm_endpoint`.
 - `POST /driver-profiles/season`: gera relatorios por temporada e multiplas sessoes. Aceita `seasons`, `session_names` (vazio = todas), `include_llm`, `llm_endpoint`, `drivers_include`, `drivers_exclude`. Retorna `artifacts`, `summaries` e `top_drivers` por temporada.
-- `POST /import-season`: cria job assincrono por temporada. Aceita `season`, `session_name` (Race ou Sprint), `include_llm` e `llm_endpoint`.
+- `POST /import-season`: cria job assincrono por temporada. Aceita `season`, `session_name` (Race ou Sprint), `include_llm`, `llm_endpoint` e `resume_job_id` (opcional).
+- `POST /import-season/resume`: cria job assincrono com base em um job anterior. Aceita `resume_job_id`, `include_llm` (opcional) e `llm_endpoint` (opcional).
 - `POST /data-lake/sync`: sincroniza bronze/silver/gold com o MinIO (upload/download).
 - `GET /jobs/{job_id}`: status do job criado em `/import-season`.
 - `GET /jobs/{job_id}/logs?lines=200`: ultimas linhas do log do job.
@@ -151,6 +152,13 @@ curl -X POST http://localhost:7077/import-season \
   -H "Content-Type: application/json" \
   -d '{"season": 2023, "session_name": "Race", "include_llm": false}'
 ```
+
+```bash
+curl -X POST http://localhost:7077/import-season/resume \
+  -H "Content-Type: application/json" \
+  -d '{"resume_job_id":"SEU_JOB_ID","include_llm": true}'
+```
+Observacao: `/import-season/resume` reutiliza `season` e `session_name` do job anterior e pula meetings com status `ok` ou `skipped`.
 
 ```bash
 curl -X POST http://localhost:7077/data-lake/sync \

@@ -147,6 +147,17 @@ flowchart TD
   J --> K[Complete job]
 ```
 
+Fluxo da API `/import-season/resume`:
+```text
+POST /import-season/resume
+  -> carrega status do job anterior
+  -> cria novo job_id e arquivos de status/log
+  -> reutiliza season e session_name do job anterior
+  -> pula meetings ja concluidos (ok/skipped)
+  -> reprocessa meetings restantes e opcional LLM
+  -> atualiza status com progresso por meeting
+```
+
 Paralelismo e checkpoints:
 ```text
 Runner
@@ -353,7 +364,8 @@ Endpoints:
 - `POST /train/stint-delta-pace`: treino assincrono do modelo de delta de ritmo (com filtros, MLflow obrigatorio).
 - `POST /driver-profiles`: gera relatorios e rankings para um meeting. Aceita `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `include_llm`, `llm_endpoint`.
 - `POST /driver-profiles/season`: gera relatorios por temporada e multiplas sessoes. Aceita `seasons`, `session_names` (vazio = todas), `include_llm`, `llm_endpoint`, `drivers_include`, `drivers_exclude`.
-- `POST /import-season`: cria job assincrono por temporada. Aceita `season`, `session_name` (Race ou Sprint), `include_llm`, `llm_endpoint`.
+- `POST /import-season`: cria job assincrono por temporada. Aceita `season`, `session_name` (Race ou Sprint), `include_llm`, `llm_endpoint`, `resume_job_id` (opcional).
+- `POST /import-season/resume`: cria job assincrono a partir de um job anterior. Aceita `resume_job_id`, `include_llm` (opcional) e `llm_endpoint` (opcional).
 - `POST /data-lake/sync`: sincroniza bronze/silver/gold com MinIO (upload/download).
 - `GET /jobs/{job_id}`: status do job.
 - `GET /jobs/{job_id}/logs?lines=200`: ultimas linhas do log.
@@ -404,6 +416,12 @@ curl -X POST http://localhost:7077/driver-profiles/season \
 curl -X POST http://localhost:7077/import-season \
   -H "Content-Type: application/json" \
   -d '{"season": 2023, "session_name": "Race", "include_llm": false}'
+```
+
+```bash
+curl -X POST http://localhost:7077/import-season/resume \
+  -H "Content-Type: application/json" \
+  -d '{"resume_job_id":"SEU_JOB_ID","include_llm": true}'
 ```
 
 ```bash
