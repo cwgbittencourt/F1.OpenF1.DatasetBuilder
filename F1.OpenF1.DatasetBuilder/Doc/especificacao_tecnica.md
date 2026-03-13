@@ -120,7 +120,8 @@ api:
 ## 9. API Do Sistema
 
 Endpoints atuais:
-- `GET /health`: healthcheck.
+- `GET /health`: healthcheck simples da API, confirma que o serviço está respondendo (não valida dependências externas).
+- `GET /health/dependencies`: verifica dependências externas (MLflow, MinIO/S3 e OpenF1) e retorna status por dependência.
 - `GET /gold/meetings`: lista meetings existentes no gold (meeting_key/meeting_name/sessions).
 - `POST /gold/questions`: responde perguntas usando o gold consolidado (pt-BR garantido).
 - `POST /train/stint-delta-pace`: treino assincrono do modelo de delta de ritmo (com filtros, MLflow obrigatorio).
@@ -138,6 +139,33 @@ curl -X POST http://localhost:7077/import-season/resume \
   -H "Content-Type: application/json" \
   -d '{"resume_job_id":"SEU_JOB_ID","include_llm": true}'
 ```
+
+Exemplo de health de dependencias:
+```bash
+curl http://localhost:7077/health/dependencies
+```
+
+Exemplo de resposta do `/health/dependencies`:
+```json
+{
+  "status": "degraded",
+  "dependencies": {
+    "mlflow": { "status": "ok", "tracking_uri": "http://mlflow:5000", "latency_ms": 120 },
+    "minio": { "status": "ok", "endpoint": "http://minio:9000", "bucket": "openf1-datalake", "latency_ms": 95 },
+    "openf1": {
+      "status": "degraded",
+      "status_code": 429,
+      "message": "OpenF1 pode ficar indisponivel para nao-assinantes em horario de eventos."
+    }
+  },
+  "checked_at": "2026-03-13T13:45:58.906279Z"
+}
+```
+Interpretacao rapida:
+- `ok`: dependencia acessivel.
+- `degraded`: respondeu com restricao (ex.: 401/403/429) ou configuracao parcial.
+- `down`: indisponivel.
+- `not_configured`: variaveis/credenciais nao configuradas.
 
 ## 10. Jobs Implementados
 

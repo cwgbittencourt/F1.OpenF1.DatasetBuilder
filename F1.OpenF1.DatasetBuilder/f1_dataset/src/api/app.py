@@ -5,6 +5,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -817,6 +818,164 @@ def _fallback_gold_summary_pt(summary: dict[str, Any]) -> str:
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+def _check_mlflow_dependency(tracking_uri: str | None, experiment_name: str) -> dict[str, Any]:
+    if not tracking_uri:
+        return {
+            "status": "not_configured",
+            "message": "MLFLOW_TRACKING_URI vazio; MLflow remoto nao configurado.",
+        }
+    start = time.monotonic()
+    try:
+        get_tracking_client(tracking_uri, experiment_name, create_if_missing=False)
+        return {
+            "status": "ok",
+            "tracking_uri": tracking_uri,
+            "latency_ms": int((time.monotonic() - start) * 1000),
+        }
+    except RuntimeError as exc:
+        message = str(exc)
+        if "Experimento MLflow nao encontrado" in message:
+            return {
+                "status": "degraded",
+                "tracking_uri": tracking_uri,
+                "message": message,
+                "latency_ms": int((time.monotonic() - start) * 1000),
+            }
+        if "MLFLOW_TRACKING_URI vazio" in message:
+            return {"status": "not_configured", "message": message}
+        return {
+            "status": "down",
+            "tracking_uri": tracking_uri,
+            "message": message,
+        }
+    except Exception as exc:
+        return {
+            "status": "down",
+            "tracking_uri": tracking_uri,
+            "message": str(exc),
+        }
+
+
+def _check_minio_dependency(env: dict[str, str]) -> dict[str, Any]:
+    endpoint = env.get("DATA_LAKE_S3_ENDPOINT") or env.get("MLFLOW_S3_ENDPOINT_URL")
+    access_key = env.get("AWS_ACCESS_KEY_ID")
+    secret_key = env.get("AWS_SECRET_ACCESS_KEY")
+    bucket = env.get("DATA_LAKE_BUCKET", "openf1-datalake")
+    if not endpoint or not access_key or not secret_key:
+        return {
+            "status": "not_configured",
+            "message": "Credenciais S3 ou endpoint do data lake nao configurados.",
+        }
+    start = time.monotonic()
+    try:
+        import boto3
+        from botocore.exceptions import ClientError
+
+        client = boto3.client(
+            "s3",
+            endpoint_url=endpoint,
+            aws_access_key_id=access_key,
+            aws_secret_access_key=secret_key,
+        )
+        client.head_bucket(Bucket=bucket)
+        return {
+            "status": "ok",
+            "endpoint": endpoint,
+            "bucket": bucket,
+            "latency_ms": int((time.monotonic() - start) * 1000),
+        }
+    except ClientError as exc:
+        code = exc.response.get("Error", {}).get("Code")
+        status = "degraded" if code in {"404", "NoSuchBucket", "NotFound"} else "down"
+        return {
+            "status": status,
+            "endpoint": endpoint,
+            "bucket": bucket,
+            "message": f"Erro no MinIO/S3: {code or 'ClientError'}",
+            "latency_ms": int((time.monotonic() - start) * 1000),
+        }
+    except Exception as exc:
+        return {
+            "status": "down",
+            "endpoint": endpoint,
+            "bucket": bucket,
+            "message": str(exc),
+        }
+
+
+def _check_openf1_dependency(base_url: str | None) -> dict[str, Any]:
+    if not base_url:
+        return {"status": "not_configured", "message": "OPENF1_BASE_URL nao configurado."}
+    url = base_url.rstrip("/") + "/meetings?limit=1"
+    start = time.monotonic()
+    try:
+        req = Request(url, headers={"User-Agent": "OpenF1-DatasetBuilder/health"})
+        with urlopen(req, timeout=8) as resp:
+            status_code = resp.getcode()
+    except HTTPError as exc:
+        status_code = exc.code
+    except URLError as exc:
+        return {
+            "status": "down",
+            "url": url,
+            "message": f"Falha de rede: {exc.reason}",
+        }
+    except Exception as exc:
+        return {"status": "down", "url": url, "message": str(exc)}
+
+    latency_ms = int((time.monotonic() - start) * 1000)
+    if 200 <= status_code < 300:
+        return {"status": "ok", "url": url, "status_code": status_code, "latency_ms": latency_ms}
+    if status_code in {401, 403, 429}:
+        return {
+            "status": "degraded",
+            "url": url,
+            "status_code": status_code,
+            "message": "OpenF1 pode ficar indisponivel para nao-assinantes em horario de eventos.",
+            "latency_ms": latency_ms,
+        }
+    if 400 <= status_code < 500:
+        return {
+            "status": "degraded",
+            "url": url,
+            "status_code": status_code,
+            "message": "Resposta 4xx da OpenF1.",
+            "latency_ms": latency_ms,
+        }
+    return {
+        "status": "down",
+        "url": url,
+        "status_code": status_code,
+        "message": "Resposta 5xx da OpenF1.",
+        "latency_ms": latency_ms,
+    }
+
+
+@app.get("/health/dependencies")
+def health_dependencies() -> dict[str, Any]:
+    env = os.environ.copy()
+    config_path = env.get("CONFIG_PATH", "/app/config/config.yaml")
+    settings = load_settings(config_path)
+
+    dependencies = {
+        "mlflow": _check_mlflow_dependency(
+            settings.mlflow.tracking_uri, settings.mlflow.experiment_name
+        ),
+        "minio": _check_minio_dependency(env),
+        "openf1": _check_openf1_dependency(settings.api.base_url),
+    }
+    overall = "ok"
+    for dep in dependencies.values():
+        if dep.get("status") != "ok":
+            overall = "degraded"
+            break
+    return {
+        "status": overall,
+        "dependencies": dependencies,
+        "checked_at": datetime.utcnow().isoformat() + "Z",
+    }
 
 
 @app.post("/data-lake/sync", response_model=DataLakeSyncResponse)

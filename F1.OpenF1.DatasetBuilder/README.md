@@ -21,17 +21,18 @@ O servico da API fica disponivel em `http://localhost:7077/docs`.
 ## API (FastAPI)
 
 Endpoints:
-- `GET /health`
-- `GET /gold/meetings`
-- `POST /gold/questions`
-- `POST /train/stint-delta-pace`
-- `POST /driver-profiles`
-- `POST /driver-profiles/season`
-- `POST /import-season`
-- `POST /import-season/resume`
-- `POST /data-lake/sync`
-- `GET /jobs/{job_id}`
-- `GET /jobs/{job_id}/logs?lines=200`
+- `GET /health`: healthcheck simples da API, confirma que o serviço está respondendo. Obs: não valida dependências externas (MLflow, MinIO/S3, OpenF1).
+- `GET /health/dependencies`: verifica dependências externas (MLflow, MinIO/S3 e OpenF1) e retorna status por dependência. Obs: OpenF1 pode ficar indisponível para não-assinantes em horários de eventos.
+- `GET /gold/meetings`: lista meetings disponíveis no gold consolidado, com `meeting_key`, `meeting_name` e sessões; aceita filtros por `season` e `session_name`. Obs: requer `f1_dataset/data/gold/consolidated.parquet` local; se não existir retorna 404.
+- `POST /gold/questions`: responde perguntas em linguagem natural usando o gold consolidado; aplica filtros e retorna `answer` (pt-BR) e `summary` estatístico do recorte. Obs: requer gold consolidado local e endpoint LLM acessível via `MLFLOW_GATEWAY_ENDPOINT`; falhas no LLM retornam 502.
+- `POST /train/stint-delta-pace`: dispara treino assíncrono do modelo de delta de ritmo entre stints; retorna `job_id` para acompanhamento. Obs: job roda em background e grava logs em `f1_dataset/data/logs/jobs`.
+- `POST /driver-profiles`: gera relatórios e rankings de pilotos para um meeting específico; garante gold, gera artifacts e retorna URIs no MLflow. Obs: pode executar pipeline se faltarem dados e depende de MLflow disponível.
+- `POST /driver-profiles/season`: gera relatórios por temporada e múltiplas sessões em lote; retorna artifacts e sumários por temporada. Obs: processamento pode demorar em temporadas múltiplas.
+- `POST /import-season`: inicia job assíncrono para importar e processar uma temporada inteira (com opção de LLM); retorna `job_id`. Obs: acompanha via `/jobs` e `/jobs/{job_id}/logs`.
+- `POST /import-season/resume`: retoma um job de importação anterior usando `resume_job_id`, pulando meetings já concluídos. Obs: requer `resume_job_id` válido de importação.
+- `POST /data-lake/sync`: sincroniza bronze/silver/gold com o data lake (upload/download) e controla limpeza local. Obs: requer credenciais/endpoint S3/MinIO configurados; `cleanup_local=true` apaga dados locais após sync.
+- `GET /jobs/{job_id}`: consulta status atual do job assíncrono (ex.: importação ou treino). Obs: válido para jobs criados por `/import-season` e `/train/stint-delta-pace`.
+- `GET /jobs/{job_id}/logs?lines=200`: retorna as últimas linhas do log do job assíncrono. Obs: `lines` controla a quantidade de linhas retornadas.
 
 Campos principais:
 - `/gold/questions`: `question`, `season`, `meeting_key` (opcional), `session_name` (Race, Sprint ou all), `driver_name` (opcional), `driver_number` (opcional). Resposta sempre em pt-BR.
@@ -62,6 +63,32 @@ No endpoint `/driver-profiles/season`, a resposta inclui:
 ```bash
 curl http://localhost:7077/health
 ```
+
+```bash
+curl http://localhost:7077/health/dependencies
+```
+
+Exemplo de resposta do `/health/dependencies`:
+```json
+{
+  "status": "degraded",
+  "dependencies": {
+    "mlflow": { "status": "ok", "tracking_uri": "http://mlflow:5000", "latency_ms": 120 },
+    "minio": { "status": "ok", "endpoint": "http://minio:9000", "bucket": "openf1-datalake", "latency_ms": 95 },
+    "openf1": {
+      "status": "degraded",
+      "status_code": 429,
+      "message": "OpenF1 pode ficar indisponivel para nao-assinantes em horario de eventos."
+    }
+  },
+  "checked_at": "2026-03-13T13:45:58.906279Z"
+}
+```
+Interpretacao rapida:
+- `ok`: dependencia acessivel.
+- `degraded`: respondeu com restricao (ex.: 401/403/429) ou configuracao parcial.
+- `down`: indisponivel.
+- `not_configured`: variaveis/credenciais nao configuradas.
 
 ```bash
 curl "http://localhost:7077/gold/meetings?season=2024&session_name=Race"

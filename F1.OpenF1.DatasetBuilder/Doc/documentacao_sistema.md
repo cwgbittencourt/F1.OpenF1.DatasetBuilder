@@ -358,7 +358,8 @@ Uso: alimentar rankings, comparacoes, textos e pontuacao geral.
 **API FastAPI**
 Arquivo: `f1_dataset/src/api/app.py`.
 Endpoints:
-- `GET /health`: healthcheck.
+- `GET /health`: healthcheck simples da API, confirma que o serviço está respondendo (não valida dependências externas).
+- `GET /health/dependencies`: verifica dependências externas (MLflow, MinIO/S3 e OpenF1) e retorna status por dependência.
 - `GET /gold/meetings`: lista sessions, meeting_key e meeting_name existentes no gold.
 - `POST /gold/questions`: responde perguntas usando o gold consolidado (pt-BR garantido).
 - `POST /train/stint-delta-pace`: treino assincrono do modelo de delta de ritmo (com filtros, MLflow obrigatorio).
@@ -378,6 +379,31 @@ Saidas do `/driver-profiles/season`: `artifacts` por temporada (URIs MLflow), `s
 curl http://localhost:7077/health
 ```
 
+```bash
+curl http://localhost:7077/health/dependencies
+```
+
+Exemplo de resposta do `/health/dependencies`:
+```json
+{
+  "status": "degraded",
+  "dependencies": {
+    "mlflow": { "status": "ok", "tracking_uri": "http://mlflow:5000", "latency_ms": 120 },
+    "minio": { "status": "ok", "endpoint": "http://minio:9000", "bucket": "openf1-datalake", "latency_ms": 95 },
+    "openf1": {
+      "status": "degraded",
+      "status_code": 429,
+      "message": "OpenF1 pode ficar indisponivel para nao-assinantes em horario de eventos."
+    }
+  },
+  "checked_at": "2026-03-13T13:45:58.906279Z"
+}
+```
+Interpretacao rapida:
+- `ok`: dependencia acessivel.
+- `degraded`: respondeu com restricao (ex.: 401/403/429) ou configuracao parcial.
+- `down`: indisponivel.
+- `not_configured`: variaveis/credenciais nao configuradas.
 ```bash
 curl "http://localhost:7077/gold/meetings?season=2024&session_name=Race"
 ```
