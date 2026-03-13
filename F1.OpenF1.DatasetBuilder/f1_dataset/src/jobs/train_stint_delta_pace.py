@@ -124,6 +124,63 @@ def _build_stint_dataset(df: pd.DataFrame) -> pd.DataFrame:
     return stint_df
 
 
+def _apply_filters(df: pd.DataFrame, args: argparse.Namespace) -> pd.DataFrame:
+    filtered = df.copy()
+    if args.season is not None:
+        if "season" not in filtered.columns:
+            raise ValueError("Coluna season nao encontrada no gold.")
+        filtered = filtered[filtered["season"] == args.season]
+    if args.meeting_key:
+        if "meeting_key" not in filtered.columns:
+            raise ValueError("Coluna meeting_key nao encontrada no gold.")
+        filtered = filtered[filtered["meeting_key"].astype(str) == str(args.meeting_key)]
+    if args.session_name and args.session_name.lower() != "all":
+        if "session_name" not in filtered.columns:
+            raise ValueError("Coluna session_name nao encontrada no gold.")
+        filtered = filtered[
+            filtered["session_name"].astype(str).str.strip().str.lower()
+            == args.session_name.lower()
+        ]
+    if args.driver_number is not None:
+        if "driver_number" not in filtered.columns:
+            raise ValueError("Coluna driver_number nao encontrada no gold.")
+        filtered = filtered[
+            filtered["driver_number"].astype(str) == str(args.driver_number)
+        ]
+    if args.constructor:
+        if "team_name" not in filtered.columns:
+            raise ValueError("Coluna team_name nao encontrada no gold.")
+        filtered = filtered[
+            filtered["team_name"].astype(str).str.strip().str.lower()
+            == str(args.constructor).strip().lower()
+        ]
+    if filtered.empty:
+        raise ValueError("Nenhum dado encontrado no gold para os filtros informados.")
+    return filtered
+
+
+def _build_stint_lap_dataset(df: pd.DataFrame, baseline_laps: int) -> pd.DataFrame:
+    group_cols = ["meeting_key", "session_key", "driver_number", "stint_number"]
+    working = df[df["lap_duration"].notna()].copy()
+    if "lap_number" in working.columns:
+        working = working.sort_values(group_cols + ["lap_number"])
+    else:
+        working = working.sort_values(group_cols)
+
+    working["lap_in_stint"] = working.groupby(group_cols).cumcount() + 1
+    baseline = (
+        working[working["lap_in_stint"] <= baseline_laps]
+        .groupby(group_cols)["lap_duration"]
+        .mean()
+        .rename("baseline_lap")
+    )
+    working = working.merge(baseline, on=group_cols, how="left")
+    working = working[working["lap_in_stint"] > baseline_laps]
+    working["delta_pace"] = working["lap_duration"] - working["baseline_lap"]
+    working = working[working["delta_pace"].notna()]
+    return working
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Treina modelo para delta de ritmo entre stints."
@@ -139,20 +196,50 @@ def main() -> None:
     parser.add_argument("--n-estimators", type=int, default=300)
     parser.add_argument("--max-depth", type=int, default=None)
     parser.add_argument("--min-samples-leaf", type=int, default=1)
+    parser.add_argument("--season", type=int, default=None)
+    parser.add_argument("--meeting-key", default=None)
+    parser.add_argument("--session-name", default="all")
+    parser.add_argument("--driver-number", type=int, default=None)
+    parser.add_argument("--constructor", default=None)
+    parser.add_argument(
+        "--target-mode",
+        choices=["prev_stint_mean", "stint_start_mean"],
+        default="prev_stint_mean",
+        help="Alvo: delta entre stints (prev_stint_mean) ou "
+        "delta vs media das primeiras voltas do stint (stint_start_mean).",
+    )
+    parser.add_argument(
+        "--baseline-laps",
+        type=int,
+        default=3,
+        help="Numero de voltas iniciais do stint para baseline (stint_start_mean).",
+    )
     args = parser.parse_args()
 
     config_path = args.config or os.getenv("CONFIG_PATH") or "./config/config.yaml"
     settings = load_settings(config_path)
+    if not settings.output.register_mlflow:
+        raise RuntimeError("REGISTER_MLFLOW=false; MLflow e obrigatorio para este treino.")
     ensure_paths(settings)
     _setup_logging(settings.paths.logs_dir)
 
+    if args.baseline_laps < 1:
+        raise ValueError("baseline_laps deve ser >= 1.")
+    if args.session_name.lower() not in {"race", "sprint", "all"}:
+        raise ValueError("session_name deve ser Race, Sprint ou all.")
+
     df = load_consolidated()
-    stint_df = _build_stint_dataset(df)
+    df = _apply_filters(df, args)
+
+    if args.target_mode == "stint_start_mean":
+        stint_df = _build_stint_lap_dataset(df, args.baseline_laps)
+        drop_cols = ["delta_pace", "baseline_lap", "lap_duration"]
+    else:
+        stint_df = _build_stint_dataset(df)
+        drop_cols = ["delta_pace", "prev_mean_lap", "lap_duration"]
 
     target = stint_df["delta_pace"]
-    features = stint_df.drop(
-        columns=["delta_pace", "prev_mean_lap", "lap_duration"], errors="ignore"
-    )
+    features = stint_df.drop(columns=drop_cols, errors="ignore")
 
     train_idx, test_idx = split_indices(
         stint_df, args.group_col, args.test_size, args.random_state
@@ -189,6 +276,8 @@ def main() -> None:
         "test_rows": int(len(x_test)),
         "group_col": args.group_col,
         "test_size": args.test_size,
+        "target_mode": args.target_mode,
+        "baseline_laps": args.baseline_laps,
     }
     feature_summary = {
         "numeric_columns": numeric_cols,
@@ -231,6 +320,8 @@ def main() -> None:
                 "max_depth": args.max_depth,
                 "min_samples_leaf": args.min_samples_leaf,
                 "group_col": args.group_col,
+                "target_mode": args.target_mode,
+                "baseline_laps": args.baseline_laps,
                 "train_rows": len(x_train),
                 "test_rows": len(x_test),
                 "feature_count": len(x_train.columns),

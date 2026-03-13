@@ -1,0 +1,15 @@
+{
+  "status": "completed",
+  "updated_at": "2026-03-13T00:25:22.459086Z",
+  "payload": {
+    "season": 2025,
+    "meeting_key": 1256,
+    "meeting_name": "Japanese Grand Prix",
+    "meeting_date_start": "2025-04-04T02:30:00+00:00",
+    "session_key": 10006,
+    "session_name": "Race",
+    "driver_number": 14,
+    "driver_name": "Fernando ALONSO",
+    "team_name": "Aston Martin"
+  }
+}

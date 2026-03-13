@@ -1,0 +1,15 @@
+{
+  "status": "completed",
+  "updated_at": "2026-03-13T02:24:13.736089Z",
+  "payload": {
+    "season": 2025,
+    "meeting_key": 1268,
+    "meeting_name": "Italian Grand Prix",
+    "meeting_date_start": "2025-09-05T11:30:00+00:00",
+    "session_key": 9912,
+    "session_name": "Race",
+    "driver_number": 6,
+    "driver_name": "Isack HADJAR",
+    "team_name": "Racing Bulls"
+  }
+}

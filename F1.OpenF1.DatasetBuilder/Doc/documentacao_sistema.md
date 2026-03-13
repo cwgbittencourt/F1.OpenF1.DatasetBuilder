@@ -92,6 +92,36 @@ flowchart TD
   L --> M[Return MLflow artifact URIs]
 ```
 
+Fluxo da API `/perguntas-gold`:
+```text
+POST /perguntas-gold
+  -> carrega gold consolidado (download do data lake se necessario)
+  -> aplica filtros (season/meeting/session/driver)
+  -> monta resumo estatistico do gold filtrado
+  -> chama LLM via MLflow Gateway
+  -> se resposta nao estiver em pt-BR: reforca prompt e aplica fallback deterministico
+  -> retorna answer + summary
+```
+
+Fluxo da API `/train/stint-delta-pace`:
+```text
+POST /train/stint-delta-pace
+  -> cria job_id e arquivos de status/log
+  -> executa treino em background
+  -> aplica filtros (season/meeting/session/driver/constructor)
+  -> gera artefatos e metrics.json
+  -> atualiza status com metrics e artifacts_dir
+```
+
+Fluxo da API `/gold/meetings`:
+```text
+GET /gold/meetings
+  -> carrega gold consolidado
+  -> filtra por season/session_name (opcional)
+  -> agrupa meeting_key + meeting_name + sessions
+  -> retorna lista de meetings existentes no gold
+```
+
 Fluxo da API `/import-season`:
 ```text
 POST /import-season
@@ -318,6 +348,9 @@ Uso: alimentar rankings, comparacoes, textos e pontuacao geral.
 Arquivo: `f1_dataset/src/api/app.py`.
 Endpoints:
 - `GET /health`: healthcheck.
+- `GET /gold/meetings`: lista sessions, meeting_key e meeting_name existentes no gold.
+- `POST /perguntas-gold`: responde perguntas usando o gold consolidado (pt-BR garantido).
+- `POST /train/stint-delta-pace`: treino assincrono do modelo de delta de ritmo (com filtros, MLflow obrigatorio).
 - `POST /driver-profiles`: gera relatorios e rankings para um meeting. Aceita `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `include_llm`, `llm_endpoint`.
 - `POST /driver-profiles/season`: gera relatorios por temporada e multiplas sessoes. Aceita `seasons`, `session_names` (vazio = todas), `include_llm`, `llm_endpoint`, `drivers_include`, `drivers_exclude`.
 - `POST /import-season`: cria job assincrono por temporada. Aceita `season`, `session_name` (Race ou Sprint), `include_llm`, `llm_endpoint`.
@@ -331,6 +364,22 @@ Saidas do `/driver-profiles/season`: `artifacts` por temporada (URIs MLflow), `s
 
 ```bash
 curl http://localhost:7077/health
+```
+
+```bash
+curl "http://localhost:7077/gold/meetings?season=2024&session_name=Race"
+```
+
+```bash
+curl -X POST http://localhost:7077/perguntas-gold \
+  -H "Content-Type: application/json" \
+  -d '{"question":"Faça um resumo da temporada de 2024","season":2024,"session_name":"all"}'
+```
+
+```bash
+curl -X POST http://localhost:7077/train/stint-delta-pace \
+  -H "Content-Type: application/json" \
+  -d '{"season":2024,"session_name":"Race","target_mode":"stint_start_mean","baseline_laps":3,"constructor":"McLaren"}'
 ```
 
 ```bash

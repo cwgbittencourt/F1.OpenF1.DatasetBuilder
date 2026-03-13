@@ -22,6 +22,9 @@ O servico da API fica disponivel em `http://localhost:7077`.
 
 Endpoints:
 - `GET /health`
+- `GET /gold/meetings`
+- `POST /perguntas-gold`
+- `POST /train/stint-delta-pace`
 - `POST /driver-profiles`
 - `POST /driver-profiles/season`
 - `POST /import-season`
@@ -30,6 +33,8 @@ Endpoints:
 - `GET /jobs/{job_id}/logs?lines=200`
 
 Campos principais:
+- `/perguntas-gold`: `question`, `season`, `meeting_key` (opcional), `session_name` (Race, Sprint ou all), `driver_name` (opcional), `driver_number` (opcional). Resposta sempre em pt-BR.
+- `/train/stint-delta-pace`: `target_mode`, `baseline_laps`, `group_col`, `test_size`, `random_state`, `n_estimators`, `max_depth`, `min_samples_leaf` + filtros (`season`, `meeting_key`, `session_name`, `driver_number`, `constructor`).
 - `/driver-profiles`: `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `include_llm`, `llm_endpoint`.
 - `/driver-profiles/season`: `seasons` (lista), `session_names` (lista; vazio = todas), `include_llm`, `llm_endpoint`, `drivers_include`, `drivers_exclude`.
 - `/import-season`: `season`, `session_name` (Race ou Sprint), `include_llm`, `llm_endpoint`.
@@ -54,6 +59,22 @@ No endpoint `/driver-profiles/season`, a resposta inclui:
 
 ```bash
 curl http://localhost:7077/health
+```
+
+```bash
+curl "http://localhost:7077/gold/meetings?season=2024&session_name=Race"
+```
+
+```bash
+curl -X POST http://localhost:7077/perguntas-gold \
+  -H "Content-Type: application/json" \
+  -d '{"question":"Faça um resumo da temporada de 2024","season":2024,"session_name":"all"}'
+```
+
+```bash
+curl -X POST http://localhost:7077/train/stint-delta-pace \
+  -H "Content-Type: application/json" \
+  -d '{"season":2024,"session_name":"Race","target_mode":"stint_start_mean","baseline_laps":3,"constructor":"McLaren"}'
 ```
 
 ```bash

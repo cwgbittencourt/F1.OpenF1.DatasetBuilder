@@ -88,9 +88,49 @@ class ImportSeasonRequest(BaseModel):
     llm_endpoint: Optional[str] = Field(
         None, description="Override do endpoint do MLflow Gateway"
     )
+    resume_job_id: Optional[str] = Field(
+        None,
+        description="Job anterior para retomar (pula meetings ja concluidos).",
+    )
 
 
 class ImportSeasonJobResponse(BaseModel):
+    status: str
+    job_id: str
+    message: Optional[str] = None
+
+
+class ImportSeasonResumeRequest(BaseModel):
+    resume_job_id: str = Field(..., description="Job anterior para retomar.")
+    include_llm: Optional[bool] = Field(
+        None, description="Override do include_llm do job anterior."
+    )
+    llm_endpoint: Optional[str] = Field(
+        None, description="Override do endpoint do MLflow Gateway"
+    )
+
+
+class TrainStintDeltaPaceRequest(BaseModel):
+    season: Optional[int] = Field(None, description="Temporada, ex: 2023")
+    meeting_key: Optional[str] = Field(None, description="meeting_key da corrida")
+    session_name: str = Field("all", description="Race, Sprint ou all")
+    driver_number: Optional[int] = Field(None, description="Numero do piloto (opcional)")
+    constructor: Optional[str] = Field(
+        None, description="Nome da construtora (team_name) (opcional)"
+    )
+    target_mode: Literal["prev_stint_mean", "stint_start_mean"] = Field(
+        "prev_stint_mean", description="Modo do alvo do delta de ritmo."
+    )
+    baseline_laps: int = Field(3, description="Voltas iniciais do stint para baseline.")
+    group_col: str = Field("meeting_key", description="Coluna de split por grupo.")
+    test_size: float = Field(0.2, description="Percentual de teste.")
+    random_state: int = Field(42, description="Seed do split.")
+    n_estimators: int = Field(300, description="Numero de arvores do RandomForest.")
+    max_depth: Optional[int] = Field(None, description="Profundidade maxima.")
+    min_samples_leaf: int = Field(1, description="Minimo de amostras por folha.")
+
+
+class TrainStintDeltaPaceJobResponse(BaseModel):
     status: str
     job_id: str
     message: Optional[str] = None
@@ -133,6 +173,21 @@ class GoldQuestionsResponse(BaseModel):
     summary: dict[str, Any]
 
 
+class GoldMeetingItem(BaseModel):
+    season: Optional[int] = None
+    meeting_key: str
+    meeting_name: Optional[str] = None
+    sessions: list[str]
+
+
+class GoldMeetingsResponse(BaseModel):
+    status: str
+    rows: int
+    seasons: list[int]
+    sessions: list[str]
+    meetings: list[GoldMeetingItem]
+
+
 app = FastAPI(title="OpenF1 Dataset API", version="1.0.0")
 
 
@@ -165,6 +220,12 @@ def _normalize_text(value: Optional[str]) -> Optional[str]:
 
 def _normalize_simple(value: str) -> str:
     return re.sub(r"\s+", " ", value.strip().lower())
+
+
+def _clean_text_series(series: pd.Series) -> pd.Series:
+    cleaned = series.astype("string").str.strip()
+    cleaned = cleaned.replace("", pd.NA)
+    return cleaned
 
 
 def _post_json(url: str, payload: dict[str, Any], timeout_s: int) -> tuple[int, str]:
@@ -669,6 +730,90 @@ def _is_probably_portuguese(text: str) -> bool:
     return True
 
 
+def _apply_pt_br_replacements(text: str) -> str:
+    if not text:
+        return text
+    replacements = {
+        r"\bHARD\b": "duro",
+        r"\bMEDIUM\b": "médio",
+        r"\bSOFT\b": "macio",
+        r"\bINTERMEDIATE\b": "intermediário",
+        r"\bWET\b": "chuva",
+        r"\bRace\b": "corrida",
+        r"\bSprints?\b": "sprint",
+        r"\blow speed\b": "baixa velocidade",
+        r"\bmedium speed\b": "média velocidade",
+        r"\bhigh speed\b": "alta velocidade",
+    }
+    updated = text
+    for pattern, replacement in replacements.items():
+        updated = re.sub(pattern, replacement, updated, flags=re.IGNORECASE)
+    return updated
+
+
+def _contains_english_markers(text: str) -> bool:
+    if not text:
+        return False
+    tokens = re.findall(r"[a-zA-Z]+", text.lower())
+    markers = {
+        "hard",
+        "medium",
+        "soft",
+        "intermediate",
+        "wet",
+        "average",
+        "driver",
+        "drivers",
+        "lap",
+        "laps",
+        "speed",
+        "session",
+        "race",
+        "summary",
+    }
+    return any(token in markers for token in tokens)
+
+
+def _fallback_gold_summary_pt(summary: dict[str, Any]) -> str:
+    filters = summary.get("filters", {}) if isinstance(summary, dict) else {}
+    season = filters.get("season")
+    meetings_total = summary.get("meetings_total")
+    drivers_total = summary.get("drivers_total")
+    teams_total = summary.get("teams_total")
+    sessions = summary.get("sessions") or []
+    date_range = summary.get("meeting_date_start") or {}
+    date_min = date_range.get("min")
+    date_max = date_range.get("max")
+    circuit_class = summary.get("circuit_speed_class_most_common_pt")
+    compound = summary.get("compound_most_common_pt")
+    drivers_focus = summary.get("drivers_focus") or []
+
+    parts: list[str] = []
+    if season:
+        parts.append(f"Resumo da temporada {season}.")
+    if meetings_total:
+        parts.append(f"Total de corridas: {meetings_total}.")
+    if sessions:
+        parts.append(f"Sessoes consideradas: {', '.join(sessions)}.")
+    if drivers_total:
+        parts.append(f"Pilotos na base: {drivers_total}.")
+    if teams_total:
+        parts.append(f"Equipes na base: {teams_total}.")
+    if circuit_class:
+        parts.append(f"Classe de velocidade mais comum: {circuit_class}.")
+    if compound:
+        parts.append(f"Composto de pneu mais usado: {compound}.")
+    if date_min and date_max:
+        parts.append(f"Periodo coberto: {date_min} ate {date_max}.")
+    if drivers_focus:
+        drivers_str = ", ".join(str(d) for d in drivers_focus)
+        parts.append(f"Pilotos com mais voltas registradas: {drivers_str}.")
+
+    if not parts:
+        return "Sem dados no gold."
+    return _apply_pt_br_replacements(" ".join(parts))
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
@@ -775,8 +920,122 @@ def perguntas_gold(payload: GoldQuestionsRequest) -> GoldQuestionsResponse:
                 answer = _parse_answer(content)
             except Exception:
                 pass
+    answer = _apply_pt_br_replacements(answer)
+    normalized_answer = answer.strip().lower()
+    if normalized_answer == "sem dados no gold." and summary.get("rows"):
+        answer = _fallback_gold_summary_pt(summary)
+    elif not _is_probably_portuguese(answer) or _contains_english_markers(answer):
+        answer = _fallback_gold_summary_pt(summary)
 
     return GoldQuestionsResponse(status="ok", answer=answer, summary=summary)
+
+
+@app.get("/gold/meetings", response_model=GoldMeetingsResponse)
+def list_gold_meetings(
+    season: Optional[int] = None,
+    session_name: str = "all",
+) -> GoldMeetingsResponse:
+    session_name = (session_name or "all").strip()
+    if session_name.lower() not in {"race", "sprint", "all"}:
+        raise HTTPException(status_code=400, detail="session_name deve ser Race, Sprint ou all")
+
+    try:
+        df = load_consolidated()
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+    if season is not None:
+        if "season" not in df.columns:
+            raise HTTPException(status_code=400, detail="Coluna season nao encontrada no gold.")
+        df = df[df["season"] == season]
+
+    if session_name.lower() != "all":
+        if "session_name" not in df.columns:
+            raise HTTPException(
+                status_code=400, detail="Coluna session_name nao encontrada no gold."
+            )
+        df = df[
+            df["session_name"].astype(str).str.strip().str.lower() == session_name.lower()
+        ]
+
+    if df.empty:
+        raise HTTPException(status_code=404, detail="Nenhum dado encontrado no gold para os filtros.")
+    if "meeting_key" not in df.columns:
+        raise HTTPException(status_code=500, detail="Coluna meeting_key nao encontrada no gold.")
+
+    season_series = (
+        pd.to_numeric(df["season"], errors="coerce") if "season" in df.columns else None
+    )
+    meeting_key_series = _clean_text_series(df["meeting_key"])
+    meeting_name_series = (
+        _clean_text_series(df["meeting_name"])
+        if "meeting_name" in df.columns
+        else pd.Series([pd.NA] * len(df), index=df.index, dtype="string")
+    )
+    session_series = (
+        _clean_text_series(df["session_name"])
+        if "session_name" in df.columns
+        else pd.Series([pd.NA] * len(df), index=df.index, dtype="string")
+    )
+
+    data = pd.DataFrame(
+        {
+            "season": season_series if season_series is not None else pd.Series(
+                [pd.NA] * len(df), index=df.index, dtype="Int64"
+            ),
+            "meeting_key": meeting_key_series,
+            "meeting_name": meeting_name_series,
+            "session_name": session_series,
+        }
+    )
+    data = data.dropna(subset=["meeting_key"])
+    data = data[data["meeting_key"].astype(str).str.strip() != ""]
+
+    if data.empty:
+        raise HTTPException(status_code=404, detail="Nenhum meeting encontrado no gold.")
+
+    sessions_all = (
+        sorted(
+            s for s in data["session_name"].dropna().astype(str).unique() if str(s).strip()
+        )
+        if "session_name" in data.columns
+        else []
+    )
+    seasons_all = (
+        sorted(int(s) for s in data["season"].dropna().unique())
+        if "season" in data.columns
+        else []
+    )
+
+    meetings: list[GoldMeetingItem] = []
+    grouped = data.groupby(["season", "meeting_key", "meeting_name"], dropna=False)
+    for (season_val, meeting_key, meeting_name), group in grouped:
+        sessions = sorted(
+            s for s in group["session_name"].dropna().astype(str).unique() if str(s).strip()
+        )
+        meeting = GoldMeetingItem(
+            season=int(season_val) if pd.notna(season_val) else None,
+            meeting_key=str(meeting_key),
+            meeting_name=str(meeting_name) if pd.notna(meeting_name) else None,
+            sessions=sessions,
+        )
+        meetings.append(meeting)
+
+    def _meeting_sort_key(item: GoldMeetingItem) -> tuple:
+        season_key = item.season if item.season is not None else 10**9
+        return (season_key, item.meeting_key)
+
+    meetings.sort(key=_meeting_sort_key)
+
+    return GoldMeetingsResponse(
+        status="ok",
+        rows=len(meetings),
+        seasons=seasons_all,
+        sessions=sessions_all,
+        meetings=meetings,
+    )
 
 
 @app.post("/driver-profiles", response_model=DriverProfilesResponse)
@@ -1321,16 +1580,28 @@ def _jobs_dir(env: dict[str, str], config_path: str) -> Path:
     return jobs_dir
 
 
+def _load_job_status(jobs_dir: Path, job_id: str) -> dict:
+    status_file = jobs_dir / f"{job_id}.status.json"
+    if not status_file.exists():
+        raise HTTPException(status_code=404, detail="Job nao encontrado.")
+    return json.loads(status_file.read_text(encoding="utf-8"))
+
+
 def _write_json_atomic(path: Path, payload: dict) -> None:
     tmp = path.with_suffix(path.suffix + ".tmp")
     tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     tmp.replace(path)
 
 
-def _spawn_job_process(job_file: Path, log_file: Path, env: dict[str, str]) -> None:
+def _spawn_job_process(
+    job_file: Path,
+    log_file: Path,
+    env: dict[str, str],
+    module: str = "jobs.import_season_job",
+) -> None:
     log_file.parent.mkdir(parents=True, exist_ok=True)
     log_handle = log_file.open("a", encoding="utf-8")
-    cmd = [sys.executable, "-m", "jobs.import_season_job", "--job-file", str(job_file)]
+    cmd = [sys.executable, "-m", module, "--job-file", str(job_file)]
     kwargs: dict[str, object] = {
         "env": env,
         "stdout": log_handle,
@@ -1387,6 +1658,7 @@ def import_season(payload: ImportSeasonRequest) -> ImportSeasonJobResponse:
         "include_llm": payload.include_llm,
         "llm_endpoint": payload.llm_endpoint,
         "config_path": config_path,
+        "resume_job_id": payload.resume_job_id,
     }
     status_payload = {
         "job_id": job_id,
@@ -1397,6 +1669,7 @@ def import_season(payload: ImportSeasonRequest) -> ImportSeasonJobResponse:
         "include_llm": payload.include_llm,
         "log_file": str(log_file),
         "status_file": str(status_file),
+        "resume_job_id": payload.resume_job_id,
     }
 
     _write_json_atomic(job_file, job_payload)
@@ -1404,6 +1677,128 @@ def import_season(payload: ImportSeasonRequest) -> ImportSeasonJobResponse:
     _spawn_job_process(job_file, log_file, env)
 
     return ImportSeasonJobResponse(status="queued", job_id=job_id)
+
+
+@app.post("/import-season/resume", response_model=ImportSeasonJobResponse, status_code=202)
+def import_season_resume(payload: ImportSeasonResumeRequest) -> ImportSeasonJobResponse:
+    env = os.environ.copy()
+    config_path = env.get("CONFIG_PATH", "/app/config/config.yaml")
+    jobs_dir = _jobs_dir(env, config_path)
+
+    resume_status = _load_job_status(jobs_dir, payload.resume_job_id)
+    season = resume_status.get("season")
+    session_name = resume_status.get("session_name") or "Race"
+    if not season:
+        raise HTTPException(status_code=400, detail="Job anterior sem season valido.")
+    if str(session_name).lower() not in {"race", "sprint"}:
+        raise HTTPException(status_code=400, detail="session_name deve ser Race ou Sprint")
+
+    include_llm = (
+        payload.include_llm
+        if payload.include_llm is not None
+        else bool(resume_status.get("include_llm", True))
+    )
+
+    job_id = uuid.uuid4().hex
+    job_file = jobs_dir / f"{job_id}.json"
+    status_file = jobs_dir / f"{job_id}.status.json"
+    log_file = jobs_dir / f"{job_id}.log"
+    created_at = datetime.now().isoformat()
+
+    job_payload = {
+        "job_id": job_id,
+        "created_at": created_at,
+        "status_file": str(status_file),
+        "log_file": str(log_file),
+        "season": season,
+        "session_name": session_name,
+        "include_llm": include_llm,
+        "llm_endpoint": payload.llm_endpoint,
+        "config_path": config_path,
+        "resume_job_id": payload.resume_job_id,
+    }
+    status_payload = {
+        "job_id": job_id,
+        "status": "queued",
+        "created_at": created_at,
+        "season": season,
+        "session_name": session_name,
+        "include_llm": include_llm,
+        "log_file": str(log_file),
+        "status_file": str(status_file),
+        "resume_job_id": payload.resume_job_id,
+    }
+
+    _write_json_atomic(job_file, job_payload)
+    _write_json_atomic(status_file, status_payload)
+    _spawn_job_process(job_file, log_file, env)
+
+    return ImportSeasonJobResponse(status="queued", job_id=job_id)
+
+
+@app.post(
+    "/train/stint-delta-pace",
+    response_model=TrainStintDeltaPaceJobResponse,
+    status_code=202,
+)
+def train_stint_delta_pace_job(
+    payload: TrainStintDeltaPaceRequest,
+) -> TrainStintDeltaPaceJobResponse:
+    if payload.session_name.lower() not in {"race", "sprint", "all"}:
+        raise HTTPException(status_code=400, detail="session_name deve ser Race, Sprint ou all")
+    if payload.baseline_laps < 1:
+        raise HTTPException(status_code=400, detail="baseline_laps deve ser >= 1")
+
+    env = os.environ.copy()
+    config_path = env.get("CONFIG_PATH", "/app/config/config.yaml")
+    jobs_dir = _jobs_dir(env, config_path)
+
+    job_id = uuid.uuid4().hex
+    job_file = jobs_dir / f"{job_id}.json"
+    status_file = jobs_dir / f"{job_id}.status.json"
+    log_file = jobs_dir / f"{job_id}.log"
+    created_at = datetime.now().isoformat()
+
+    job_payload = {
+        "job_id": job_id,
+        "created_at": created_at,
+        "status_file": str(status_file),
+        "log_file": str(log_file),
+        "config_path": config_path,
+        "filters": {
+            "season": payload.season,
+            "meeting_key": payload.meeting_key,
+            "session_name": payload.session_name,
+            "driver_number": payload.driver_number,
+            "constructor": payload.constructor,
+        },
+        "params": {
+            "target_mode": payload.target_mode,
+            "baseline_laps": payload.baseline_laps,
+            "group_col": payload.group_col,
+            "test_size": payload.test_size,
+            "random_state": payload.random_state,
+            "n_estimators": payload.n_estimators,
+            "max_depth": payload.max_depth,
+            "min_samples_leaf": payload.min_samples_leaf,
+        },
+    }
+    status_payload = {
+        "job_id": job_id,
+        "job_type": "train_stint_delta_pace",
+        "status": "queued",
+        "created_at": created_at,
+        "filters": job_payload["filters"],
+        "params": job_payload["params"],
+        "log_file": str(log_file),
+        "status_file": str(status_file),
+    }
+
+    _write_json_atomic(job_file, job_payload)
+    _write_json_atomic(status_file, status_payload)
+    _spawn_job_process(job_file, log_file, env, module="jobs.train_stint_delta_pace_job")
+
+    return TrainStintDeltaPaceJobResponse(status="queued", job_id=job_id)
 
 
 @app.get("/jobs/{job_id}")

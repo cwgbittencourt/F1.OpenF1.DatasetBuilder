@@ -57,6 +57,7 @@ def _init_status(job: dict[str, Any], status: str) -> dict[str, Any]:
         "season": job.get("season"),
         "session_name": job.get("session_name"),
         "include_llm": job.get("include_llm"),
+        "resume_job_id": job.get("resume_job_id"),
         "total_meetings": 0,
         "processed_meetings": 0,
         "current_meeting": None,
@@ -64,6 +65,25 @@ def _init_status(job: dict[str, Any], status: str) -> dict[str, Any]:
         "log_file": job.get("log_file"),
         "status_file": job.get("status_file"),
     }
+
+
+def _load_resume_status(resume_job_id: str, jobs_dir: Path) -> dict[str, Any]:
+    resume_path = jobs_dir / f"{resume_job_id}.status.json"
+    if not resume_path.exists():
+        raise RuntimeError(f"Resume job_id nao encontrado: {resume_job_id}")
+    return json.loads(resume_path.read_text(encoding="utf-8"))
+
+
+def _resume_completed_meetings(resume_status: dict[str, Any]) -> set[str]:
+    completed: set[str] = set()
+    for meeting in resume_status.get("meetings", []):
+        meeting_key = meeting.get("meeting_key")
+        if meeting_key is None:
+            continue
+        status = str(meeting.get("status") or "").lower()
+        if status in {"ok", "skipped"}:
+            completed.add(str(meeting_key))
+    return completed
 
 
 def main() -> None:
@@ -91,6 +111,7 @@ def main() -> None:
     session_name = str(job.get("session_name") or "Race")
     include_llm = bool(job.get("include_llm", True))
     llm_endpoint = job.get("llm_endpoint")
+    resume_job_id = job.get("resume_job_id")
 
     try:
         settings = load_settings(config_path)
@@ -128,6 +149,14 @@ def main() -> None:
             _write_json_atomic(status_file, status_payload)
             return
 
+        resume_completed: set[str] = set()
+        if resume_job_id:
+            jobs_dir = Path(job.get("status_file", "")).parent
+            resume_status = _load_resume_status(str(resume_job_id), jobs_dir)
+            resume_completed = _resume_completed_meetings(resume_status)
+            status_payload["resume_skipped_meetings"] = len(resume_completed)
+            _write_json_atomic(status_file, status_payload)
+
         for meeting in meetings:
             meeting_key = meeting.get("meeting_key")
             meeting_name = meeting.get("meeting_name", "")
@@ -147,6 +176,19 @@ def main() -> None:
 
             session_key = None
             try:
+                meeting_key_str = str(meeting_key) if meeting_key is not None else None
+                if meeting_key_str and meeting_key_str in resume_completed:
+                    status_payload["meetings"].append(
+                        {
+                            "meeting_key": str(meeting_key),
+                            "meeting_name": str(meeting_name),
+                            "status": "skipped",
+                            "message": f"Pulado via resume do job {resume_job_id}.",
+                        }
+                    )
+                    _write_json_atomic(status_file, status_payload)
+                    continue
+
                 sessions = get_sessions_for_meeting(client, meeting_key)
                 session = select_session(sessions, session_name)
                 if not session:

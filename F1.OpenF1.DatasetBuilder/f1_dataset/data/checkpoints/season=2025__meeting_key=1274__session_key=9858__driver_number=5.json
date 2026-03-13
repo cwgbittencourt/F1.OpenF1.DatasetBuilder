@@ -1,0 +1,15 @@
+{
+  "status": "completed",
+  "updated_at": "2026-03-13T03:10:13.395990Z",
+  "payload": {
+    "season": 2025,
+    "meeting_key": 1274,
+    "meeting_name": "Las Vegas Grand Prix",
+    "meeting_date_start": "2025-11-21T00:30:00+00:00",
+    "session_key": 9858,
+    "session_name": "Race",
+    "driver_number": 5,
+    "driver_name": "Gabriel BORTOLETO",
+    "team_name": "Kick Sauber"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "status": "completed",
+  "updated_at": "2026-03-13T00:18:48.483557Z",
+  "payload": {
+    "season": 2025,
+    "meeting_key": 1255,
+    "meeting_name": "Chinese Grand Prix",
+    "meeting_date_start": "2025-03-21T03:30:00+00:00",
+    "session_key": 9998,
+    "session_name": "Race",
+    "driver_number": 22,
+    "driver_name": "Yuki TSUNODA",
+    "team_name": "Racing Bulls"
+  }
+}

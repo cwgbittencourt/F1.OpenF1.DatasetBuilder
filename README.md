@@ -96,6 +96,9 @@ Por que: a API e camada de automacao, nao de avaliacao estatistica.
 
 **Endpoints Atuais Da API**
 - `GET /health`: healthcheck.
+- `GET /gold/meetings`: lista sessions, meeting_key e meeting_name existentes no gold.
+- `POST /perguntas-gold`: responde perguntas usando o gold consolidado (resposta sempre em pt-BR).
+- `POST /train/stint-delta-pace`: treino assincrono do modelo de delta de ritmo entre stints (MLflow obrigatorio).
 - `POST /driver-profiles`: gera relatorios e rankings por meeting. Aceita `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `include_llm` e `llm_endpoint`.
 - `POST /driver-profiles/season`: gera relatorios por temporada e multiplas sessoes. Aceita `seasons`, `session_names` (vazio = todas), `include_llm`, `llm_endpoint`, `drivers_include`, `drivers_exclude`. Retorna `artifacts`, `summaries` e `top_drivers` por temporada.
 - `POST /import-season`: cria job assincrono por temporada. Aceita `season`, `session_name` (Race ou Sprint), `include_llm` e `llm_endpoint`.
@@ -107,6 +110,22 @@ Por que: a API e camada de automacao, nao de avaliacao estatistica.
 
 ```bash
 curl http://localhost:7077/health
+```
+
+```bash
+curl "http://localhost:7077/gold/meetings?season=2024&session_name=Race"
+```
+
+```bash
+curl -X POST http://localhost:7077/perguntas-gold \
+  -H "Content-Type: application/json" \
+  -d '{"question":"Faça um resumo da temporada de 2024","season":2024,"session_name":"all"}'
+```
+
+```bash
+curl -X POST http://localhost:7077/train/stint-delta-pace \
+  -H "Content-Type: application/json" \
+  -d '{"season":2024,"session_name":"Race","target_mode":"stint_start_mean","baseline_laps":3,"constructor":"McLaren"}'
 ```
 
 ```bash

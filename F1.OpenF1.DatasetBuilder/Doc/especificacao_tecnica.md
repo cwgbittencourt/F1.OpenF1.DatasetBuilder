@@ -7,12 +7,14 @@
 - Registrar execucoes, metricas e artefatos no MLflow.
 - Gerar relatorios e rankings de pilotos.
 - Disponibilizar uma API FastAPI para orquestrar relatorios e importacao de temporadas.
+- Expor consultas ao gold consolidado (perguntas em linguagem natural e catalogo de meetings).
 
 ## 2. Stack E Execucao
 
 - Python 3.11 com pipeline modular e jobs de analytics.
 - FastAPI para endpoints de orquestracao.
 - MLflow para tracking de execucoes e artefatos.
+- MLflow Gateway para respostas de LLM no endpoint de perguntas do gold.
 - Dockerfile e Docker Compose como caminho oficial de execucao.
 - Visual Studio 2026 como IDE recomendada para desenvolvimento local.
 
@@ -119,8 +121,13 @@ api:
 
 Endpoints atuais:
 - `GET /health`: healthcheck.
+- `GET /gold/meetings`: lista meetings existentes no gold (meeting_key/meeting_name/sessions).
+- `POST /perguntas-gold`: responde perguntas usando o gold consolidado (pt-BR garantido).
+- `POST /train/stint-delta-pace`: treino assincrono do modelo de delta de ritmo (com filtros, MLflow obrigatorio).
 - `POST /driver-profiles`: gera relatorios por meeting. Campos: `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `include_llm`, `llm_endpoint`.
+- `POST /driver-profiles/season`: gera relatorios por temporada (multiplas sessoes). Campos: `seasons`, `session_names`, `include_llm`, `llm_endpoint`, `drivers_include`, `drivers_exclude`.
 - `POST /import-season`: cria job assincrono por temporada. Campos: `season`, `session_name` (Race ou Sprint), `include_llm`, `llm_endpoint`.
+- `POST /data-lake/sync`: sincroniza bronze/silver/gold com MinIO (upload/download).
 - `GET /jobs/{job_id}`: status do job.
 - `GET /jobs/{job_id}/logs?lines=200`: ultimas linhas do log do job.
 
