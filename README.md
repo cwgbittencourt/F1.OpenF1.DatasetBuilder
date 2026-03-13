@@ -120,6 +120,8 @@ Por que: a API e camada de automacao, nao de avaliacao estatistica.
 
 Detalhes do `/train/stint-delta-pace` (Machine Learning):
 Objetivo: treinar um modelo de regressao para prever o delta de ritmo entre stints com base no gold consolidado.
+Como usar esta informacao: define o alvo do modelo (`target_mode` + `baseline_laps`), controla o recorte dos dados (filtros), evita vazamento com split por grupo (`group_col`) e ajusta a complexidade do modelo (hiperparametros do RandomForest). O resultado e um `job_id` para acompanhar e um run no MLflow para comparacao de experimentos.
+Validacao (metricas): `mae`, `rmse`, `r2`, `mape` validam a qualidade da previsao do delta de ritmo. `mae` e `rmse` medem erro absoluto e penalizam erros grandes; `r2` indica variancia explicada; `mape` mostra erro percentual medio para comparar recortes.
 Parametros principais: `target_mode` (`prev_stint_mean` ou `stint_start_mean`), `baseline_laps`, `group_col`, `test_size`, `random_state`, `n_estimators`, `max_depth`, `min_samples_leaf` + filtros (`season`, `meeting_key`, `session_name`, `driver_number`, `constructor`).
 Retorno: `job_id` para acompanhar via `/jobs/{job_id}`; logs em `f1_dataset/data/logs/jobs` e artefatos publicados no MLflow.
 

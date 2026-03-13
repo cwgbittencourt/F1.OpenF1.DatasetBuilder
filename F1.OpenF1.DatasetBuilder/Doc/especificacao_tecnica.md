@@ -147,6 +147,8 @@ Endpoints atuais:
 Detalhes do `/train/stint-delta-pace` (Machine Learning):
 Objetivo: treinar um modelo de regressao para prever o delta de ritmo entre stints usando o gold consolidado.
 Requisitos: gold consolidado local e MLflow configurado para log de parametros, metricas e artefatos.
+Como usar esta informacao: define o alvo do modelo (`target_mode` + `baseline_laps`), controla o recorte dos dados (filtros), evita vazamento com split por grupo (`group_col`) e ajusta a complexidade do modelo (hiperparametros do RandomForest). O resultado e um `job_id` para acompanhar e um run no MLflow para comparacao de experimentos.
+Validacao (metricas): as metricas `mae`, `rmse`, `r2`, `mape` validam a qualidade da previsao do delta de ritmo. `mae` e `rmse` medem erro absoluto e penalizam erros grandes; `r2` indica variancia explicada; `mape` mostra erro percentual medio, facilitando comparacao entre recortes e temporadas.
 Parametros principais: `target_mode` (`prev_stint_mean` para delta entre stints consecutivos; `stint_start_mean` para delta vs media das primeiras voltas do stint), `baseline_laps` (usado no `stint_start_mean`), `group_col` (coluna usada para split por grupo e evitar vazamento), `test_size`, `random_state`, `n_estimators`, `max_depth`, `min_samples_leaf`.
 Filtros opcionais: `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `driver_number`, `constructor`.
 Retorno: `job_id` para acompanhamento via `/jobs/{job_id}` e logs em `f1_dataset/data/logs/jobs`.

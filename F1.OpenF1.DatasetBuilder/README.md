@@ -37,6 +37,7 @@ Endpoints:
 Campos principais:
 - `/gold/questions`: `question`, `season`, `meeting_key` (opcional), `session_name` (Race, Sprint ou all), `driver_name` (opcional), `driver_number` (opcional). Resposta sempre em pt-BR.
 - `/train/stint-delta-pace` (Machine Learning): treina modelo de regressao para delta de ritmo entre stints; `target_mode` (`prev_stint_mean` ou `stint_start_mean`), `baseline_laps` (usado no `stint_start_mean`), `group_col` (split por grupo), `test_size`, `random_state`, `n_estimators`, `max_depth`, `min_samples_leaf` + filtros (`season`, `meeting_key`, `session_name`, `driver_number`, `constructor`).
+  Validacao: `mae`, `rmse`, `r2`, `mape` medem a qualidade da previsao (erro absoluto, penalizacao de erros grandes, variancia explicada e erro percentual medio).
 - `/driver-profiles`: `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `include_llm`, `llm_endpoint`.
 - `/driver-profiles/season`: `seasons` (lista), `session_names` (lista; vazio = todas), `include_llm`, `llm_endpoint`, `drivers_include`, `drivers_exclude`.
 - `/import-season`: `season`, `session_name` (Race ou Sprint), `include_llm`, `llm_endpoint`, `resume_job_id` (opcional).
