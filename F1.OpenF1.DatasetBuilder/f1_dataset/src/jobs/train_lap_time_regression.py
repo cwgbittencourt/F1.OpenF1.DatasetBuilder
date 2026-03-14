@@ -17,7 +17,13 @@ from sklearn.pipeline import Pipeline
 
 from config.settings import ensure_paths, load_settings
 from modeling.dataset import load_consolidated
+from modeling.mlflow_metadata import build_mlflow_tags
+from modeling.mlflow_registry import register_model_if_possible
+from modeling.system_metrics import SystemMetrics
 from modeling.utils import TARGET_COLUMN, build_preprocessor, get_feature_frame, split_indices
+
+MODEL_NAME = "lap_time_regression"
+MODEL_DESCRIPTION = "Regressao para prever tempo de volta."
 
 
 def _setup_logging(log_dir: str) -> None:
@@ -79,6 +85,7 @@ def _log_model_safe(pipeline: Pipeline, artifacts_dir: Path) -> None:
 
 
 def main() -> None:
+    system_metrics = SystemMetrics.start()
     parser = argparse.ArgumentParser(
         description="Train lap time regression model (optionally excluding sector features)."
     )
@@ -186,13 +193,13 @@ def main() -> None:
     if settings.output.register_mlflow and _init_mlflow(
         tracking_uri, settings.mlflow.experiment_name
     ):
-        with mlflow.start_run(run_name="lap_time_regression") as run:
-            mlflow.set_tags(
-                {
-                    "task": "lap_time_regression",
-                    "exclude_sectors": str(exclude_sectors).lower(),
-                }
-            )
+        with mlflow.start_run(run_name="lap_time_regression", log_system_metrics=True) as run:
+            tags = {
+                "task": "lap_time_regression",
+                "exclude_sectors": str(exclude_sectors).lower(),
+            }
+            tags.update(build_mlflow_tags(MODEL_NAME, MODEL_DESCRIPTION, run_timestamp))
+            mlflow.set_tags(tags)
             params: dict[str, Any] = {
                 "test_size": args.test_size,
                 "random_state": args.random_state,
@@ -204,13 +211,23 @@ def main() -> None:
                 "test_rows": len(x_test),
                 "feature_count": len(x_train.columns),
             }
+            model_version = os.getenv("MODEL_VERSION")
+            if model_version:
+                params["model_version"] = model_version
             mlflow.log_params(params)
             mlflow.log_metrics(metrics)
+            mlflow.log_metrics(system_metrics.collect())
             mlflow.log_artifact(str(artifacts_dir / "metrics.json"))
             mlflow.log_artifact(str(artifacts_dir / "split_summary.json"))
             mlflow.log_artifact(str(artifacts_dir / "features.json"))
             mlflow.log_artifact(str(artifacts_dir / "predictions_sample.csv"))
             _log_model_safe(pipeline, artifacts_dir)
+            register_model_if_possible(
+                run_id=run.info.run_id,
+                model_name=MODEL_NAME,
+                model_version=model_version or run_timestamp,
+                model_description=MODEL_DESCRIPTION,
+            )
             logging.getLogger(__name__).info(
                 "Run registrado no MLflow: %s", run.info.run_id
             )

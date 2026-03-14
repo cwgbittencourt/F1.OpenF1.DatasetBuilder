@@ -1,0 +1,38 @@
+{
+  "numeric_columns": [
+    "meeting_key",
+    "session_key",
+    "driver_number",
+    "lap_count",
+    "avg_speed",
+    "max_speed",
+    "min_speed",
+    "speed_std",
+    "avg_rpm",
+    "max_rpm",
+    "min_rpm",
+    "rpm_std",
+    "avg_throttle",
+    "max_throttle",
+    "min_throttle",
+    "throttle_std",
+    "full_throttle_pct",
+    "brake_pct",
+    "brake_events",
+    "hard_brake_events",
+    "drs_pct",
+    "gear_changes",
+    "distance_traveled",
+    "trajectory_length",
+    "trajectory_variation",
+    "telemetry_points",
+    "trajectory_points",
+    "season"
+  ],
+  "categorical_columns": [
+    "driver_name",
+    "team_name",
+    "meeting_name",
+    "session_name"
+  ]
+}

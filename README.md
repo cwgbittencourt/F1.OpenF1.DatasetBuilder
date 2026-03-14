@@ -110,6 +110,14 @@ Por que: a API e camada de automacao, nao de avaliacao estatistica.
 - `GET /gold/meetings`: lista meetings disponíveis no gold consolidado, com `meeting_key`, `meeting_name` e sessões; aceita filtros por `season` e `session_name`. Obs: requer `f1_dataset/data/gold/consolidated.parquet` local; se não existir retorna 404.
 - `POST /gold/questions`: responde perguntas em linguagem natural usando o gold consolidado; aplica filtros e retorna `answer` (pt-BR) e `summary` estatístico do recorte. Obs: requer gold consolidado local e endpoint LLM acessível via `MLFLOW_GATEWAY_ENDPOINT`; falhas no LLM retornam 502.
 - `POST /train/stint-delta-pace`: dispara treino assíncrono do modelo de delta de ritmo entre stints; retorna `job_id` para acompanhamento. Obs: job roda em background e grava logs em `f1_dataset/data/logs/jobs`. (Machine Learning)
+- `POST /train/lap-time-regression`: treino assíncrono de regressão de tempo de volta. (Machine Learning)
+- `POST /train/lap-time-ranking`: treino assíncrono de ranking de lap time. (Machine Learning)
+- `POST /train/relative-position`: treino assíncrono de posição relativa por meeting. (Machine Learning)
+- `POST /train/tyre-degradation`: treino assíncrono de degradação de pneus. (Machine Learning)
+- `POST /train/lap-quality-classifier`: treino assíncrono de classificação de qualidade de volta. (Machine Learning)
+- `POST /train/lap-anomaly`: treino assíncrono de detecção de anomalias por volta. (Machine Learning)
+- `POST /train/driver-style-clustering`: treino assíncrono de clustering de estilo de pilotagem. (Machine Learning)
+- `POST /train/circuit-segmentation`: treino assíncrono de segmentação de circuitos. (Machine Learning)
 - `POST /driver-profiles`: gera relatórios e rankings por meeting específico; garante gold, gera artifacts e retorna URIs no MLflow. Obs: pode executar pipeline se faltarem dados e depende de MLflow disponível.
 - `POST /driver-profiles/season`: gera relatórios por temporada e múltiplas sessões em lote; retorna artifacts e sumários por temporada. Obs: processamento pode demorar em temporadas múltiplas.
 - `POST /import-season`: inicia job assíncrono para importar e processar uma temporada inteira (com opção de LLM); retorna `job_id`. Obs: acompanha via `/jobs` e `/jobs/{job_id}/logs`.
@@ -170,6 +178,9 @@ Exemplo de logs em `/jobs/{job_id}/logs?lines=200`:
   "log": "2026-03-13 12:10:16,021 INFO root - Carregando gold consolidado\n2026-03-13 12:10:18,442 INFO root - Aplicando filtros: season=2024, session_name=Race\n2026-03-13 12:10:21,107 INFO root - Treinando RandomForestRegressor\n2026-03-13 12:10:29,553 INFO root - Metrics: mae=1.23, rmse=2.34, r2=0.78, mape=0.04\n2026-03-13 12:10:30,112 INFO root - Run finalizado"
 }
 ```
+
+Treinos ML adicionais: `/train/lap-time-regression`, `/train/lap-time-ranking`, `/train/relative-position`, `/train/tyre-degradation`, `/train/lap-quality-classifier`, `/train/lap-anomaly`, `/train/driver-style-clustering`, `/train/circuit-segmentation`.
+Todos seguem o mesmo fluxo: retornam `job_id`, gravam logs em `f1_dataset/data/logs/jobs` e registram parametros/metricas/artefatos no MLflow.
 
 **Exemplos de chamadas**
 

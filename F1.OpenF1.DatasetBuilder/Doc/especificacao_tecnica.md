@@ -136,6 +136,14 @@ Endpoints atuais:
 - `GET /gold/meetings`: lista meetings existentes no gold (meeting_key/meeting_name/sessions).
 - `POST /gold/questions`: responde perguntas usando o gold consolidado (pt-BR garantido).
 - `POST /train/stint-delta-pace`: treino assincrono do modelo de delta de ritmo (com filtros, MLflow obrigatorio). (Machine Learning)
+- `POST /train/lap-time-regression`: treino assincrono de regressao de tempo de volta. (Machine Learning)
+- `POST /train/lap-time-ranking`: treino assincrono de ranking de lap time. (Machine Learning)
+- `POST /train/relative-position`: treino assincrono de posicao relativa por meeting. (Machine Learning)
+- `POST /train/tyre-degradation`: treino assincrono de degradacao de pneus. (Machine Learning)
+- `POST /train/lap-quality-classifier`: treino assincrono de classificacao de qualidade de volta. (Machine Learning)
+- `POST /train/lap-anomaly`: treino assincrono de deteccao de anomalias por volta. (Machine Learning)
+- `POST /train/driver-style-clustering`: treino assincrono de clustering de estilo de pilotagem. (Machine Learning)
+- `POST /train/circuit-segmentation`: treino assincrono de segmentacao de circuitos. (Machine Learning)
 - `POST /driver-profiles`: gera relatorios por meeting. Campos: `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `include_llm`, `llm_endpoint`.
 - `POST /driver-profiles/season`: gera relatorios por temporada (multiplas sessoes). Campos: `seasons`, `session_names`, `include_llm`, `llm_endpoint`, `drivers_include`, `drivers_exclude`.
 - `POST /import-season`: cria job assincrono por temporada. Campos: `season`, `session_name` (Race ou Sprint), `include_llm`, `llm_endpoint`, `resume_job_id` (opcional).
@@ -212,6 +220,16 @@ Exemplo de logs em `/jobs/{job_id}/logs?lines=200`:
   "log": "2026-03-13 12:10:16,021 INFO root - Carregando gold consolidado\n2026-03-13 12:10:18,442 INFO root - Aplicando filtros: season=2024, session_name=Race\n2026-03-13 12:10:21,107 INFO root - Treinando RandomForestRegressor\n2026-03-13 12:10:29,553 INFO root - Metrics: mae=1.23, rmse=2.34, r2=0.78, mape=0.04\n2026-03-13 12:10:30,112 INFO root - Run finalizado"
 }
 ```
+
+Treinos ML adicionais (todos retornam `job_id` e registram metricas no MLflow):
+- `/train/lap-time-regression` (Machine Learning): regressao de tempo de volta; params `include_sectors`, `group_col`, `test_size`, `random_state`, `n_estimators`, `max_depth`, `min_samples_leaf`. Metricas: `mae`, `rmse`, `r2`, `mape`.
+- `/train/lap-time-ranking` (Machine Learning): ranking de pilotos por lap time; params `include_sectors`, `group_col`, `driver_col`, `test_size`, `random_state`, `n_estimators`, `max_depth`, `min_samples_leaf`. Metricas: `mae`, `rmse`, `r2`, `mape`, `rank_spearman_mean`, `rank_ndcg_mean`.
+- `/train/relative-position` (Machine Learning): previsao de posicao relativa; params `group_col`, `test_size`, `random_state`, `n_estimators`, `max_depth`, `min_samples_leaf`. Metricas: `mae`, `rmse`, `r2`, `mape`, `rank_spearman_mean`.
+- `/train/tyre-degradation` (Machine Learning): degradacao de pneus ao longo do stint; params `include_sectors`, `group_col`, `test_size`, `random_state`, `n_estimators`, `max_depth`, `min_samples_leaf`. Metricas: `mae`, `rmse`, `r2`, `mape`.
+- `/train/lap-quality-classifier` (Machine Learning): classifica voltas boas/ruins; params `include_sectors`, `group_col`, `test_size`, `random_state`, `n_estimators`. Metricas: `accuracy`, `precision`, `recall`, `f1`, `roc_auc`.
+- `/train/lap-anomaly` (Machine Learning): detecta anomalias por volta; params `contamination`, `n_estimators`, `random_state`. Metricas: `rows`, `anomaly_count`, `anomaly_rate`, `score_min`, `score_max`, `score_mean`.
+- `/train/driver-style-clustering` (Machine Learning): clusteriza estilos de pilotagem; params `clusters`, `random_state`. Metricas: `clusters`, `rows`, `silhouette`, `davies_bouldin`.
+- `/train/circuit-segmentation` (Machine Learning): segmenta circuitos por comportamento; params `clusters`, `random_state`. Metricas: `clusters`, `rows`, `silhouette`, `davies_bouldin`.
 
 Exemplo de resume:
 ```bash

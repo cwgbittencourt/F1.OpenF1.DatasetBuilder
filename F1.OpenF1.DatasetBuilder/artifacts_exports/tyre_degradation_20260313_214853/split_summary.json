@@ -1,0 +1,6 @@
+{
+  "train_rows": 57463,
+  "test_rows": 14751,
+  "group_col": "meeting_key",
+  "test_size": 0.2
+}

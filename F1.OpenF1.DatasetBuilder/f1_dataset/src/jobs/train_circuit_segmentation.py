@@ -17,6 +17,11 @@ from sklearn.preprocessing import StandardScaler
 
 from config.settings import ensure_paths, load_settings
 from modeling.dataset import load_consolidated
+from modeling.mlflow_metadata import build_mlflow_tags
+from modeling.system_metrics import SystemMetrics
+
+MODEL_NAME = "circuit_segmentation"
+MODEL_DESCRIPTION = "Segmentacao de circuitos por comportamento agregado."
 
 
 def _setup_logging(log_dir: str) -> None:
@@ -80,6 +85,7 @@ def _build_meeting_dataset(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def main() -> None:
+    system_metrics = SystemMetrics.start()
     parser = argparse.ArgumentParser(
         description="Segmentacao de circuitos por comportamento agregado."
     )
@@ -161,8 +167,10 @@ def main() -> None:
     if settings.output.register_mlflow and _init_mlflow(
         tracking_uri, settings.mlflow.experiment_name
     ):
-        with mlflow.start_run(run_name="circuit_segmentation") as run:
-            mlflow.set_tags({"task": "circuit_segmentation"})
+        with mlflow.start_run(run_name="circuit_segmentation", log_system_metrics=True) as run:
+            tags = {"task": "circuit_segmentation"}
+            tags.update(build_mlflow_tags(MODEL_NAME, MODEL_DESCRIPTION, run_timestamp))
+            mlflow.set_tags(tags)
             mlflow.log_params(
                 {
                     "clusters": args.clusters,
@@ -170,7 +178,11 @@ def main() -> None:
                     "feature_count": len(numeric_cols),
                 }
             )
+            model_version = os.getenv("MODEL_VERSION")
+            if model_version:
+                mlflow.log_param("model_version", model_version)
             mlflow.log_metrics(metrics)
+            mlflow.log_metrics(system_metrics.collect())
             mlflow.log_artifact(str(artifacts_dir / "metrics.json"))
             mlflow.log_artifact(str(artifacts_dir / "features.json"))
             mlflow.log_artifact(str(artifacts_dir / "circuit_clusters.csv"))

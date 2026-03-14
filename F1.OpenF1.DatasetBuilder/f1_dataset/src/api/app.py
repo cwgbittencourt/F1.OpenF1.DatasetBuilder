@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 import re
 import subprocess
@@ -135,6 +136,147 @@ class TrainStintDeltaPaceJobResponse(BaseModel):
     status: str
     job_id: str
     message: Optional[str] = None
+
+
+class TrainJobResponse(BaseModel):
+    status: str
+    job_id: str
+    message: Optional[str] = None
+
+
+class TrainLapTimeRegressionRequest(BaseModel):
+    include_sectors: bool = Field(
+        False, description="Inclui features de setores (por padrao sao excluidas)."
+    )
+    group_col: str = Field("meeting_key", description="Coluna de split por grupo.")
+    test_size: float = Field(0.2, description="Percentual de teste.")
+    random_state: int = Field(42, description="Seed do split.")
+    n_estimators: int = Field(300, description="Numero de arvores do RandomForest.")
+    max_depth: Optional[int] = Field(None, description="Profundidade maxima.")
+    min_samples_leaf: int = Field(1, description="Minimo de amostras por folha.")
+    model_version: Optional[str] = Field(
+        None,
+        description=(
+            "Versao do modelo para MLflow (opcional). "
+            "Se omitido, sera gerada a partir dos parametros."
+        ),
+    )
+    model_version: Optional[str] = Field(
+        None,
+        description=(
+            "Versao do modelo para MLflow (opcional). "
+            "Se omitido, sera gerada a partir dos parametros."
+        ),
+    )
+
+
+class TrainLapTimeRankingRequest(BaseModel):
+    include_sectors: bool = Field(
+        False, description="Inclui features de setores (por padrao sao excluidas)."
+    )
+    group_col: str = Field("meeting_key", description="Coluna de split por grupo.")
+    driver_col: str = Field("driver_name", description="Coluna de ranking de pilotos.")
+    test_size: float = Field(0.2, description="Percentual de teste.")
+    random_state: int = Field(42, description="Seed do split.")
+    n_estimators: int = Field(300, description="Numero de arvores do RandomForest.")
+    max_depth: Optional[int] = Field(None, description="Profundidade maxima.")
+    min_samples_leaf: int = Field(1, description="Minimo de amostras por folha.")
+    model_version: Optional[str] = Field(
+        None,
+        description=(
+            "Versao do modelo para MLflow (opcional). "
+            "Se omitido, sera gerada a partir dos parametros."
+        ),
+    )
+
+
+class TrainRelativePositionRequest(BaseModel):
+    group_col: str = Field("meeting_key", description="Coluna de split por grupo.")
+    test_size: float = Field(0.2, description="Percentual de teste.")
+    random_state: int = Field(42, description="Seed do split.")
+    n_estimators: int = Field(300, description="Numero de arvores do RandomForest.")
+    max_depth: Optional[int] = Field(None, description="Profundidade maxima.")
+    min_samples_leaf: int = Field(1, description="Minimo de amostras por folha.")
+    model_version: Optional[str] = Field(
+        None,
+        description=(
+            "Versao do modelo para MLflow (opcional). "
+            "Se omitido, sera gerada a partir dos parametros."
+        ),
+    )
+
+
+class TrainTyreDegradationRequest(BaseModel):
+    include_sectors: bool = Field(
+        False, description="Inclui features de setores (por padrao sao excluidas)."
+    )
+    group_col: str = Field("meeting_key", description="Coluna de split por grupo.")
+    test_size: float = Field(0.2, description="Percentual de teste.")
+    random_state: int = Field(42, description="Seed do split.")
+    n_estimators: int = Field(300, description="Numero de arvores do RandomForest.")
+    max_depth: Optional[int] = Field(None, description="Profundidade maxima.")
+    min_samples_leaf: int = Field(1, description="Minimo de amostras por folha.")
+    model_version: Optional[str] = Field(
+        None,
+        description=(
+            "Versao do modelo para MLflow (opcional). "
+            "Se omitido, sera gerada a partir dos parametros."
+        ),
+    )
+
+
+class TrainLapQualityClassifierRequest(BaseModel):
+    include_sectors: bool = Field(
+        False, description="Inclui features de setores (por padrao sao excluidas)."
+    )
+    group_col: str = Field("meeting_key", description="Coluna de split por grupo.")
+    test_size: float = Field(0.2, description="Percentual de teste.")
+    random_state: int = Field(42, description="Seed do split.")
+    n_estimators: int = Field(300, description="Numero de arvores do RandomForest.")
+    model_version: Optional[str] = Field(
+        None,
+        description=(
+            "Versao do modelo para MLflow (opcional). "
+            "Se omitido, sera gerada a partir dos parametros."
+        ),
+    )
+
+
+class TrainLapAnomalyRequest(BaseModel):
+    contamination: float = Field(0.02, description="Percentual esperado de anomalias.")
+    n_estimators: int = Field(300, description="Numero de arvores do IsolationForest.")
+    random_state: int = Field(42, description="Seed do modelo.")
+    model_version: Optional[str] = Field(
+        None,
+        description=(
+            "Versao do modelo para MLflow (opcional). "
+            "Se omitido, sera gerada a partir dos parametros."
+        ),
+    )
+
+
+class TrainDriverStyleClusteringRequest(BaseModel):
+    clusters: int = Field(4, description="Numero de clusters.")
+    random_state: int = Field(42, description="Seed do modelo.")
+    model_version: Optional[str] = Field(
+        None,
+        description=(
+            "Versao do modelo para MLflow (opcional). "
+            "Se omitido, sera gerada a partir dos parametros."
+        ),
+    )
+
+
+class TrainCircuitSegmentationRequest(BaseModel):
+    clusters: int = Field(3, description="Numero de clusters.")
+    random_state: int = Field(42, description="Seed do modelo.")
+    model_version: Optional[str] = Field(
+        None,
+        description=(
+            "Versao do modelo para MLflow (opcional). "
+            "Se omitido, sera gerada a partir dos parametros."
+        ),
+    )
 
 
 class DataLakeSyncRequest(BaseModel):
@@ -1775,6 +1917,59 @@ def _spawn_job_process(
     log_handle.close()
 
 
+def _queue_ml_job(
+    *,
+    env: dict[str, str],
+    config_path: str,
+    job_type: str,
+    module: str,
+    args: list[str],
+    params: dict[str, Any],
+    artifacts_root: Path,
+    filters: Optional[dict[str, Any]] = None,
+) -> TrainJobResponse:
+    jobs_dir = _jobs_dir(env, config_path)
+    job_id = uuid.uuid4().hex
+    job_file = jobs_dir / f"{job_id}.json"
+    status_file = jobs_dir / f"{job_id}.status.json"
+    log_file = jobs_dir / f"{job_id}.log"
+    created_at = datetime.now().isoformat()
+
+    job_payload: dict[str, Any] = {
+        "job_id": job_id,
+        "job_type": job_type,
+        "created_at": created_at,
+        "status_file": str(status_file),
+        "log_file": str(log_file),
+        "config_path": config_path,
+        "module": module,
+        "args": args,
+        "params": params,
+        "artifacts_root": str(artifacts_root),
+        "metrics_file": "metrics.json",
+    }
+    if filters is not None:
+        job_payload["filters"] = filters
+
+    status_payload: dict[str, Any] = {
+        "job_id": job_id,
+        "job_type": job_type,
+        "status": "queued",
+        "created_at": created_at,
+        "params": params,
+        "log_file": str(log_file),
+        "status_file": str(status_file),
+    }
+    if filters is not None:
+        status_payload["filters"] = filters
+
+    _write_json_atomic(job_file, job_payload)
+    _write_json_atomic(status_file, status_payload)
+    _spawn_job_process(job_file, log_file, env, module="jobs.train_generic_job")
+
+    return TrainJobResponse(status="queued", job_id=job_id)
+
+
 def _tail_log(path: Path, lines: int) -> str:
     if lines <= 0:
         return ""
@@ -1790,6 +1985,29 @@ def _tail_log(path: Path, lines: int) -> str:
             data = f.read(read_size) + data
     text = data.decode("utf-8", errors="replace")
     return "\n".join(text.splitlines()[-lines:])
+
+
+def _normalize_max_depth(max_depth: int | None) -> int | None:
+    if max_depth is None:
+        return None
+    return max_depth if max_depth >= 1 else None
+
+
+def _resolve_model_version(payload: BaseModel, prefix: str) -> str:
+    provided = getattr(payload, "model_version", None)
+    if provided:
+        return str(provided)
+    payload_dict = payload.dict()
+    payload_dict.pop("model_version", None)
+    raw = json.dumps(
+        payload_dict,
+        sort_keys=True,
+        ensure_ascii=False,
+        default=str,
+        separators=(",", ":"),
+    )
+    digest = hashlib.sha1(raw.encode("utf-8")).hexdigest()[:12]
+    return f"{prefix}-{digest}"
 
 
 @app.post("/import-season", response_model=ImportSeasonJobResponse, status_code=202)
@@ -1924,6 +2142,9 @@ def train_stint_delta_pace_job(
     log_file = jobs_dir / f"{job_id}.log"
     created_at = datetime.now().isoformat()
 
+    max_depth = _normalize_max_depth(payload.max_depth)
+    model_version = _resolve_model_version(payload, "stint_delta_pace")
+    env["MODEL_VERSION"] = model_version
     job_payload = {
         "job_id": job_id,
         "created_at": created_at,
@@ -1944,8 +2165,9 @@ def train_stint_delta_pace_job(
             "test_size": payload.test_size,
             "random_state": payload.random_state,
             "n_estimators": payload.n_estimators,
-            "max_depth": payload.max_depth,
+            "max_depth": max_depth,
             "min_samples_leaf": payload.min_samples_leaf,
+            "model_version": model_version,
         },
     }
     status_payload = {
@@ -1964,6 +2186,406 @@ def train_stint_delta_pace_job(
     _spawn_job_process(job_file, log_file, env, module="jobs.train_stint_delta_pace_job")
 
     return TrainStintDeltaPaceJobResponse(status="queued", job_id=job_id)
+
+
+@app.post(
+    "/train/lap-time-regression",
+    response_model=TrainJobResponse,
+    status_code=202,
+    summary="Treino de lap time regression (Machine Learning)",
+    description=(
+        "Dispara treino assincrono do modelo de regressao de tempo de volta. "
+        "Requer MLflow configurado. (Machine Learning)"
+    ),
+)
+def train_lap_time_regression_job(
+    payload: TrainLapTimeRegressionRequest,
+) -> TrainJobResponse:
+    env = os.environ.copy()
+    config_path = env.get("CONFIG_PATH", "/app/config/config.yaml")
+    settings = load_settings(config_path)
+    artifacts_root = Path(settings.paths.artifacts_dir) / "modeling" / "lap_time_regression"
+
+    max_depth = _normalize_max_depth(payload.max_depth)
+    model_version = _resolve_model_version(payload, "lap_time_regression")
+    env["MODEL_VERSION"] = model_version
+    args = [
+        "--config",
+        config_path,
+        "--group-col",
+        payload.group_col,
+        "--test-size",
+        str(payload.test_size),
+        "--random-state",
+        str(payload.random_state),
+        "--n-estimators",
+        str(payload.n_estimators),
+        "--min-samples-leaf",
+        str(payload.min_samples_leaf),
+    ]
+    if payload.include_sectors:
+        args.append("--include-sectors")
+    if max_depth is not None:
+        args += ["--max-depth", str(max_depth)]
+
+    params = payload.dict()
+    params["max_depth"] = max_depth
+    params["model_version"] = model_version
+
+    return _queue_ml_job(
+        env=env,
+        config_path=config_path,
+        job_type="train_lap_time_regression",
+        module="jobs.train_lap_time_regression",
+        args=args,
+        params=params,
+        artifacts_root=artifacts_root,
+    )
+
+
+@app.post(
+    "/train/lap-time-ranking",
+    response_model=TrainJobResponse,
+    status_code=202,
+    summary="Treino de lap time ranking (Machine Learning)",
+    description=(
+        "Dispara treino assincrono do modelo de ranking de lap time. "
+        "Requer MLflow configurado. (Machine Learning)"
+    ),
+)
+def train_lap_time_ranking_job(
+    payload: TrainLapTimeRankingRequest,
+) -> TrainJobResponse:
+    env = os.environ.copy()
+    config_path = env.get("CONFIG_PATH", "/app/config/config.yaml")
+    settings = load_settings(config_path)
+    artifacts_root = Path(settings.paths.artifacts_dir) / "modeling" / "lap_time_ranking"
+
+    max_depth = _normalize_max_depth(payload.max_depth)
+    model_version = _resolve_model_version(payload, "lap_time_ranking")
+    env["MODEL_VERSION"] = model_version
+    args = [
+        "--config",
+        config_path,
+        "--group-col",
+        payload.group_col,
+        "--driver-col",
+        payload.driver_col,
+        "--test-size",
+        str(payload.test_size),
+        "--random-state",
+        str(payload.random_state),
+        "--n-estimators",
+        str(payload.n_estimators),
+        "--min-samples-leaf",
+        str(payload.min_samples_leaf),
+    ]
+    if payload.include_sectors:
+        args.append("--include-sectors")
+    if max_depth is not None:
+        args += ["--max-depth", str(max_depth)]
+
+    params = payload.dict()
+    params["max_depth"] = max_depth
+    params["model_version"] = model_version
+
+    return _queue_ml_job(
+        env=env,
+        config_path=config_path,
+        job_type="train_lap_time_ranking",
+        module="jobs.train_lap_time_ranking",
+        args=args,
+        params=params,
+        artifacts_root=artifacts_root,
+    )
+
+
+@app.post(
+    "/train/relative-position",
+    response_model=TrainJobResponse,
+    status_code=202,
+    summary="Treino de posicao relativa (Machine Learning)",
+    description=(
+        "Dispara treino assincrono do modelo de posicao relativa. "
+        "Requer MLflow configurado. (Machine Learning)"
+    ),
+)
+def train_relative_position_job(
+    payload: TrainRelativePositionRequest,
+) -> TrainJobResponse:
+    env = os.environ.copy()
+    config_path = env.get("CONFIG_PATH", "/app/config/config.yaml")
+    settings = load_settings(config_path)
+    artifacts_root = Path(settings.paths.artifacts_dir) / "modeling" / "relative_position"
+
+    max_depth = _normalize_max_depth(payload.max_depth)
+    model_version = _resolve_model_version(payload, "relative_position")
+    env["MODEL_VERSION"] = model_version
+    args = [
+        "--config",
+        config_path,
+        "--group-col",
+        payload.group_col,
+        "--test-size",
+        str(payload.test_size),
+        "--random-state",
+        str(payload.random_state),
+        "--n-estimators",
+        str(payload.n_estimators),
+        "--min-samples-leaf",
+        str(payload.min_samples_leaf),
+    ]
+    if max_depth is not None:
+        args += ["--max-depth", str(max_depth)]
+
+    params = payload.dict()
+    params["max_depth"] = max_depth
+    params["model_version"] = model_version
+
+    return _queue_ml_job(
+        env=env,
+        config_path=config_path,
+        job_type="train_relative_position",
+        module="jobs.train_relative_position",
+        args=args,
+        params=params,
+        artifacts_root=artifacts_root,
+    )
+
+
+@app.post(
+    "/train/tyre-degradation",
+    response_model=TrainJobResponse,
+    status_code=202,
+    summary="Treino de degradacao de pneus (Machine Learning)",
+    description=(
+        "Dispara treino assincrono do modelo de degradacao de pneus. "
+        "Requer MLflow configurado. (Machine Learning)"
+    ),
+)
+def train_tyre_degradation_job(
+    payload: TrainTyreDegradationRequest,
+) -> TrainJobResponse:
+    env = os.environ.copy()
+    config_path = env.get("CONFIG_PATH", "/app/config/config.yaml")
+    settings = load_settings(config_path)
+    artifacts_root = Path(settings.paths.artifacts_dir) / "modeling" / "tyre_degradation"
+
+    max_depth = _normalize_max_depth(payload.max_depth)
+    model_version = _resolve_model_version(payload, "tyre_degradation")
+    env["MODEL_VERSION"] = model_version
+    args = [
+        "--config",
+        config_path,
+        "--group-col",
+        payload.group_col,
+        "--test-size",
+        str(payload.test_size),
+        "--random-state",
+        str(payload.random_state),
+        "--n-estimators",
+        str(payload.n_estimators),
+        "--min-samples-leaf",
+        str(payload.min_samples_leaf),
+    ]
+    if payload.include_sectors:
+        args.append("--include-sectors")
+    if max_depth is not None:
+        args += ["--max-depth", str(max_depth)]
+
+    params = payload.dict()
+    params["max_depth"] = max_depth
+    params["model_version"] = model_version
+
+    return _queue_ml_job(
+        env=env,
+        config_path=config_path,
+        job_type="train_tyre_degradation",
+        module="jobs.train_tyre_degradation",
+        args=args,
+        params=params,
+        artifacts_root=artifacts_root,
+    )
+
+
+@app.post(
+    "/train/lap-quality-classifier",
+    response_model=TrainJobResponse,
+    status_code=202,
+    summary="Treino de qualidade de volta (Machine Learning)",
+    description=(
+        "Dispara treino assincrono do classificador de qualidade de volta. "
+        "Requer MLflow configurado. (Machine Learning)"
+    ),
+)
+def train_lap_quality_classifier_job(
+    payload: TrainLapQualityClassifierRequest,
+) -> TrainJobResponse:
+    env = os.environ.copy()
+    config_path = env.get("CONFIG_PATH", "/app/config/config.yaml")
+    settings = load_settings(config_path)
+    artifacts_root = Path(settings.paths.artifacts_dir) / "modeling" / "lap_quality_classifier"
+
+    model_version = _resolve_model_version(payload, "lap_quality_classifier")
+    env["MODEL_VERSION"] = model_version
+    args = [
+        "--config",
+        config_path,
+        "--group-col",
+        payload.group_col,
+        "--test-size",
+        str(payload.test_size),
+        "--random-state",
+        str(payload.random_state),
+        "--n-estimators",
+        str(payload.n_estimators),
+    ]
+    if payload.include_sectors:
+        args.append("--include-sectors")
+
+    params = payload.dict()
+    params["model_version"] = model_version
+
+    return _queue_ml_job(
+        env=env,
+        config_path=config_path,
+        job_type="train_lap_quality_classifier",
+        module="jobs.train_lap_quality_classifier",
+        args=args,
+        params=params,
+        artifacts_root=artifacts_root,
+    )
+
+
+@app.post(
+    "/train/lap-anomaly",
+    response_model=TrainJobResponse,
+    status_code=202,
+    summary="Treino de anomalias de volta (Machine Learning)",
+    description=(
+        "Dispara treino assincrono do modelo de anomalias por volta. "
+        "Requer MLflow configurado. (Machine Learning)"
+    ),
+)
+def train_lap_anomaly_job(
+    payload: TrainLapAnomalyRequest,
+) -> TrainJobResponse:
+    env = os.environ.copy()
+    config_path = env.get("CONFIG_PATH", "/app/config/config.yaml")
+    settings = load_settings(config_path)
+    artifacts_root = Path(settings.paths.artifacts_dir) / "modeling" / "lap_anomaly"
+
+    model_version = _resolve_model_version(payload, "lap_anomaly")
+    env["MODEL_VERSION"] = model_version
+    args = [
+        "--config",
+        config_path,
+        "--contamination",
+        str(payload.contamination),
+        "--n-estimators",
+        str(payload.n_estimators),
+        "--random-state",
+        str(payload.random_state),
+    ]
+
+    params = payload.dict()
+    params["model_version"] = model_version
+
+    return _queue_ml_job(
+        env=env,
+        config_path=config_path,
+        job_type="train_lap_anomaly",
+        module="jobs.train_lap_anomaly",
+        args=args,
+        params=params,
+        artifacts_root=artifacts_root,
+    )
+
+
+@app.post(
+    "/train/driver-style-clustering",
+    response_model=TrainJobResponse,
+    status_code=202,
+    summary="Treino de clustering de estilo (Machine Learning)",
+    description=(
+        "Dispara treino assincrono de clustering de estilo de pilotagem. "
+        "Requer MLflow configurado. (Machine Learning)"
+    ),
+)
+def train_driver_style_clustering_job(
+    payload: TrainDriverStyleClusteringRequest,
+) -> TrainJobResponse:
+    env = os.environ.copy()
+    config_path = env.get("CONFIG_PATH", "/app/config/config.yaml")
+    settings = load_settings(config_path)
+    artifacts_root = Path(settings.paths.artifacts_dir) / "modeling" / "driver_style_clustering"
+
+    model_version = _resolve_model_version(payload, "driver_style_clustering")
+    env["MODEL_VERSION"] = model_version
+    args = [
+        "--config",
+        config_path,
+        "--clusters",
+        str(payload.clusters),
+        "--random-state",
+        str(payload.random_state),
+    ]
+
+    params = payload.dict()
+    params["model_version"] = model_version
+
+    return _queue_ml_job(
+        env=env,
+        config_path=config_path,
+        job_type="train_driver_style_clustering",
+        module="jobs.train_driver_style_clustering",
+        args=args,
+        params=params,
+        artifacts_root=artifacts_root,
+    )
+
+
+@app.post(
+    "/train/circuit-segmentation",
+    response_model=TrainJobResponse,
+    status_code=202,
+    summary="Treino de segmentacao de circuitos (Machine Learning)",
+    description=(
+        "Dispara treino assincrono de segmentacao de circuitos. "
+        "Requer MLflow configurado. (Machine Learning)"
+    ),
+)
+def train_circuit_segmentation_job(
+    payload: TrainCircuitSegmentationRequest,
+) -> TrainJobResponse:
+    env = os.environ.copy()
+    config_path = env.get("CONFIG_PATH", "/app/config/config.yaml")
+    settings = load_settings(config_path)
+    artifacts_root = Path(settings.paths.artifacts_dir) / "modeling" / "circuit_segmentation"
+
+    model_version = _resolve_model_version(payload, "circuit_segmentation")
+    env["MODEL_VERSION"] = model_version
+    args = [
+        "--config",
+        config_path,
+        "--clusters",
+        str(payload.clusters),
+        "--random-state",
+        str(payload.random_state),
+    ]
+
+    params = payload.dict()
+    params["model_version"] = model_version
+
+    return _queue_ml_job(
+        env=env,
+        config_path=config_path,
+        job_type="train_circuit_segmentation",
+        module="jobs.train_circuit_segmentation",
+        args=args,
+        params=params,
+        artifacts_root=artifacts_root,
+    )
 
 
 @app.get("/jobs/{job_id}")

@@ -26,6 +26,14 @@ Endpoints:
 - `GET /gold/meetings`: lista meetings disponíveis no gold consolidado, com `meeting_key`, `meeting_name` e sessões; aceita filtros por `season` e `session_name`. Obs: requer `f1_dataset/data/gold/consolidated.parquet` local; se não existir retorna 404.
 - `POST /gold/questions`: responde perguntas em linguagem natural usando o gold consolidado; aplica filtros e retorna `answer` (pt-BR) e `summary` estatístico do recorte. Obs: requer gold consolidado local e endpoint LLM acessível via `MLFLOW_GATEWAY_ENDPOINT`; falhas no LLM retornam 502.
 - `POST /train/stint-delta-pace`: dispara treino assíncrono do modelo de delta de ritmo entre stints; retorna `job_id` para acompanhamento. Obs: job roda em background e grava logs em `f1_dataset/data/logs/jobs`. (Machine Learning)
+- `POST /train/lap-time-regression`: treino assíncrono de regressão de tempo de volta. (Machine Learning)
+- `POST /train/lap-time-ranking`: treino assíncrono de ranking de lap time. (Machine Learning)
+- `POST /train/relative-position`: treino assíncrono de posição relativa por meeting. (Machine Learning)
+- `POST /train/tyre-degradation`: treino assíncrono de degradação de pneus. (Machine Learning)
+- `POST /train/lap-quality-classifier`: treino assíncrono de classificação de qualidade de volta. (Machine Learning)
+- `POST /train/lap-anomaly`: treino assíncrono de detecção de anomalias por volta. (Machine Learning)
+- `POST /train/driver-style-clustering`: treino assíncrono de clustering de estilo de pilotagem. (Machine Learning)
+- `POST /train/circuit-segmentation`: treino assíncrono de segmentação de circuitos. (Machine Learning)
 - `POST /driver-profiles`: gera relatórios e rankings de pilotos para um meeting específico; garante gold, gera artifacts e retorna URIs no MLflow. Obs: pode executar pipeline se faltarem dados e depende de MLflow disponível.
 - `POST /driver-profiles/season`: gera relatórios por temporada e múltiplas sessões em lote; retorna artifacts e sumários por temporada. Obs: processamento pode demorar em temporadas múltiplas.
 - `POST /import-season`: inicia job assíncrono para importar e processar uma temporada inteira (com opção de LLM); retorna `job_id`. Obs: acompanha via `/jobs` e `/jobs/{job_id}/logs`.
@@ -38,6 +46,14 @@ Campos principais:
 - `/gold/questions`: `question`, `season`, `meeting_key` (opcional), `session_name` (Race, Sprint ou all), `driver_name` (opcional), `driver_number` (opcional). Resposta sempre em pt-BR.
 - `/train/stint-delta-pace` (Machine Learning): treina modelo de regressao para delta de ritmo entre stints; `target_mode` (`prev_stint_mean` ou `stint_start_mean`), `baseline_laps` (usado no `stint_start_mean`), `group_col` (split por grupo), `test_size`, `random_state`, `n_estimators`, `max_depth`, `min_samples_leaf` + filtros (`season`, `meeting_key`, `session_name`, `driver_number`, `constructor`).
   Validacao: `mae`, `rmse`, `r2`, `mape` medem a qualidade da previsao (erro absoluto, penalizacao de erros grandes, variancia explicada e erro percentual medio).
+- `/train/lap-time-regression` (Machine Learning): `include_sectors`, `group_col`, `test_size`, `random_state`, `n_estimators`, `max_depth`, `min_samples_leaf`.
+- `/train/lap-time-ranking` (Machine Learning): `include_sectors`, `group_col`, `driver_col`, `test_size`, `random_state`, `n_estimators`, `max_depth`, `min_samples_leaf`.
+- `/train/relative-position` (Machine Learning): `group_col`, `test_size`, `random_state`, `n_estimators`, `max_depth`, `min_samples_leaf`.
+- `/train/tyre-degradation` (Machine Learning): `include_sectors`, `group_col`, `test_size`, `random_state`, `n_estimators`, `max_depth`, `min_samples_leaf`.
+- `/train/lap-quality-classifier` (Machine Learning): `include_sectors`, `group_col`, `test_size`, `random_state`, `n_estimators`.
+- `/train/lap-anomaly` (Machine Learning): `contamination`, `n_estimators`, `random_state`.
+- `/train/driver-style-clustering` (Machine Learning): `clusters`, `random_state`.
+- `/train/circuit-segmentation` (Machine Learning): `clusters`, `random_state`.
 - `/driver-profiles`: `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `include_llm`, `llm_endpoint`.
 - `/driver-profiles/season`: `seasons` (lista), `session_names` (lista; vazio = todas), `include_llm`, `llm_endpoint`, `drivers_include`, `drivers_exclude`.
 - `/import-season`: `season`, `session_name` (Race ou Sprint), `include_llm`, `llm_endpoint`, `resume_job_id` (opcional).
