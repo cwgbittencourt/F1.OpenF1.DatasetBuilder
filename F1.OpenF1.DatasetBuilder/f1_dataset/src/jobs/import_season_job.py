@@ -47,6 +47,26 @@ def _now_iso() -> str:
     return datetime.now(tz=timezone.utc).isoformat()
 
 
+def _parse_meeting_datetime(
+    meeting: dict[str, Any],
+    session: dict[str, Any] | None,
+) -> datetime | None:
+    raw = None
+    if session:
+        raw = session.get("date_start") or session.get("session_start")
+    if not raw:
+        raw = meeting.get("date_start") or meeting.get("meeting_start") or meeting.get("meeting_date")
+    if not raw:
+        return None
+    try:
+        parsed = datetime.fromisoformat(str(raw).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=timezone.utc)
+    return parsed
+
+
 def _init_status(job: dict[str, Any], status: str) -> dict[str, Any]:
     return {
         "job_id": job["job_id"],
@@ -157,7 +177,9 @@ def main() -> None:
             status_payload["resume_skipped_meetings"] = len(resume_completed)
             _write_json_atomic(status_file, status_payload)
 
+        paused = False
         for meeting in meetings:
+            increment_processed = True
             meeting_key = meeting.get("meeting_key")
             meeting_name = meeting.get("meeting_name", "")
             env["MLFLOW_RUN_GROUP"] = run_group
@@ -191,6 +213,26 @@ def main() -> None:
 
                 sessions = get_sessions_for_meeting(client, meeting_key)
                 session = select_session(sessions, session_name)
+                session_datetime = _parse_meeting_datetime(meeting, session)
+                if session_datetime and datetime.now(tz=timezone.utc) < session_datetime:
+                    status_payload["status"] = "waiting"
+                    status_payload["message"] = (
+                        "Aguardando etapa futura para continuar o processamento."
+                    )
+                    status_payload["current_meeting"] = {
+                        "meeting_key": str(meeting_key),
+                        "meeting_name": str(meeting_name),
+                        "meeting_date_start": session_datetime.isoformat(),
+                    }
+                    status_payload["next_meeting"] = {
+                        "meeting_key": str(meeting_key),
+                        "meeting_name": str(meeting_name),
+                        "meeting_date_start": session_datetime.isoformat(),
+                    }
+                    _write_json_atomic(status_file, status_payload)
+                    paused = True
+                    increment_processed = False
+                    break
                 if not session:
                     status_payload["meetings"].append(
                         {
@@ -412,8 +454,13 @@ def main() -> None:
                     }
                 )
             finally:
-                status_payload["processed_meetings"] += 1
+                if increment_processed:
+                    status_payload["processed_meetings"] += 1
                 _write_json_atomic(status_file, status_payload)
+
+        if paused:
+            logger.info("Job pausado aguardando etapa futura: %s", job.get("job_id"))
+            return
 
         status_payload["status"] = "completed"
         status_payload["finished_at"] = _now_iso()

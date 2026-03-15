@@ -1,0 +1,15 @@
+{
+  "status": "completed",
+  "updated_at": "2026-03-15T17:08:21.929368Z",
+  "payload": {
+    "season": 2026,
+    "meeting_key": 1299,
+    "meeting_name": "São Paulo Grand Prix",
+    "meeting_date_start": "2026-11-06T15:30:00+00:00",
+    "session_key": 11412,
+    "session_name": "Race",
+    "driver_number": 12,
+    "driver_name": "Kimi ANTONELLI",
+    "team_name": "Mercedes"
+  }
+}

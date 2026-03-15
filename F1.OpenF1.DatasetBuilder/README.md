@@ -23,8 +23,16 @@ O servico da API fica disponivel em `http://localhost:7077/docs`.
 Endpoints:
 - `GET /health`: healthcheck simples da API, confirma que o serviço está respondendo. Obs: não valida dependências externas (MLflow, MinIO/S3, OpenF1).
 - `GET /health/dependencies`: verifica dependências externas (MLflow, MinIO/S3 e OpenF1) e retorna status por dependência. Obs: OpenF1 pode ficar indisponível para não-assinantes em horários de eventos.
+- `GET /catalog/bronze`: lista registros da camada Bronze (dados crus, origem, path, sync opcional via `check_sync=true`); aceita `season` para filtrar.
+- `GET /catalog/silver`: lista registros da camada Silver (normalização, schema, nulls, path); aceita `season` para filtrar.
+- `GET /catalog/gold`: lista registros do Gold por volta (dataset por piloto); suporta `include_schema=true` e aceita `season` para filtrar.
 - `GET /gold/meetings`: lista meetings disponíveis no gold consolidado, com `meeting_key`, `meeting_name` e sessões; aceita filtros por `season` e `session_name`. Obs: requer `f1_dataset/data/gold/consolidated.parquet` local; se não existir retorna 404.
-- `POST /gold/questions`: responde perguntas em linguagem natural usando o gold consolidado; aplica filtros e retorna `answer` (pt-BR) e `summary` estatístico do recorte. Obs: requer gold consolidado local e endpoint LLM acessível via `MLFLOW_GATEWAY_ENDPOINT`; falhas no LLM retornam 502.
+- `GET /gold/lap`: retorna os dados de todos os pilotos para uma volta específica. Requer `season`, `lap_number` e `meeting_key` ou `meeting_name`. Gera colunas adicionais `lap_duration_min` (mm:ss:fff), `lap_duration_total` (hh:mm:ss:fff) e `lap_duration_gap` (hh:mm:ss:fff); ordena por `lap_duration_total`.
+- `GET /gold/laps/max`: retorna o número máximo de voltas para uma corrida/sessão, usado para preencher o combo de voltas.
+- `POST /gold/questions`: responde perguntas em linguagem natural usando o gold consolidado; aplica filtros e retorna `answer` (pt-BR) e `summary` estatístico do recorte. Tenta DuckDB (LLM -> SQL -> execucao) antes do LLM narrativo. Summary inclui `fastest_lap`, `slowest_lap`, `records`, quantis de tempo, top por meeting/piloto/equipe e cobertura de telemetria/trajectoria. Perguntas sobre “volta mais rápida” são respondidas de forma determinística. Se o LLM retornar “Sem dados no gold.”, tenta fallback web via DuckDuckGo (desativável com `WEB_FALLBACK_PROVIDER=disabled`). DuckDB pode ser desativado com `GOLD_QUESTIONS_DUCKDB=false`. Obs: requer gold consolidado local e endpoint LLM acessível via `MLFLOW_GATEWAY_ENDPOINT`; falhas no LLM retornam 502.
+- `GET /ui/gold-lap`: tela web para consultar voltas do gold por temporada + meeting + lap_number, com seleção de colunas e ordenação.
+- `GET /jobs`: lista jobs assíncronos recentes (id, status, tipo, datas, mensagem). Status possíveis: `queued`, `running`, `waiting`, `completed`, `failed`, `resumed`.
+- Datas de jobs (`created_at`, `started_at`, `finished_at`) são gravadas em UTC (ISO 8601 com timezone).
 - `POST /train/stint-delta-pace`: dispara treino assíncrono do modelo de delta de ritmo entre stints; retorna `job_id` para acompanhamento. Obs: job roda em background e grava logs em `f1_dataset/data/logs/jobs`. (Machine Learning)
 - `POST /train/lap-time-regression`: treino assíncrono de regressão de tempo de volta. (Machine Learning)
 - `POST /train/lap-time-ranking`: treino assíncrono de ranking de lap time. (Machine Learning)
@@ -36,14 +44,18 @@ Endpoints:
 - `POST /train/circuit-segmentation`: treino assíncrono de segmentação de circuitos. (Machine Learning)
 - `POST /driver-profiles`: gera relatórios e rankings de pilotos para um meeting específico; garante gold, gera artifacts e retorna URIs no MLflow. Obs: pode executar pipeline se faltarem dados e depende de MLflow disponível.
 - `POST /driver-profiles/season`: gera relatórios por temporada e múltiplas sessões em lote; retorna artifacts e sumários por temporada. Obs: processamento pode demorar em temporadas múltiplas.
-- `POST /import-season`: inicia job assíncrono para importar e processar uma temporada inteira (com opção de LLM); retorna `job_id`. Obs: acompanha via `/jobs` e `/jobs/{job_id}/logs`.
-- `POST /import-season/resume`: retoma um job de importação anterior usando `resume_job_id`, pulando meetings já concluídos. Obs: requer `resume_job_id` válido de importação.
+- `POST /import-season`: inicia job assíncrono para importar e processar uma temporada inteira (com opção de LLM); retorna `job_id`. Obs: acompanha via `/jobs` e `/jobs/{job_id}/logs`. Quando encontra etapa futura, pausa com `status=waiting` e `next_meeting`.
+- `POST /import-season/resume`: retoma um job de importação anterior usando `resume_job_id`, pulando meetings já concluídos. Obs: requer `resume_job_id` válido de importação. O job anterior passa para `status=resumed` com `resumed_job_id`.
 - `POST /data-lake/sync`: sincroniza bronze/silver/gold com o data lake (upload/download) e controla limpeza local. Obs: requer credenciais/endpoint S3/MinIO configurados; `cleanup_local=true` apaga dados locais após sync.
 - `GET /jobs/{job_id}`: consulta status atual do job assíncrono (ex.: importação ou treino). Obs: válido para jobs criados por `/import-season` e `/train/stint-delta-pace`.
 - `GET /jobs/{job_id}/logs?lines=200`: retorna as últimas linhas do log do job assíncrono. Obs: `lines` controla a quantidade de linhas retornadas.
+- `GET /mlflow/runs`: lista runs do MLflow com métricas, parâmetros e artefatos.
+- `GET /minio/objects`: lista objetos do MinIO/S3 (bucket, prefixo, tamanho, camada, URI).
 
 Campos principais:
 - `/gold/questions`: `question`, `season`, `meeting_key` (opcional), `session_name` (Race, Sprint ou all), `driver_name` (opcional), `driver_number` (opcional). Resposta sempre em pt-BR.
+- `/gold/lap`: `season`, `lap_number`, `meeting_key` ou `meeting_name`, `session_name` (Race, Sprint ou all). Retorna também `lap_duration_min`, `lap_duration_total`, `lap_duration_gap` formatados.
+- `/gold/laps/max`: `season`, `meeting_key` ou `meeting_name`, `session_name` (Race, Sprint ou all). Retorna `max_lap_number`.
 - `/train/stint-delta-pace` (Machine Learning): treina modelo de regressao para delta de ritmo entre stints; `target_mode` (`prev_stint_mean` ou `stint_start_mean`), `baseline_laps` (usado no `stint_start_mean`), `group_col` (split por grupo), `test_size`, `random_state`, `n_estimators`, `max_depth`, `min_samples_leaf` + filtros (`season`, `meeting_key`, `session_name`, `driver_number`, `constructor`).
   Validacao: `mae`, `rmse`, `r2`, `mape` medem a qualidade da previsao (erro absoluto, penalizacao de erros grandes, variancia explicada e erro percentual medio).
 - `/train/lap-time-regression` (Machine Learning): `include_sectors`, `group_col`, `test_size`, `random_state`, `n_estimators`, `max_depth`, `min_samples_leaf`.
@@ -82,7 +94,7 @@ Exemplo de acompanhamento em `/jobs/{job_id}`:
   "job_id": "6f7b4c0a9c8b4f9f9b0f2f6c7a8d9e10",
   "job_type": "train_stint_delta_pace",
   "status": "running",
-  "created_at": "2026-03-13T12:10:15.123456",
+  "created_at": "2026-03-13T12:10:15.123456+00:00",
   "filters": {
     "season": 2024,
     "meeting_key": null,
@@ -131,6 +143,10 @@ curl http://localhost:7077/health
 curl http://localhost:7077/health/dependencies
 ```
 
+```bash
+curl http://localhost:7077/ui/gold-lap
+```
+
 Exemplo de resposta do `/health/dependencies`:
 ```json
 {
@@ -155,6 +171,14 @@ Interpretacao rapida:
 
 ```bash
 curl "http://localhost:7077/gold/meetings?season=2024&session_name=Race"
+```
+
+```bash
+curl "http://localhost:7077/gold/lap?season=2024&meeting_name=Italian%20Grand%20Prix&lap_number=12"
+```
+
+```bash
+curl "http://localhost:7077/gold/laps/max?season=2024&meeting_name=Italian%20Grand%20Prix"
 ```
 
 ```bash
@@ -198,7 +222,7 @@ curl -X POST http://localhost:7077/import-season/resume \
   -H "Content-Type: application/json" \
   -d '{"resume_job_id":"SEU_JOB_ID","include_llm": true}'
 ```
-Observacao: `/import-season/resume` reutiliza `season` e `session_name` do job anterior e pula meetings com status `ok` ou `skipped`.
+Observacao: `/import-season/resume` reutiliza `season` e `session_name` do job anterior e pula meetings com status `ok` ou `skipped`. O job anterior passa para `status=resumed` com `resumed_job_id`. Se encontrar etapa futura, o novo job pausa com `status=waiting` e `next_meeting`.
 
 ```bash
 curl -X POST http://localhost:7077/data-lake/sync \
@@ -218,6 +242,19 @@ curl http://localhost:7077/jobs/{job_id}
 
 ```bash
 curl "http://localhost:7077/jobs/{job_id}/logs?lines=200"
+```
+
+```bash
+curl "http://localhost:7077/catalog/gold?include_schema=true"
+curl "http://localhost:7077/catalog/gold?season=2025&include_schema=true"
+```
+
+```bash
+curl "http://localhost:7077/mlflow/runs?limit=10"
+```
+
+```bash
+curl "http://localhost:7077/minio/objects?prefix=openf1/gold&limit=20"
 ```
 
 ## MLflow (container separado)

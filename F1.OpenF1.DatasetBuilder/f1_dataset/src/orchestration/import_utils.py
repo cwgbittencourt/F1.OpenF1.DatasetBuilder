@@ -238,6 +238,26 @@ def ensure_data(
         env,
     )
 
+    update_summaries = env.get("UPDATE_SEASON_SUMMARIES", "true").lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+    if update_summaries:
+        run_cmd(
+            [
+                "python",
+                "-m",
+                "jobs.update_season_summaries",
+                "--gold",
+                str(data_dir / "gold" / "consolidated.parquet"),
+                "--output",
+                str(data_dir / "reports" / "season_summaries.json"),
+            ],
+            env,
+        )
+
 
 def meeting_start_date(meeting: dict[str, Any]) -> datetime:
     raw = meeting.get("date_start") or meeting.get("meeting_start") or meeting.get("meeting_date")

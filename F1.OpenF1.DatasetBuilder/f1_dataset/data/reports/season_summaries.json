@@ -1,0 +1,5974 @@
+{
+  "generated_at": "2026-03-15T21:23:26.230139+00:00",
+  "source": "f1_dataset\\data\\gold\\consolidated.parquet",
+  "seasons": {
+    "2023": {
+      "season": 2023,
+      "rows": 24333,
+      "columns_available": [
+        "air_temperature",
+        "avg_rpm",
+        "avg_speed",
+        "avg_throttle",
+        "brake_events",
+        "brake_pct",
+        "circuit_speed_class",
+        "compound",
+        "distance_traveled",
+        "driver_name",
+        "driver_number",
+        "drs_pct",
+        "duration_sector_1",
+        "duration_sector_2",
+        "duration_sector_3",
+        "full_throttle_pct",
+        "gear_changes",
+        "hard_brake_events",
+        "has_telemetry",
+        "has_trajectory",
+        "i1_speed",
+        "i2_speed",
+        "is_pit_out_lap",
+        "lap_duration",
+        "lap_number",
+        "max_rpm",
+        "max_speed",
+        "max_throttle",
+        "meeting_date_start",
+        "meeting_day",
+        "meeting_key",
+        "meeting_month",
+        "meeting_name",
+        "min_rpm",
+        "min_speed",
+        "min_throttle",
+        "rpm_std",
+        "season",
+        "session_key",
+        "session_name",
+        "speed_std",
+        "st_speed",
+        "stint_lap_end",
+        "stint_lap_start",
+        "stint_number",
+        "team_name",
+        "telemetry_points",
+        "throttle_std",
+        "track_temperature",
+        "trajectory_length",
+        "trajectory_points",
+        "trajectory_variation",
+        "tyre_age_at_lap",
+        "tyre_age_at_start",
+        "weather_date"
+      ],
+      "drivers_total": 22,
+      "teams_total": 10,
+      "meetings_total": 22,
+      "sessions": [
+        "Race"
+      ],
+      "meeting_date_start": {
+        "min": "2023-03-03T11:30:00+00:00",
+        "max": "2023-11-24T09:30:00+00:00"
+      },
+      "lap_duration_quantiles": {
+        "p01": 69.72632,
+        "p05": 73.9422,
+        "p10": 76.5104,
+        "p25": 81.058,
+        "p50": 90.418,
+        "p75": 99.792,
+        "p90": 109.58399999999999,
+        "p95": 119.0762,
+        "p99": 165.49136000000004
+      },
+      "fastest_lap": {
+        "meeting_name": "Austrian Grand Prix",
+        "meeting_key": 1213,
+        "meeting_date_start": "2023-06-30T11:30:00+00:00",
+        "session_name": "Race",
+        "session_key": 9118,
+        "driver_name": "Max VERSTAPPEN",
+        "driver_number": 1,
+        "team_name": "Red Bull Racing",
+        "lap_number": 71,
+        "lap_duration": 67.012,
+        "lap_duration_seconds": 67.012,
+        "lap_duration_min": "01:07:012"
+      },
+      "slowest_lap": {
+        "meeting_name": "Dutch Grand Prix",
+        "meeting_key": 1217,
+        "meeting_date_start": "2023-08-25T10:30:00+00:00",
+        "session_name": "Race",
+        "session_key": 9149,
+        "driver_name": "Max VERSTAPPEN",
+        "driver_number": 1,
+        "team_name": "Red Bull Racing",
+        "lap_number": 65,
+        "lap_duration": 2625.541,
+        "lap_duration_seconds": 2625.541,
+        "lap_duration_min": "43:45:541"
+      },
+      "fastest_laps_top": [
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 71,
+          "lap_duration": 67.012,
+          "lap_duration_seconds": 67.012,
+          "lap_duration_min": "01:07:012"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Sergio PEREZ",
+          "driver_number": 11,
+          "team_name": "Red Bull Racing",
+          "lap_number": 52,
+          "lap_duration": 68.111,
+          "lap_duration_seconds": 68.111,
+          "lap_duration_min": "01:08:111"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 51,
+          "lap_duration": 68.15,
+          "lap_duration_seconds": 68.15,
+          "lap_duration_min": "01:08:150"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 53,
+          "lap_duration": 68.235,
+          "lap_duration_seconds": 68.235,
+          "lap_duration_min": "01:08:235"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 54,
+          "lap_duration": 68.25,
+          "lap_duration_seconds": 68.25,
+          "lap_duration_min": "01:08:250"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 55,
+          "lap_duration": 68.273,
+          "lap_duration_seconds": 68.273,
+          "lap_duration_min": "01:08:273"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Sergio PEREZ",
+          "driver_number": 11,
+          "team_name": "Red Bull Racing",
+          "lap_number": 56,
+          "lap_duration": 68.324,
+          "lap_duration_seconds": 68.324,
+          "lap_duration_min": "01:08:324"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 52,
+          "lap_duration": 68.342,
+          "lap_duration_seconds": 68.342,
+          "lap_duration_min": "01:08:342"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 56,
+          "lap_duration": 68.35,
+          "lap_duration_seconds": 68.35,
+          "lap_duration_min": "01:08:350"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 57,
+          "lap_duration": 68.412,
+          "lap_duration_seconds": 68.412,
+          "lap_duration_min": "01:08:412"
+        }
+      ],
+      "slowest_laps_top": [
+        {
+          "meeting_name": "Dutch Grand Prix",
+          "meeting_key": 1217,
+          "meeting_date_start": "2023-08-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9149,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 65,
+          "lap_duration": 2625.541,
+          "lap_duration_seconds": 2625.541,
+          "lap_duration_min": "43:45:541"
+        },
+        {
+          "meeting_name": "Dutch Grand Prix",
+          "meeting_key": 1217,
+          "meeting_date_start": "2023-08-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9149,
+          "driver_name": "Fernando ALONSO",
+          "driver_number": 14,
+          "team_name": "Aston Martin",
+          "lap_number": 65,
+          "lap_duration": 2595.634,
+          "lap_duration_seconds": 2595.634,
+          "lap_duration_min": "43:15:634"
+        },
+        {
+          "meeting_name": "Japanese Grand Prix",
+          "meeting_key": 1220,
+          "meeting_date_start": "2023-09-22T02:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9173,
+          "driver_name": "Sergio PEREZ",
+          "driver_number": 11,
+          "team_name": "Red Bull Racing",
+          "lap_number": 14,
+          "lap_duration": 2588.523,
+          "lap_duration_seconds": 2588.523,
+          "lap_duration_min": "43:08:523"
+        },
+        {
+          "meeting_name": "Dutch Grand Prix",
+          "meeting_key": 1217,
+          "meeting_date_start": "2023-08-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9149,
+          "driver_name": "Pierre GASLY",
+          "driver_number": 10,
+          "team_name": "Alpine",
+          "lap_number": 65,
+          "lap_duration": 2579.227,
+          "lap_duration_seconds": 2579.227,
+          "lap_duration_min": "42:59:227"
+        },
+        {
+          "meeting_name": "Dutch Grand Prix",
+          "meeting_key": 1217,
+          "meeting_date_start": "2023-08-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9149,
+          "driver_name": "Carlos SAINZ",
+          "driver_number": 55,
+          "team_name": "Ferrari",
+          "lap_number": 65,
+          "lap_duration": 2577.121,
+          "lap_duration_seconds": 2577.121,
+          "lap_duration_min": "42:57:121"
+        },
+        {
+          "meeting_name": "Dutch Grand Prix",
+          "meeting_key": 1217,
+          "meeting_date_start": "2023-08-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9149,
+          "driver_name": "Sergio PEREZ",
+          "driver_number": 11,
+          "team_name": "Red Bull Racing",
+          "lap_number": 64,
+          "lap_duration": 2562.49,
+          "lap_duration_seconds": 2562.49,
+          "lap_duration_min": "42:42:490"
+        },
+        {
+          "meeting_name": "Dutch Grand Prix",
+          "meeting_key": 1217,
+          "meeting_date_start": "2023-08-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9149,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Mercedes",
+          "lap_number": 65,
+          "lap_duration": 2561.864,
+          "lap_duration_seconds": 2561.864,
+          "lap_duration_min": "42:41:864"
+        },
+        {
+          "meeting_name": "Dutch Grand Prix",
+          "meeting_key": 1217,
+          "meeting_date_start": "2023-08-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9149,
+          "driver_name": "George RUSSELL",
+          "driver_number": 63,
+          "team_name": "Mercedes",
+          "lap_number": 64,
+          "lap_duration": 2547.8,
+          "lap_duration_seconds": 2547.8,
+          "lap_duration_min": "42:27:800"
+        },
+        {
+          "meeting_name": "Dutch Grand Prix",
+          "meeting_key": 1217,
+          "meeting_date_start": "2023-08-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9149,
+          "driver_name": "Alexander ALBON",
+          "driver_number": 23,
+          "team_name": "Williams",
+          "lap_number": 64,
+          "lap_duration": 2544.728,
+          "lap_duration_seconds": 2544.728,
+          "lap_duration_min": "42:24:728"
+        },
+        {
+          "meeting_name": "Dutch Grand Prix",
+          "meeting_key": 1217,
+          "meeting_date_start": "2023-08-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9149,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 64,
+          "lap_duration": 2540.47,
+          "lap_duration_seconds": 2540.47,
+          "lap_duration_min": "42:20:470"
+        }
+      ],
+      "fastest_lap_by_meeting": [
+        {
+          "meeting_name": "Bahrain Grand Prix",
+          "meeting_key": 1141,
+          "meeting_date_start": "2023-03-03T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 7953,
+          "driver_name": "ZHOU Guanyu",
+          "driver_number": 24,
+          "team_name": "Alfa Romeo",
+          "lap_number": 56,
+          "lap_duration": 93.996,
+          "lap_duration_seconds": 93.996,
+          "lap_duration_min": "01:33:996"
+        },
+        {
+          "meeting_name": "Saudi Arabian Grand Prix",
+          "meeting_key": 1142,
+          "meeting_date_start": "2023-03-17T13:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 7779,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 50,
+          "lap_duration": 91.906,
+          "lap_duration_seconds": 91.906,
+          "lap_duration_min": "01:31:906"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1143,
+          "meeting_date_start": "2023-03-31T02:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 7787,
+          "driver_name": "Sergio PEREZ",
+          "driver_number": 11,
+          "team_name": "Red Bull Racing",
+          "lap_number": 53,
+          "lap_duration": 80.235,
+          "lap_duration_seconds": 80.235,
+          "lap_duration_min": "01:20:235"
+        },
+        {
+          "meeting_name": "Azerbaijan Grand Prix",
+          "meeting_key": 1207,
+          "meeting_date_start": "2023-04-28T09:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9070,
+          "driver_name": "George RUSSELL",
+          "driver_number": 63,
+          "team_name": "Mercedes",
+          "lap_number": 51,
+          "lap_duration": 103.37,
+          "lap_duration_seconds": 103.37,
+          "lap_duration_min": "01:43:370"
+        },
+        {
+          "meeting_name": "Miami Grand Prix",
+          "meeting_key": 1208,
+          "meeting_date_start": "2023-05-05T18:00:00+00:00",
+          "session_name": "Race",
+          "session_key": 9078,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 56,
+          "lap_duration": 89.708,
+          "lap_duration_seconds": 89.708,
+          "lap_duration_min": "01:29:708"
+        },
+        {
+          "meeting_name": "Monaco Grand Prix",
+          "meeting_key": 1210,
+          "meeting_date_start": "2023-05-26T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9094,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Mercedes",
+          "lap_number": 33,
+          "lap_duration": 75.65,
+          "lap_duration_seconds": 75.65,
+          "lap_duration_min": "01:15:650"
+        },
+        {
+          "meeting_name": "Spanish Grand Prix",
+          "meeting_key": 1211,
+          "meeting_date_start": "2023-06-02T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9102,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 61,
+          "lap_duration": 76.33,
+          "lap_duration_seconds": 76.33,
+          "lap_duration_min": "01:16:330"
+        },
+        {
+          "meeting_name": "Canadian Grand Prix",
+          "meeting_key": 1212,
+          "meeting_date_start": "2023-06-16T17:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9110,
+          "driver_name": "Sergio PEREZ",
+          "driver_number": 11,
+          "team_name": "Red Bull Racing",
+          "lap_number": 70,
+          "lap_duration": 74.481,
+          "lap_duration_seconds": 74.481,
+          "lap_duration_min": "01:14:481"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 71,
+          "lap_duration": 67.012,
+          "lap_duration_seconds": 67.012,
+          "lap_duration_min": "01:07:012"
+        },
+        {
+          "meeting_name": "British Grand Prix",
+          "meeting_key": 1214,
+          "meeting_date_start": "2023-07-07T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9126,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 42,
+          "lap_duration": 90.275,
+          "lap_duration_seconds": 90.275,
+          "lap_duration_min": "01:30:275"
+        },
+        {
+          "meeting_name": "Hungarian Grand Prix",
+          "meeting_key": 1215,
+          "meeting_date_start": "2023-07-21T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9133,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 53,
+          "lap_duration": 80.504,
+          "lap_duration_seconds": 80.504,
+          "lap_duration_min": "01:20:504"
+        },
+        {
+          "meeting_name": "Belgian Grand Prix",
+          "meeting_key": 1216,
+          "meeting_date_start": "2023-07-28T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9141,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Mercedes",
+          "lap_number": 44,
+          "lap_duration": 107.305,
+          "lap_duration_seconds": 107.305,
+          "lap_duration_min": "01:47:305"
+        },
+        {
+          "meeting_name": "Dutch Grand Prix",
+          "meeting_key": 1217,
+          "meeting_date_start": "2023-08-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9149,
+          "driver_name": "Fernando ALONSO",
+          "driver_number": 14,
+          "team_name": "Aston Martin",
+          "lap_number": 56,
+          "lap_duration": 73.837,
+          "lap_duration_seconds": 73.837,
+          "lap_duration_min": "01:13:837"
+        },
+        {
+          "meeting_name": "Italian Grand Prix",
+          "meeting_key": 1218,
+          "meeting_date_start": "2023-09-01T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9157,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 43,
+          "lap_duration": 85.072,
+          "lap_duration_seconds": 85.072,
+          "lap_duration_min": "01:25:072"
+        },
+        {
+          "meeting_name": "Singapore Grand Prix",
+          "meeting_key": 1219,
+          "meeting_date_start": "2023-09-15T09:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9165,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Mercedes",
+          "lap_number": 47,
+          "lap_duration": 95.867,
+          "lap_duration_seconds": 95.867,
+          "lap_duration_min": "01:35:867"
+        },
+        {
+          "meeting_name": "Japanese Grand Prix",
+          "meeting_key": 1220,
+          "meeting_date_start": "2023-09-22T02:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9173,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 39,
+          "lap_duration": 94.183,
+          "lap_duration_seconds": 94.183,
+          "lap_duration_min": "01:34:183"
+        },
+        {
+          "meeting_name": "Qatar Grand Prix",
+          "meeting_key": 1221,
+          "meeting_date_start": "2023-10-06T13:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9221,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 56,
+          "lap_duration": 84.319,
+          "lap_duration_seconds": 84.319,
+          "lap_duration_min": "01:24:319"
+        },
+        {
+          "meeting_name": "United States Grand Prix",
+          "meeting_key": 1222,
+          "meeting_date_start": "2023-10-20T17:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9213,
+          "driver_name": "Yuki TSUNODA",
+          "driver_number": 22,
+          "team_name": "AlphaTauri",
+          "lap_number": 56,
+          "lap_duration": 98.139,
+          "lap_duration_seconds": 98.139,
+          "lap_duration_min": "01:38:139"
+        },
+        {
+          "meeting_name": "Mexico City Grand Prix",
+          "meeting_key": 1223,
+          "meeting_date_start": "2023-10-27T18:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9181,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Mercedes",
+          "lap_number": 71,
+          "lap_duration": 81.334,
+          "lap_duration_seconds": 81.334,
+          "lap_duration_min": "01:21:334"
+        },
+        {
+          "meeting_name": "São Paulo Grand Prix",
+          "meeting_key": 1224,
+          "meeting_date_start": "2023-11-03T14:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9205,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 61,
+          "lap_duration": 72.486,
+          "lap_duration_seconds": 72.486,
+          "lap_duration_min": "01:12:486"
+        },
+        {
+          "meeting_name": "Las Vegas Grand Prix",
+          "meeting_key": 1225,
+          "meeting_date_start": "2023-11-17T04:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9189,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 47,
+          "lap_duration": 95.49,
+          "lap_duration_seconds": 95.49,
+          "lap_duration_min": "01:35:490"
+        },
+        {
+          "meeting_name": "Abu Dhabi Grand Prix",
+          "meeting_key": 1226,
+          "meeting_date_start": "2023-11-24T09:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9197,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 45,
+          "lap_duration": 86.993,
+          "lap_duration_seconds": 86.993,
+          "lap_duration_min": "01:26:993"
+        }
+      ],
+      "fastest_lap_by_driver": [
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Alexander ALBON",
+          "driver_number": 23,
+          "team_name": "Williams",
+          "lap_number": 53,
+          "lap_duration": 69.56,
+          "lap_duration_seconds": 69.56,
+          "lap_duration_min": "01:09:560"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Carlos SAINZ",
+          "driver_number": 55,
+          "team_name": "Ferrari",
+          "lap_number": 50,
+          "lap_duration": 68.88,
+          "lap_duration_seconds": 68.88,
+          "lap_duration_min": "01:08:880"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Charles LECLERC",
+          "driver_number": 16,
+          "team_name": "Ferrari",
+          "lap_number": 51,
+          "lap_duration": 68.82,
+          "lap_duration_seconds": 68.82,
+          "lap_duration_min": "01:08:820"
+        },
+        {
+          "meeting_name": "São Paulo Grand Prix",
+          "meeting_key": 1224,
+          "meeting_date_start": "2023-11-03T14:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9205,
+          "driver_name": "Daniel RICCIARDO",
+          "driver_number": 3,
+          "team_name": "AlphaTauri",
+          "lap_number": 68,
+          "lap_duration": 73.866,
+          "lap_duration_seconds": 73.866,
+          "lap_duration_min": "01:13:866"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Esteban OCON",
+          "driver_number": 31,
+          "team_name": "Alpine",
+          "lap_number": 50,
+          "lap_duration": 69.797,
+          "lap_duration_seconds": 69.797,
+          "lap_duration_min": "01:09:797"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Fernando ALONSO",
+          "driver_number": 14,
+          "team_name": "Aston Martin",
+          "lap_number": 54,
+          "lap_duration": 69.108,
+          "lap_duration_seconds": 69.108,
+          "lap_duration_min": "01:09:108"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "George RUSSELL",
+          "driver_number": 63,
+          "team_name": "Mercedes",
+          "lap_number": 49,
+          "lap_duration": 69.283,
+          "lap_duration_seconds": 69.283,
+          "lap_duration_min": "01:09:283"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Kevin MAGNUSSEN",
+          "driver_number": 20,
+          "team_name": "Haas F1 Team",
+          "lap_number": 37,
+          "lap_duration": 70.176,
+          "lap_duration_seconds": 70.176,
+          "lap_duration_min": "01:10:176"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Lance STROLL",
+          "driver_number": 18,
+          "team_name": "Aston Martin",
+          "lap_number": 57,
+          "lap_duration": 68.463,
+          "lap_duration_seconds": 68.463,
+          "lap_duration_min": "01:08:463"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 48,
+          "lap_duration": 68.739,
+          "lap_duration_seconds": 68.739,
+          "lap_duration_min": "01:08:739"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Mercedes",
+          "lap_number": 48,
+          "lap_duration": 69.16,
+          "lap_duration_seconds": 69.16,
+          "lap_duration_min": "01:09:160"
+        },
+        {
+          "meeting_name": "Dutch Grand Prix",
+          "meeting_key": 1217,
+          "meeting_date_start": "2023-08-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9149,
+          "driver_name": "Liam LAWSON",
+          "driver_number": 40,
+          "team_name": "AlphaTauri",
+          "lap_number": 49,
+          "lap_duration": 74.82,
+          "lap_duration_seconds": 74.82,
+          "lap_duration_min": "01:14:820"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Logan SARGEANT",
+          "driver_number": 2,
+          "team_name": "Williams",
+          "lap_number": 45,
+          "lap_duration": 69.611,
+          "lap_duration_seconds": 69.611,
+          "lap_duration_min": "01:09:611"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 71,
+          "lap_duration": 67.012,
+          "lap_duration_seconds": 67.012,
+          "lap_duration_min": "01:07:012"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Nico HULKENBERG",
+          "driver_number": 27,
+          "team_name": "Haas F1 Team",
+          "lap_number": 7,
+          "lap_duration": 71.066,
+          "lap_duration_seconds": 71.066,
+          "lap_duration_min": "01:11:066"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Nyck DE VRIES",
+          "driver_number": 21,
+          "team_name": "AlphaTauri",
+          "lap_number": 46,
+          "lap_duration": 69.852,
+          "lap_duration_seconds": 69.852,
+          "lap_duration_min": "01:09:852"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 46,
+          "lap_duration": 69.862,
+          "lap_duration_seconds": 69.862,
+          "lap_duration_min": "01:09:862"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Pierre GASLY",
+          "driver_number": 10,
+          "team_name": "Alpine",
+          "lap_number": 48,
+          "lap_duration": 69.046,
+          "lap_duration_seconds": 69.046,
+          "lap_duration_min": "01:09:046"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Sergio PEREZ",
+          "driver_number": 11,
+          "team_name": "Red Bull Racing",
+          "lap_number": 52,
+          "lap_duration": 68.111,
+          "lap_duration_seconds": 68.111,
+          "lap_duration_min": "01:08:111"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Valtteri BOTTAS",
+          "driver_number": 77,
+          "team_name": "Alfa Romeo",
+          "lap_number": 49,
+          "lap_duration": 69.94,
+          "lap_duration_seconds": 69.94,
+          "lap_duration_min": "01:09:940"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Yuki TSUNODA",
+          "driver_number": 22,
+          "team_name": "AlphaTauri",
+          "lap_number": 45,
+          "lap_duration": 69.62,
+          "lap_duration_seconds": 69.62,
+          "lap_duration_min": "01:09:620"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "ZHOU Guanyu",
+          "driver_number": 24,
+          "team_name": "Alfa Romeo",
+          "lap_number": 46,
+          "lap_duration": 69.786,
+          "lap_duration_seconds": 69.786,
+          "lap_duration_min": "01:09:786"
+        }
+      ],
+      "records": {
+        "best_duration_sector_1": {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1213,
+          "meeting_date_start": "2023-06-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9118,
+          "driver_name": "Sergio PEREZ",
+          "driver_number": 11,
+          "team_name": "Red Bull Racing",
+          "lap_number": 56,
+          "lap_duration": 68.324,
+          "metric": "duration_sector_1",
+          "metric_value": 16.835
+        },
+        "best_duration_sector_2": {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1143,
+          "meeting_date_start": "2023-03-31T02:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 7787,
+          "driver_name": "Sergio PEREZ",
+          "driver_number": 11,
+          "team_name": "Red Bull Racing",
+          "lap_number": 44,
+          "lap_duration": 81.232,
+          "metric": "duration_sector_2",
+          "metric_value": 17.589
+        },
+        "best_duration_sector_3": {
+          "meeting_name": "São Paulo Grand Prix",
+          "meeting_key": 1224,
+          "meeting_date_start": "2023-11-03T14:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9205,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 59,
+          "lap_duration": 74.089,
+          "metric": "duration_sector_3",
+          "metric_value": 16.913
+        },
+        "max_st_speed": {
+          "meeting_name": "Mexico City Grand Prix",
+          "meeting_key": 1223,
+          "meeting_date_start": "2023-10-27T18:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9181,
+          "driver_name": "Valtteri BOTTAS",
+          "driver_number": 77,
+          "team_name": "Alfa Romeo",
+          "lap_number": 65,
+          "lap_duration": 84.214,
+          "metric": "st_speed",
+          "metric_value": 361.0
+        },
+        "max_i1_speed": {
+          "meeting_name": "Belgian Grand Prix",
+          "meeting_key": 1216,
+          "meeting_date_start": "2023-07-28T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9141,
+          "driver_name": "Pierre GASLY",
+          "driver_number": 10,
+          "team_name": "Alpine",
+          "lap_number": 5,
+          "lap_duration": 115.415,
+          "metric": "i1_speed",
+          "metric_value": 355.0
+        },
+        "max_i2_speed": {
+          "meeting_name": "Italian Grand Prix",
+          "meeting_key": 1218,
+          "meeting_date_start": "2023-09-01T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9157,
+          "driver_name": "Charles LECLERC",
+          "driver_number": 16,
+          "team_name": "Ferrari",
+          "lap_number": 43,
+          "lap_duration": 86.597,
+          "metric": "i2_speed",
+          "metric_value": 342.0
+        },
+        "max_avg_speed": {
+          "meeting_name": "Italian Grand Prix",
+          "meeting_key": 1218,
+          "meeting_date_start": "2023-09-01T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9157,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 30,
+          "lap_duration": 85.398,
+          "metric": "avg_speed",
+          "metric_value": 246.64375
+        },
+        "max_max_speed": {
+          "meeting_name": "Las Vegas Grand Prix",
+          "meeting_key": 1225,
+          "meeting_date_start": "2023-11-17T04:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9189,
+          "driver_name": "Carlos SAINZ",
+          "driver_number": 55,
+          "team_name": "Ferrari",
+          "lap_number": 9,
+          "lap_duration": 100.334,
+          "metric": "max_speed",
+          "metric_value": 366.0
+        },
+        "max_drs_pct": {
+          "meeting_name": "Bahrain Grand Prix",
+          "meeting_key": 1141,
+          "meeting_date_start": "2023-03-03T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 7953,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 1,
+          "lap_duration": 99.359,
+          "metric": "drs_pct",
+          "metric_value": 1.0
+        },
+        "max_full_throttle_pct": {
+          "meeting_name": "Mexico City Grand Prix",
+          "meeting_key": 1223,
+          "meeting_date_start": "2023-10-27T18:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9181,
+          "driver_name": "Sergio PEREZ",
+          "driver_number": 11,
+          "team_name": "Red Bull Racing",
+          "lap_number": 1,
+          "lap_duration": 103.812,
+          "metric": "full_throttle_pct",
+          "metric_value": 1.0
+        },
+        "max_brake_events": {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1143,
+          "meeting_date_start": "2023-03-31T02:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 7787,
+          "driver_name": "Esteban OCON",
+          "driver_number": 31,
+          "team_name": "Alpine",
+          "lap_number": 56,
+          "lap_duration": 203.112,
+          "metric": "brake_events",
+          "metric_value": 78.0
+        },
+        "max_hard_brake_events": {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1143,
+          "meeting_date_start": "2023-03-31T02:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 7787,
+          "driver_name": "Esteban OCON",
+          "driver_number": 31,
+          "team_name": "Alpine",
+          "lap_number": 56,
+          "lap_duration": 203.112,
+          "metric": "hard_brake_events",
+          "metric_value": 78.0
+        }
+      },
+      "laps_by_meeting_top": [
+        {
+          "meeting_key": 1210,
+          "meeting_name": "Monaco Grand Prix",
+          "laps_total": 1511
+        },
+        {
+          "meeting_key": 1213,
+          "meeting_name": "Austrian Grand Prix",
+          "laps_total": 1350
+        },
+        {
+          "meeting_key": 1217,
+          "meeting_name": "Dutch Grand Prix",
+          "laps_total": 1339
+        },
+        {
+          "meeting_key": 1212,
+          "meeting_name": "Canadian Grand Prix",
+          "laps_total": 1313
+        },
+        {
+          "meeting_key": 1211,
+          "meeting_name": "Spanish Grand Prix",
+          "laps_total": 1309
+        },
+        {
+          "meeting_key": 1223,
+          "meeting_name": "Mexico City Grand Prix",
+          "laps_total": 1279
+        },
+        {
+          "meeting_key": 1215,
+          "meeting_name": "Hungarian Grand Prix",
+          "laps_total": 1250
+        },
+        {
+          "meeting_key": 1226,
+          "meeting_name": "Abu Dhabi Grand Prix",
+          "laps_total": 1156
+        },
+        {
+          "meeting_key": 1208,
+          "meeting_name": "Miami Grand Prix",
+          "laps_total": 1136
+        },
+        {
+          "meeting_key": 1224,
+          "meeting_name": "São Paulo Grand Prix",
+          "laps_total": 1106
+        }
+      ],
+      "laps_by_driver_top": [
+        {
+          "value": "Max VERSTAPPEN",
+          "count": 1322,
+          "share": 0.10492063492063491
+        },
+        {
+          "value": "Fernando ALONSO",
+          "count": 1290,
+          "share": 0.10238095238095238
+        },
+        {
+          "value": "Lando NORRIS",
+          "count": 1270,
+          "share": 0.1007936507936508
+        },
+        {
+          "value": "Lewis HAMILTON",
+          "count": 1267,
+          "share": 0.10055555555555555
+        },
+        {
+          "value": "George RUSSELL",
+          "count": 1249,
+          "share": 0.09912698412698413
+        },
+        {
+          "value": "Pierre GASLY",
+          "count": 1246,
+          "share": 0.09888888888888889
+        },
+        {
+          "value": "Nico HULKENBERG",
+          "count": 1246,
+          "share": 0.09888888888888889
+        },
+        {
+          "value": "Carlos SAINZ",
+          "count": 1245,
+          "share": 0.0988095238095238
+        },
+        {
+          "value": "ZHOU Guanyu",
+          "count": 1240,
+          "share": 0.09841269841269841
+        },
+        {
+          "value": "Valtteri BOTTAS",
+          "count": 1225,
+          "share": 0.09722222222222222
+        }
+      ],
+      "laps_by_team_top": [
+        {
+          "value": "Red Bull Racing",
+          "count": 2534,
+          "share": 0.10413841285497062
+        },
+        {
+          "value": "Mercedes",
+          "count": 2516,
+          "share": 0.10339867669420129
+        },
+        {
+          "value": "AlphaTauri",
+          "count": 2471,
+          "share": 0.10154933629227797
+        },
+        {
+          "value": "Alfa Romeo",
+          "count": 2465,
+          "share": 0.10130275757202153
+        },
+        {
+          "value": "McLaren",
+          "count": 2453,
+          "share": 0.10080960013150865
+        },
+        {
+          "value": "Aston Martin",
+          "count": 2450,
+          "share": 0.10068631077138043
+        },
+        {
+          "value": "Haas F1 Team",
+          "count": 2410,
+          "share": 0.09904245263633749
+        },
+        {
+          "value": "Ferrari",
+          "count": 2390,
+          "share": 0.09822052356881601
+        },
+        {
+          "value": "Alpine",
+          "count": 2356,
+          "share": 0.09682324415402951
+        },
+        {
+          "value": "Williams",
+          "count": 2288,
+          "share": 0.0940286853244565
+        }
+      ],
+      "compound_usage": [
+        {
+          "value": "HARD",
+          "count": 11829,
+          "share": 0.48612994698557516
+        },
+        {
+          "value": "MEDIUM",
+          "count": 8278,
+          "share": 0.34019644104713764
+        },
+        {
+          "value": "SOFT",
+          "count": 3459,
+          "share": 0.14215263222783875
+        },
+        {
+          "value": "INTERMEDIATE",
+          "count": 720,
+          "share": 0.029589446430773023
+        },
+        {
+          "value": "WET",
+          "count": 47,
+          "share": 0.0019315333086754613
+        }
+      ],
+      "pit_out_lap_rate": 0.03743886902560309,
+      "telemetry_coverage": {
+        "rate": 1.0,
+        "count": 24333
+      },
+      "trajectory_coverage": {
+        "rate": 1.0,
+        "count": 24333
+      },
+      "top_values": {
+        "meeting_name": [
+          {
+            "value": "Monaco Grand Prix",
+            "count": 1511
+          },
+          {
+            "value": "Austrian Grand Prix",
+            "count": 1350
+          },
+          {
+            "value": "Dutch Grand Prix",
+            "count": 1339
+          },
+          {
+            "value": "Canadian Grand Prix",
+            "count": 1313
+          },
+          {
+            "value": "Spanish Grand Prix",
+            "count": 1309
+          }
+        ],
+        "meeting_key": [
+          {
+            "value": "1210",
+            "count": 1511
+          },
+          {
+            "value": "1213",
+            "count": 1350
+          },
+          {
+            "value": "1217",
+            "count": 1339
+          },
+          {
+            "value": "1212",
+            "count": 1313
+          },
+          {
+            "value": "1211",
+            "count": 1309
+          }
+        ],
+        "session_name": [
+          {
+            "value": "Race",
+            "count": 24333
+          }
+        ],
+        "driver_name": [
+          {
+            "value": "Max VERSTAPPEN",
+            "count": 1322
+          },
+          {
+            "value": "Fernando ALONSO",
+            "count": 1290
+          },
+          {
+            "value": "Lando NORRIS",
+            "count": 1270
+          },
+          {
+            "value": "Lewis HAMILTON",
+            "count": 1267
+          },
+          {
+            "value": "George RUSSELL",
+            "count": 1249
+          }
+        ],
+        "driver_number": [
+          {
+            "value": "1",
+            "count": 1322
+          },
+          {
+            "value": "14",
+            "count": 1290
+          },
+          {
+            "value": "4",
+            "count": 1270
+          },
+          {
+            "value": "44",
+            "count": 1267
+          },
+          {
+            "value": "63",
+            "count": 1249
+          }
+        ],
+        "team_name": [
+          {
+            "value": "Red Bull Racing",
+            "count": 2534
+          },
+          {
+            "value": "Mercedes",
+            "count": 2516
+          },
+          {
+            "value": "AlphaTauri",
+            "count": 2471
+          },
+          {
+            "value": "Alfa Romeo",
+            "count": 2465
+          },
+          {
+            "value": "McLaren",
+            "count": 2453
+          }
+        ],
+        "circuit_speed_class": [
+          {
+            "value": "medium",
+            "count": 23990
+          },
+          {
+            "value": "high",
+            "count": 343
+          }
+        ],
+        "compound": [
+          {
+            "value": "HARD",
+            "count": 11829
+          },
+          {
+            "value": "MEDIUM",
+            "count": 8278
+          },
+          {
+            "value": "SOFT",
+            "count": 3459
+          },
+          {
+            "value": "INTERMEDIATE",
+            "count": 720
+          },
+          {
+            "value": "WET",
+            "count": 47
+          }
+        ]
+      },
+      "top_values_pt": {
+        "circuit_speed_class": [
+          {
+            "value": "medium",
+            "count": 23990,
+            "value_pt": "media velocidade"
+          },
+          {
+            "value": "high",
+            "count": 343,
+            "value_pt": "alta velocidade"
+          }
+        ],
+        "compound": [
+          {
+            "value": "HARD",
+            "count": 11829,
+            "value_pt": "duro"
+          },
+          {
+            "value": "MEDIUM",
+            "count": 8278,
+            "value_pt": "medio"
+          },
+          {
+            "value": "SOFT",
+            "count": 3459,
+            "value_pt": "macio"
+          },
+          {
+            "value": "INTERMEDIATE",
+            "count": 720,
+            "value_pt": "intermediario"
+          },
+          {
+            "value": "WET",
+            "count": 47,
+            "value_pt": "chuva"
+          }
+        ]
+      },
+      "circuit_speed_class_most_common": "medium",
+      "circuit_speed_class_most_common_pt": "media velocidade",
+      "compound_most_common": "HARD",
+      "compound_most_common_pt": "duro"
+    },
+    "2024": {
+      "season": 2024,
+      "rows": 26518,
+      "columns_available": [
+        "air_temperature",
+        "avg_rpm",
+        "avg_speed",
+        "avg_throttle",
+        "brake_events",
+        "brake_pct",
+        "circuit_speed_class",
+        "compound",
+        "distance_traveled",
+        "driver_name",
+        "driver_number",
+        "drs_pct",
+        "duration_sector_1",
+        "duration_sector_2",
+        "duration_sector_3",
+        "full_throttle_pct",
+        "gear_changes",
+        "hard_brake_events",
+        "has_telemetry",
+        "has_trajectory",
+        "i1_speed",
+        "i2_speed",
+        "is_pit_out_lap",
+        "lap_duration",
+        "lap_number",
+        "max_rpm",
+        "max_speed",
+        "max_throttle",
+        "meeting_date_start",
+        "meeting_day",
+        "meeting_key",
+        "meeting_month",
+        "meeting_name",
+        "min_rpm",
+        "min_speed",
+        "min_throttle",
+        "rpm_std",
+        "season",
+        "session_key",
+        "session_name",
+        "speed_std",
+        "st_speed",
+        "stint_lap_end",
+        "stint_lap_start",
+        "stint_number",
+        "team_name",
+        "telemetry_points",
+        "throttle_std",
+        "track_temperature",
+        "trajectory_length",
+        "trajectory_points",
+        "trajectory_variation",
+        "tyre_age_at_lap",
+        "tyre_age_at_start",
+        "weather_date"
+      ],
+      "drivers_total": 25,
+      "teams_total": 10,
+      "meetings_total": 24,
+      "sessions": [
+        "Race"
+      ],
+      "meeting_date_start": {
+        "min": "2024-02-29T11:30:00+00:00",
+        "max": "2024-12-06T09:30:00+00:00"
+      },
+      "lap_duration_quantiles": {
+        "p01": 70.459,
+        "p05": 74.50375,
+        "p10": 77.23740000000001,
+        "p25": 82.00325000000001,
+        "p50": 89.26750000000001,
+        "p75": 98.826,
+        "p90": 108.4363,
+        "p95": 114.24974999999999,
+        "p99": 146.50420999999983
+      },
+      "fastest_lap": {
+        "meeting_name": "Austrian Grand Prix",
+        "meeting_key": 1239,
+        "meeting_date_start": "2024-06-28T10:30:00+00:00",
+        "session_name": "Race",
+        "session_key": 9550,
+        "driver_name": "Fernando ALONSO",
+        "driver_number": 14,
+        "team_name": "Aston Martin",
+        "lap_number": 70,
+        "lap_duration": 67.694,
+        "lap_duration_seconds": 67.694,
+        "lap_duration_min": "01:07:694"
+      },
+      "slowest_lap": {
+        "meeting_name": "Japanese Grand Prix",
+        "meeting_key": 1232,
+        "meeting_date_start": "2024-04-05T02:30:00+00:00",
+        "session_name": "Race",
+        "session_key": 9496,
+        "driver_name": "Fernando ALONSO",
+        "driver_number": 14,
+        "team_name": "Aston Martin",
+        "lap_number": 2,
+        "lap_duration": 1714.647,
+        "lap_duration_seconds": 1714.647,
+        "lap_duration_min": "28:34:647"
+      },
+      "fastest_laps_top": [
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Fernando ALONSO",
+          "driver_number": 14,
+          "team_name": "Aston Martin",
+          "lap_number": 70,
+          "lap_duration": 67.694,
+          "lap_duration_seconds": 67.694,
+          "lap_duration_min": "01:07:694"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 68,
+          "lap_duration": 67.719,
+          "lap_duration_seconds": 67.719,
+          "lap_duration_min": "01:07:719"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 53,
+          "lap_duration": 68.016,
+          "lap_duration_seconds": 68.016,
+          "lap_duration_min": "01:08:016"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 70,
+          "lap_duration": 68.072,
+          "lap_duration_seconds": 68.072,
+          "lap_duration_min": "01:08:072"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 69,
+          "lap_duration": 68.321,
+          "lap_duration_seconds": 68.321,
+          "lap_duration_min": "01:08:321"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 54,
+          "lap_duration": 68.429,
+          "lap_duration_seconds": 68.429,
+          "lap_duration_min": "01:08:429"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 71,
+          "lap_duration": 68.518,
+          "lap_duration_seconds": 68.518,
+          "lap_duration_min": "01:08:518"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 56,
+          "lap_duration": 68.623,
+          "lap_duration_seconds": 68.623,
+          "lap_duration_min": "01:08:623"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 56,
+          "lap_duration": 68.697,
+          "lap_duration_seconds": 68.697,
+          "lap_duration_min": "01:08:697"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 57,
+          "lap_duration": 68.751,
+          "lap_duration_seconds": 68.751,
+          "lap_duration_min": "01:08:751"
+        }
+      ],
+      "slowest_laps_top": [
+        {
+          "meeting_name": "Japanese Grand Prix",
+          "meeting_key": 1232,
+          "meeting_date_start": "2024-04-05T02:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9496,
+          "driver_name": "Fernando ALONSO",
+          "driver_number": 14,
+          "team_name": "Aston Martin",
+          "lap_number": 2,
+          "lap_duration": 1714.647,
+          "lap_duration_seconds": 1714.647,
+          "lap_duration_min": "28:34:647"
+        },
+        {
+          "meeting_name": "Japanese Grand Prix",
+          "meeting_key": 1232,
+          "meeting_date_start": "2024-04-05T02:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9496,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 2,
+          "lap_duration": 1714.222,
+          "lap_duration_seconds": 1714.222,
+          "lap_duration_min": "28:34:222"
+        },
+        {
+          "meeting_name": "Japanese Grand Prix",
+          "meeting_key": 1232,
+          "meeting_date_start": "2024-04-05T02:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9496,
+          "driver_name": "Carlos SAINZ",
+          "driver_number": 55,
+          "team_name": "Ferrari",
+          "lap_number": 2,
+          "lap_duration": 1712.219,
+          "lap_duration_seconds": 1712.219,
+          "lap_duration_min": "28:32:219"
+        },
+        {
+          "meeting_name": "Japanese Grand Prix",
+          "meeting_key": 1232,
+          "meeting_date_start": "2024-04-05T02:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9496,
+          "driver_name": "Pierre GASLY",
+          "driver_number": 10,
+          "team_name": "Alpine",
+          "lap_number": 2,
+          "lap_duration": 1711.726,
+          "lap_duration_seconds": 1711.726,
+          "lap_duration_min": "28:31:726"
+        },
+        {
+          "meeting_name": "Japanese Grand Prix",
+          "meeting_key": 1232,
+          "meeting_date_start": "2024-04-05T02:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9496,
+          "driver_name": "Esteban OCON",
+          "driver_number": 31,
+          "team_name": "Alpine",
+          "lap_number": 2,
+          "lap_duration": 1711.609,
+          "lap_duration_seconds": 1711.609,
+          "lap_duration_min": "28:31:609"
+        },
+        {
+          "meeting_name": "Japanese Grand Prix",
+          "meeting_key": 1232,
+          "meeting_date_start": "2024-04-05T02:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9496,
+          "driver_name": "Charles LECLERC",
+          "driver_number": 16,
+          "team_name": "Ferrari",
+          "lap_number": 2,
+          "lap_duration": 1711.605,
+          "lap_duration_seconds": 1711.605,
+          "lap_duration_min": "28:31:605"
+        },
+        {
+          "meeting_name": "Japanese Grand Prix",
+          "meeting_key": 1232,
+          "meeting_date_start": "2024-04-05T02:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9496,
+          "driver_name": "Sergio PEREZ",
+          "driver_number": 11,
+          "team_name": "Red Bull Racing",
+          "lap_number": 2,
+          "lap_duration": 1711.382,
+          "lap_duration_seconds": 1711.382,
+          "lap_duration_min": "28:31:382"
+        },
+        {
+          "meeting_name": "Japanese Grand Prix",
+          "meeting_key": 1232,
+          "meeting_date_start": "2024-04-05T02:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9496,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 2,
+          "lap_duration": 1711.131,
+          "lap_duration_seconds": 1711.131,
+          "lap_duration_min": "28:31:131"
+        },
+        {
+          "meeting_name": "Japanese Grand Prix",
+          "meeting_key": 1232,
+          "meeting_date_start": "2024-04-05T02:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9496,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 2,
+          "lap_duration": 1710.61,
+          "lap_duration_seconds": 1710.61,
+          "lap_duration_min": "28:30:610"
+        },
+        {
+          "meeting_name": "Japanese Grand Prix",
+          "meeting_key": 1232,
+          "meeting_date_start": "2024-04-05T02:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9496,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Mercedes",
+          "lap_number": 2,
+          "lap_duration": 1709.973,
+          "lap_duration_seconds": 1709.973,
+          "lap_duration_min": "28:29:973"
+        }
+      ],
+      "fastest_lap_by_meeting": [
+        {
+          "meeting_name": "Bahrain Grand Prix",
+          "meeting_key": 1229,
+          "meeting_date_start": "2024-02-29T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9472,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 39,
+          "lap_duration": 92.608,
+          "lap_duration_seconds": 92.608,
+          "lap_duration_min": "01:32:608"
+        },
+        {
+          "meeting_name": "Saudi Arabian Grand Prix",
+          "meeting_key": 1230,
+          "meeting_date_start": "2024-03-07T13:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9480,
+          "driver_name": "Charles LECLERC",
+          "driver_number": 16,
+          "team_name": "Ferrari",
+          "lap_number": 50,
+          "lap_duration": 91.632,
+          "lap_duration_seconds": 91.632,
+          "lap_duration_min": "01:31:632"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1231,
+          "meeting_date_start": "2024-03-22T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9488,
+          "driver_name": "Charles LECLERC",
+          "driver_number": 16,
+          "team_name": "Ferrari",
+          "lap_number": 56,
+          "lap_duration": 79.813,
+          "lap_duration_seconds": 79.813,
+          "lap_duration_min": "01:19:813"
+        },
+        {
+          "meeting_name": "Japanese Grand Prix",
+          "meeting_key": 1232,
+          "meeting_date_start": "2024-04-05T02:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9496,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 50,
+          "lap_duration": 93.706,
+          "lap_duration_seconds": 93.706,
+          "lap_duration_min": "01:33:706"
+        },
+        {
+          "meeting_name": "Chinese Grand Prix",
+          "meeting_key": 1233,
+          "meeting_date_start": "2024-04-19T03:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9673,
+          "driver_name": "Fernando ALONSO",
+          "driver_number": 14,
+          "team_name": "Aston Martin",
+          "lap_number": 45,
+          "lap_duration": 97.81,
+          "lap_duration_seconds": 97.81,
+          "lap_duration_min": "01:37:810"
+        },
+        {
+          "meeting_name": "Miami Grand Prix",
+          "meeting_key": 1234,
+          "meeting_date_start": "2024-05-03T16:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9507,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 43,
+          "lap_duration": 90.634,
+          "lap_duration_seconds": 90.634,
+          "lap_duration_min": "01:30:634"
+        },
+        {
+          "meeting_name": "Emilia Romagna Grand Prix",
+          "meeting_key": 1235,
+          "meeting_date_start": "2024-05-17T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9515,
+          "driver_name": "George RUSSELL",
+          "driver_number": 63,
+          "team_name": "Mercedes",
+          "lap_number": 54,
+          "lap_duration": 78.589,
+          "lap_duration_seconds": 78.589,
+          "lap_duration_min": "01:18:589"
+        },
+        {
+          "meeting_name": "Monaco Grand Prix",
+          "meeting_key": 1236,
+          "meeting_date_start": "2024-05-24T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9523,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Mercedes",
+          "lap_number": 63,
+          "lap_duration": 74.165,
+          "lap_duration_seconds": 74.165,
+          "lap_duration_min": "01:14:165"
+        },
+        {
+          "meeting_name": "Canadian Grand Prix",
+          "meeting_key": 1237,
+          "meeting_date_start": "2024-06-07T17:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9531,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Mercedes",
+          "lap_number": 70,
+          "lap_duration": 74.856,
+          "lap_duration_seconds": 74.856,
+          "lap_duration_min": "01:14:856"
+        },
+        {
+          "meeting_name": "Spanish Grand Prix",
+          "meeting_key": 1238,
+          "meeting_date_start": "2024-06-21T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9539,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 51,
+          "lap_duration": 77.115,
+          "lap_duration_seconds": 77.115,
+          "lap_duration_min": "01:17:115"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Fernando ALONSO",
+          "driver_number": 14,
+          "team_name": "Aston Martin",
+          "lap_number": 70,
+          "lap_duration": 67.694,
+          "lap_duration_seconds": 67.694,
+          "lap_duration_min": "01:07:694"
+        },
+        {
+          "meeting_name": "British Grand Prix",
+          "meeting_key": 1240,
+          "meeting_date_start": "2024-07-05T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9558,
+          "driver_name": "Carlos SAINZ",
+          "driver_number": 55,
+          "team_name": "Ferrari",
+          "lap_number": 52,
+          "lap_duration": 88.293,
+          "lap_duration_seconds": 88.293,
+          "lap_duration_min": "01:28:293"
+        },
+        {
+          "meeting_name": "Hungarian Grand Prix",
+          "meeting_key": 1241,
+          "meeting_date_start": "2024-07-19T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9566,
+          "driver_name": "George RUSSELL",
+          "driver_number": 63,
+          "team_name": "Mercedes",
+          "lap_number": 55,
+          "lap_duration": 80.305,
+          "lap_duration_seconds": 80.305,
+          "lap_duration_min": "01:20:305"
+        },
+        {
+          "meeting_name": "Belgian Grand Prix",
+          "meeting_key": 1242,
+          "meeting_date_start": "2024-07-26T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9574,
+          "driver_name": "Sergio PEREZ",
+          "driver_number": 11,
+          "team_name": "Red Bull Racing",
+          "lap_number": 44,
+          "lap_duration": 104.701,
+          "lap_duration_seconds": 104.701,
+          "lap_duration_min": "01:44:701"
+        },
+        {
+          "meeting_name": "Dutch Grand Prix",
+          "meeting_key": 1243,
+          "meeting_date_start": "2024-08-23T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9582,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 72,
+          "lap_duration": 73.817,
+          "lap_duration_seconds": 73.817,
+          "lap_duration_min": "01:13:817"
+        },
+        {
+          "meeting_name": "Italian Grand Prix",
+          "meeting_key": 1244,
+          "meeting_date_start": "2024-08-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9590,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 53,
+          "lap_duration": 81.432,
+          "lap_duration_seconds": 81.432,
+          "lap_duration_min": "01:21:432"
+        },
+        {
+          "meeting_name": "Azerbaijan Grand Prix",
+          "meeting_key": 1245,
+          "meeting_date_start": "2024-09-13T09:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9598,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 42,
+          "lap_duration": 105.255,
+          "lap_duration_seconds": 105.255,
+          "lap_duration_min": "01:45:255"
+        },
+        {
+          "meeting_name": "Singapore Grand Prix",
+          "meeting_key": 1246,
+          "meeting_date_start": "2024-09-20T09:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9606,
+          "driver_name": "Daniel RICCIARDO",
+          "driver_number": 3,
+          "team_name": "RB",
+          "lap_number": 60,
+          "lap_duration": 94.486,
+          "lap_duration_seconds": 94.486,
+          "lap_duration_min": "01:34:486"
+        },
+        {
+          "meeting_name": "United States Grand Prix",
+          "meeting_key": 1247,
+          "meeting_date_start": "2024-10-18T17:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9617,
+          "driver_name": "Esteban OCON",
+          "driver_number": 31,
+          "team_name": "Alpine",
+          "lap_number": 53,
+          "lap_duration": 97.33,
+          "lap_duration_seconds": 97.33,
+          "lap_duration_min": "01:37:330"
+        },
+        {
+          "meeting_name": "Mexico City Grand Prix",
+          "meeting_key": 1248,
+          "meeting_date_start": "2024-10-25T18:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9625,
+          "driver_name": "Charles LECLERC",
+          "driver_number": 16,
+          "team_name": "Ferrari",
+          "lap_number": 71,
+          "lap_duration": 78.336,
+          "lap_duration_seconds": 78.336,
+          "lap_duration_min": "01:18:336"
+        },
+        {
+          "meeting_name": "São Paulo Grand Prix",
+          "meeting_key": 1249,
+          "meeting_date_start": null,
+          "session_name": "Race",
+          "session_key": 9636,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 67,
+          "lap_duration": 80.472,
+          "lap_duration_seconds": 80.472,
+          "lap_duration_min": "01:20:472"
+        },
+        {
+          "meeting_name": "Las Vegas Grand Prix",
+          "meeting_key": 1250,
+          "meeting_date_start": null,
+          "session_name": "Race",
+          "session_key": 9644,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 50,
+          "lap_duration": 94.876,
+          "lap_duration_seconds": 94.876,
+          "lap_duration_min": "01:34:876"
+        },
+        {
+          "meeting_name": "Qatar Grand Prix",
+          "meeting_key": 1251,
+          "meeting_date_start": "2024-11-29T13:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9655,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 56,
+          "lap_duration": 82.384,
+          "lap_duration_seconds": 82.384,
+          "lap_duration_min": "01:22:384"
+        },
+        {
+          "meeting_name": "Abu Dhabi Grand Prix",
+          "meeting_key": 1252,
+          "meeting_date_start": "2024-12-06T09:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9662,
+          "driver_name": "Kevin MAGNUSSEN",
+          "driver_number": 20,
+          "team_name": "Haas F1 Team",
+          "lap_number": 57,
+          "lap_duration": 85.637,
+          "lap_duration_seconds": 85.637,
+          "lap_duration_min": "01:25:637"
+        }
+      ],
+      "fastest_lap_by_driver": [
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Alexander ALBON",
+          "driver_number": 23,
+          "team_name": "Williams",
+          "lap_number": 41,
+          "lap_duration": 70.364,
+          "lap_duration_seconds": 70.364,
+          "lap_duration_min": "01:10:364"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Carlos SAINZ",
+          "driver_number": 55,
+          "team_name": "Ferrari",
+          "lap_number": 56,
+          "lap_duration": 69.282,
+          "lap_duration_seconds": 69.282,
+          "lap_duration_min": "01:09:282"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Charles LECLERC",
+          "driver_number": 16,
+          "team_name": "Ferrari",
+          "lap_number": 55,
+          "lap_duration": 69.584,
+          "lap_duration_seconds": 69.584,
+          "lap_duration_min": "01:09:584"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Daniel RICCIARDO",
+          "driver_number": 3,
+          "team_name": "RB",
+          "lap_number": 49,
+          "lap_duration": 70.426,
+          "lap_duration_seconds": 70.426,
+          "lap_duration_min": "01:10:426"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Esteban OCON",
+          "driver_number": 31,
+          "team_name": "Alpine",
+          "lap_number": 45,
+          "lap_duration": 69.649,
+          "lap_duration_seconds": 69.649,
+          "lap_duration_min": "01:09:649"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Fernando ALONSO",
+          "driver_number": 14,
+          "team_name": "Aston Martin",
+          "lap_number": 70,
+          "lap_duration": 67.694,
+          "lap_duration_seconds": 67.694,
+          "lap_duration_min": "01:07:694"
+        },
+        {
+          "meeting_name": "Mexico City Grand Prix",
+          "meeting_key": 1248,
+          "meeting_date_start": null,
+          "session_name": "Race",
+          "session_key": 9625,
+          "driver_name": "Franco COLAPINTO",
+          "driver_number": 43,
+          "team_name": "Williams",
+          "lap_number": 50,
+          "lap_duration": 80.09,
+          "lap_duration_seconds": 80.09,
+          "lap_duration_min": "01:20:090"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "George RUSSELL",
+          "driver_number": 63,
+          "team_name": "Mercedes",
+          "lap_number": 48,
+          "lap_duration": 69.164,
+          "lap_duration_seconds": 69.164,
+          "lap_duration_min": "01:09:164"
+        },
+        {
+          "meeting_name": "Abu Dhabi Grand Prix",
+          "meeting_key": 1252,
+          "meeting_date_start": "2024-12-06T09:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9662,
+          "driver_name": "Jack DOOHAN",
+          "driver_number": 61,
+          "team_name": "Alpine",
+          "lap_number": 56,
+          "lap_duration": 89.121,
+          "lap_duration_seconds": 89.121,
+          "lap_duration_min": "01:29:121"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Kevin MAGNUSSEN",
+          "driver_number": 20,
+          "team_name": "Haas F1 Team",
+          "lap_number": 45,
+          "lap_duration": 70.125,
+          "lap_duration_seconds": 70.125,
+          "lap_duration_min": "01:10:125"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Lance STROLL",
+          "driver_number": 18,
+          "team_name": "Aston Martin",
+          "lap_number": 54,
+          "lap_duration": 70.143,
+          "lap_duration_seconds": 70.143,
+          "lap_duration_min": "01:10:143"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 53,
+          "lap_duration": 68.016,
+          "lap_duration_seconds": 68.016,
+          "lap_duration_min": "01:08:016"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Mercedes",
+          "lap_number": 61,
+          "lap_duration": 69.562,
+          "lap_duration_seconds": 69.562,
+          "lap_duration_min": "01:09:562"
+        },
+        {
+          "meeting_name": "Mexico City Grand Prix",
+          "meeting_key": 1248,
+          "meeting_date_start": null,
+          "session_name": "Race",
+          "session_key": 9625,
+          "driver_name": "Liam LAWSON",
+          "driver_number": 30,
+          "team_name": "RB",
+          "lap_number": 67,
+          "lap_duration": 79.502,
+          "lap_duration_seconds": 79.502,
+          "lap_duration_min": "01:19:502"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Logan SARGEANT",
+          "driver_number": 2,
+          "team_name": "Williams",
+          "lap_number": 60,
+          "lap_duration": 70.406,
+          "lap_duration_seconds": 70.406,
+          "lap_duration_min": "01:10:406"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 68,
+          "lap_duration": 67.719,
+          "lap_duration_seconds": 67.719,
+          "lap_duration_min": "01:07:719"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Nico HULKENBERG",
+          "driver_number": 27,
+          "team_name": "Haas F1 Team",
+          "lap_number": 51,
+          "lap_duration": 70.215,
+          "lap_duration_seconds": 70.215,
+          "lap_duration_min": "01:10:215"
+        },
+        {
+          "meeting_name": "Saudi Arabian Grand Prix",
+          "meeting_key": 1230,
+          "meeting_date_start": "2024-03-07T13:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9480,
+          "driver_name": "Oliver BEARMAN",
+          "driver_number": 38,
+          "team_name": "Ferrari",
+          "lap_number": 50,
+          "lap_duration": 92.186,
+          "lap_duration_seconds": 92.186,
+          "lap_duration_min": "01:32:186"
+        },
+        {
+          "meeting_name": "São Paulo Grand Prix",
+          "meeting_key": 1249,
+          "meeting_date_start": null,
+          "session_name": "Race",
+          "session_key": 9636,
+          "driver_name": "Oliver BEARMAN",
+          "driver_number": 50,
+          "team_name": "Haas F1 Team",
+          "lap_number": 64,
+          "lap_duration": 82.494,
+          "lap_duration_seconds": 82.494,
+          "lap_duration_min": "01:22:494"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 56,
+          "lap_duration": 68.697,
+          "lap_duration_seconds": 68.697,
+          "lap_duration_min": "01:08:697"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Pierre GASLY",
+          "driver_number": 10,
+          "team_name": "Alpine",
+          "lap_number": 45,
+          "lap_duration": 69.609,
+          "lap_duration_seconds": 69.609,
+          "lap_duration_min": "01:09:609"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Sergio PEREZ",
+          "driver_number": 11,
+          "team_name": "Red Bull Racing",
+          "lap_number": 56,
+          "lap_duration": 69.694,
+          "lap_duration_seconds": 69.694,
+          "lap_duration_min": "01:09:694"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Valtteri BOTTAS",
+          "driver_number": 77,
+          "team_name": "Kick Sauber",
+          "lap_number": 48,
+          "lap_duration": 70.449,
+          "lap_duration_seconds": 70.449,
+          "lap_duration_min": "01:10:449"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Yuki TSUNODA",
+          "driver_number": 22,
+          "team_name": "RB",
+          "lap_number": 54,
+          "lap_duration": 70.318,
+          "lap_duration_seconds": 70.318,
+          "lap_duration_min": "01:10:318"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "ZHOU Guanyu",
+          "driver_number": 24,
+          "team_name": "Kick Sauber",
+          "lap_number": 54,
+          "lap_duration": 70.47,
+          "lap_duration_seconds": 70.47,
+          "lap_duration_min": "01:10:470"
+        }
+      ],
+      "records": {
+        "best_duration_sector_1": {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1239,
+          "meeting_date_start": "2024-06-28T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9550,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 53,
+          "lap_duration": 68.016,
+          "metric": "duration_sector_1",
+          "metric_value": 16.897
+        },
+        "best_duration_sector_2": {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1231,
+          "meeting_date_start": "2024-03-22T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9488,
+          "driver_name": "Kevin MAGNUSSEN",
+          "driver_number": 20,
+          "team_name": "Haas F1 Team",
+          "lap_number": 44,
+          "lap_duration": 81.082,
+          "metric": "duration_sector_2",
+          "metric_value": 17.488
+        },
+        "best_duration_sector_3": {
+          "meeting_name": "São Paulo Grand Prix",
+          "meeting_key": 1249,
+          "meeting_date_start": null,
+          "session_name": "Race",
+          "session_key": 9636,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 67,
+          "lap_duration": 80.472,
+          "metric": "duration_sector_3",
+          "metric_value": 17.69
+        },
+        "max_st_speed": {
+          "meeting_name": "Mexico City Grand Prix",
+          "meeting_key": 1248,
+          "meeting_date_start": null,
+          "session_name": "Race",
+          "session_key": 9625,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 10,
+          "lap_duration": 82.793,
+          "metric": "st_speed",
+          "metric_value": 362.0
+        },
+        "max_i1_speed": {
+          "meeting_name": "Belgian Grand Prix",
+          "meeting_key": 1242,
+          "meeting_date_start": "2024-07-26T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9574,
+          "driver_name": "Lance STROLL",
+          "driver_number": 18,
+          "team_name": "Aston Martin",
+          "lap_number": 2,
+          "lap_duration": 111.654,
+          "metric": "i1_speed",
+          "metric_value": 357.0
+        },
+        "max_i2_speed": {
+          "meeting_name": "Italian Grand Prix",
+          "meeting_key": 1244,
+          "meeting_date_start": "2024-08-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9590,
+          "driver_name": "Valtteri BOTTAS",
+          "driver_number": 77,
+          "team_name": "Kick Sauber",
+          "lap_number": 5,
+          "lap_duration": 88.242,
+          "metric": "i2_speed",
+          "metric_value": 343.0
+        },
+        "max_avg_speed": {
+          "meeting_name": "Italian Grand Prix",
+          "meeting_key": 1244,
+          "meeting_date_start": "2024-08-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9590,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 48,
+          "lap_duration": 81.824,
+          "metric": "avg_speed",
+          "metric_value": 254.32119205298014
+        },
+        "max_max_speed": {
+          "meeting_name": "Las Vegas Grand Prix",
+          "meeting_key": 1250,
+          "meeting_date_start": null,
+          "session_name": "Race",
+          "session_key": 9644,
+          "driver_name": "Alexander ALBON",
+          "driver_number": 23,
+          "team_name": "Williams",
+          "lap_number": 16,
+          "lap_duration": 99.506,
+          "metric": "max_speed",
+          "metric_value": 369.0
+        },
+        "max_drs_pct": {
+          "meeting_name": "Bahrain Grand Prix",
+          "meeting_key": 1229,
+          "meeting_date_start": "2024-02-29T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9472,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 1,
+          "lap_duration": 97.759,
+          "metric": "drs_pct",
+          "metric_value": 1.0
+        },
+        "max_full_throttle_pct": {
+          "meeting_name": "Italian Grand Prix",
+          "meeting_key": 1244,
+          "meeting_date_start": "2024-08-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9590,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 43,
+          "lap_duration": 81.745,
+          "metric": "full_throttle_pct",
+          "metric_value": 0.7418300653594772
+        },
+        "max_brake_events": {
+          "meeting_name": "São Paulo Grand Prix",
+          "meeting_key": 1249,
+          "meeting_date_start": null,
+          "session_name": "Race",
+          "session_key": 9636,
+          "driver_name": "Esteban OCON",
+          "driver_number": 31,
+          "team_name": "Alpine",
+          "lap_number": 33,
+          "lap_duration": 1557.824,
+          "metric": "brake_events",
+          "metric_value": 57.0
+        },
+        "max_hard_brake_events": {
+          "meeting_name": "São Paulo Grand Prix",
+          "meeting_key": 1249,
+          "meeting_date_start": null,
+          "session_name": "Race",
+          "session_key": 9636,
+          "driver_name": "Esteban OCON",
+          "driver_number": 31,
+          "team_name": "Alpine",
+          "lap_number": 33,
+          "lap_duration": 1557.824,
+          "metric": "hard_brake_events",
+          "metric_value": 57.0
+        }
+      },
+      "laps_by_meeting_top": [
+        {
+          "meeting_key": 1243,
+          "meeting_name": "Dutch Grand Prix",
+          "laps_total": 1424
+        },
+        {
+          "meeting_key": 1239,
+          "meeting_name": "Austrian Grand Prix",
+          "laps_total": 1400
+        },
+        {
+          "meeting_key": 1241,
+          "meeting_name": "Hungarian Grand Prix",
+          "laps_total": 1354
+        },
+        {
+          "meeting_key": 1238,
+          "meeting_name": "Spanish Grand Prix",
+          "laps_total": 1309
+        },
+        {
+          "meeting_key": 1237,
+          "meeting_name": "Canadian Grand Prix",
+          "laps_total": 1267
+        },
+        {
+          "meeting_key": 1235,
+          "meeting_name": "Emilia Romagna Grand Prix",
+          "laps_total": 1236
+        },
+        {
+          "meeting_key": 1236,
+          "meeting_name": "Monaco Grand Prix",
+          "laps_total": 1215
+        },
+        {
+          "meeting_key": 1248,
+          "meeting_name": "Mexico City Grand Prix",
+          "laps_total": 1211
+        },
+        {
+          "meeting_key": 1246,
+          "meeting_name": "Singapore Grand Prix",
+          "laps_total": 1177
+        },
+        {
+          "meeting_key": 1249,
+          "meeting_name": "São Paulo Grand Prix",
+          "laps_total": 1131
+        }
+      ],
+      "laps_by_driver_top": [
+        {
+          "value": "Oscar PIASTRI",
+          "count": 1442,
+          "share": 0.10413056036972848
+        },
+        {
+          "value": "Lando NORRIS",
+          "count": 1435,
+          "share": 0.10362507221259387
+        },
+        {
+          "value": "George RUSSELL",
+          "count": 1420,
+          "share": 0.1025418833044483
+        },
+        {
+          "value": "Charles LECLERC",
+          "count": 1410,
+          "share": 0.10181975736568458
+        },
+        {
+          "value": "Max VERSTAPPEN",
+          "count": 1388,
+          "share": 0.1002310803004044
+        },
+        {
+          "value": "Fernando ALONSO",
+          "count": 1375,
+          "share": 0.09929231658001156
+        },
+        {
+          "value": "Valtteri BOTTAS",
+          "count": 1356,
+          "share": 0.09792027729636049
+        },
+        {
+          "value": "ZHOU Guanyu",
+          "count": 1341,
+          "share": 0.0968370883882149
+        },
+        {
+          "value": "Lewis HAMILTON",
+          "count": 1341,
+          "share": 0.0968370883882149
+        },
+        {
+          "value": "Carlos SAINZ",
+          "count": 1340,
+          "share": 0.09676487579433853
+        }
+      ],
+      "laps_by_team_top": [
+        {
+          "value": "McLaren",
+          "count": 2877,
+          "share": 0.10849234482238479
+        },
+        {
+          "value": "Ferrari",
+          "count": 2800,
+          "share": 0.10558865676144506
+        },
+        {
+          "value": "Mercedes",
+          "count": 2761,
+          "share": 0.10411795761369635
+        },
+        {
+          "value": "Kick Sauber",
+          "count": 2697,
+          "share": 0.10170450260200618
+        },
+        {
+          "value": "Haas F1 Team",
+          "count": 2651,
+          "share": 0.09996983181235387
+        },
+        {
+          "value": "Red Bull Racing",
+          "count": 2649,
+          "share": 0.09989441134323855
+        },
+        {
+          "value": "Aston Martin",
+          "count": 2637,
+          "share": 0.09944188852854664
+        },
+        {
+          "value": "RB",
+          "count": 2599,
+          "share": 0.09800889961535561
+        },
+        {
+          "value": "Alpine",
+          "count": 2549,
+          "share": 0.09612338788747266
+        },
+        {
+          "value": "Williams",
+          "count": 2298,
+          "share": 0.08665811901350026
+        }
+      ],
+      "compound_usage": [
+        {
+          "value": "HARD",
+          "count": 13722,
+          "share": 0.5174598386001961
+        },
+        {
+          "value": "MEDIUM",
+          "count": 8847,
+          "share": 0.3336224451316087
+        },
+        {
+          "value": "INTERMEDIATE",
+          "count": 2172,
+          "share": 0.08190662945923524
+        },
+        {
+          "value": "SOFT",
+          "count": 1740,
+          "share": 0.06561580813032657
+        },
+        {
+          "value": "WET",
+          "count": 37,
+          "share": 0.001395278678633381
+        }
+      ],
+      "pit_out_lap_rate": 0.031752017497548836,
+      "telemetry_coverage": {
+        "rate": 1.0,
+        "count": 26518
+      },
+      "trajectory_coverage": {
+        "rate": 1.0,
+        "count": 26518
+      },
+      "top_values": {
+        "meeting_name": [
+          {
+            "value": "Dutch Grand Prix",
+            "count": 1424
+          },
+          {
+            "value": "Austrian Grand Prix",
+            "count": 1400
+          },
+          {
+            "value": "Hungarian Grand Prix",
+            "count": 1354
+          },
+          {
+            "value": "Spanish Grand Prix",
+            "count": 1309
+          },
+          {
+            "value": "Canadian Grand Prix",
+            "count": 1267
+          }
+        ],
+        "meeting_key": [
+          {
+            "value": "1243",
+            "count": 1424
+          },
+          {
+            "value": "1239",
+            "count": 1400
+          },
+          {
+            "value": "1241",
+            "count": 1354
+          },
+          {
+            "value": "1238",
+            "count": 1309
+          },
+          {
+            "value": "1237",
+            "count": 1267
+          }
+        ],
+        "session_name": [
+          {
+            "value": "Race",
+            "count": 26518
+          }
+        ],
+        "driver_name": [
+          {
+            "value": "Oscar PIASTRI",
+            "count": 1442
+          },
+          {
+            "value": "Lando NORRIS",
+            "count": 1435
+          },
+          {
+            "value": "George RUSSELL",
+            "count": 1420
+          },
+          {
+            "value": "Charles LECLERC",
+            "count": 1410
+          },
+          {
+            "value": "Max VERSTAPPEN",
+            "count": 1388
+          }
+        ],
+        "driver_number": [
+          {
+            "value": "81",
+            "count": 1442
+          },
+          {
+            "value": "4",
+            "count": 1435
+          },
+          {
+            "value": "63",
+            "count": 1420
+          },
+          {
+            "value": "16",
+            "count": 1410
+          },
+          {
+            "value": "1",
+            "count": 1388
+          }
+        ],
+        "team_name": [
+          {
+            "value": "McLaren",
+            "count": 2877
+          },
+          {
+            "value": "Ferrari",
+            "count": 2800
+          },
+          {
+            "value": "Mercedes",
+            "count": 2761
+          },
+          {
+            "value": "Kick Sauber",
+            "count": 2697
+          },
+          {
+            "value": "Haas F1 Team",
+            "count": 2651
+          }
+        ],
+        "circuit_speed_class": [
+          {
+            "value": "medium",
+            "count": 23532
+          },
+          {
+            "value": "high",
+            "count": 196
+          }
+        ],
+        "compound": [
+          {
+            "value": "HARD",
+            "count": 13722
+          },
+          {
+            "value": "MEDIUM",
+            "count": 8847
+          },
+          {
+            "value": "INTERMEDIATE",
+            "count": 2172
+          },
+          {
+            "value": "SOFT",
+            "count": 1740
+          },
+          {
+            "value": "WET",
+            "count": 37
+          }
+        ]
+      },
+      "top_values_pt": {
+        "circuit_speed_class": [
+          {
+            "value": "medium",
+            "count": 23532,
+            "value_pt": "media velocidade"
+          },
+          {
+            "value": "high",
+            "count": 196,
+            "value_pt": "alta velocidade"
+          }
+        ],
+        "compound": [
+          {
+            "value": "HARD",
+            "count": 13722,
+            "value_pt": "duro"
+          },
+          {
+            "value": "MEDIUM",
+            "count": 8847,
+            "value_pt": "medio"
+          },
+          {
+            "value": "INTERMEDIATE",
+            "count": 2172,
+            "value_pt": "intermediario"
+          },
+          {
+            "value": "SOFT",
+            "count": 1740,
+            "value_pt": "macio"
+          },
+          {
+            "value": "WET",
+            "count": 37,
+            "value_pt": "chuva"
+          }
+        ]
+      },
+      "circuit_speed_class_most_common": "medium",
+      "circuit_speed_class_most_common_pt": "media velocidade",
+      "compound_most_common": "HARD",
+      "compound_most_common_pt": "duro"
+    },
+    "2025": {
+      "season": 2025,
+      "rows": 26170,
+      "columns_available": [
+        "air_temperature",
+        "avg_rpm",
+        "avg_speed",
+        "avg_throttle",
+        "brake_events",
+        "brake_pct",
+        "circuit_speed_class",
+        "compound",
+        "distance_traveled",
+        "driver_name",
+        "driver_number",
+        "drs_pct",
+        "duration_sector_1",
+        "duration_sector_2",
+        "duration_sector_3",
+        "full_throttle_pct",
+        "gear_changes",
+        "hard_brake_events",
+        "has_telemetry",
+        "has_trajectory",
+        "i1_speed",
+        "i2_speed",
+        "is_pit_out_lap",
+        "lap_duration",
+        "lap_number",
+        "max_rpm",
+        "max_speed",
+        "max_throttle",
+        "meeting_date_start",
+        "meeting_day",
+        "meeting_key",
+        "meeting_month",
+        "meeting_name",
+        "min_rpm",
+        "min_speed",
+        "min_throttle",
+        "rpm_std",
+        "season",
+        "session_key",
+        "session_name",
+        "speed_std",
+        "st_speed",
+        "stint_lap_end",
+        "stint_lap_start",
+        "stint_number",
+        "team_name",
+        "telemetry_points",
+        "throttle_std",
+        "track_temperature",
+        "trajectory_length",
+        "trajectory_points",
+        "trajectory_variation",
+        "tyre_age_at_lap",
+        "tyre_age_at_start",
+        "weather_date"
+      ],
+      "drivers_total": 21,
+      "teams_total": 10,
+      "meetings_total": 24,
+      "sessions": [
+        "Race"
+      ],
+      "meeting_date_start": {
+        "min": "2025-03-14T01:30:00+00:00",
+        "max": "2025-12-05T09:30:00+00:00"
+      },
+      "lap_duration_quantiles": {
+        "p01": 70.13935000000001,
+        "p05": 73.9779,
+        "p10": 75.4269,
+        "p25": 80.85,
+        "p50": 89.93100000000001,
+        "p75": 98.51875000000001,
+        "p90": 107.2971,
+        "p95": 120.70864999999998,
+        "p99": 159.0938000000001
+      },
+      "fastest_lap": {
+        "meeting_name": "Austrian Grand Prix",
+        "meeting_key": 1264,
+        "meeting_date_start": "2025-06-27T11:30:00+00:00",
+        "session_name": "Race",
+        "session_key": 9955,
+        "driver_name": "Oscar PIASTRI",
+        "driver_number": 81,
+        "team_name": "McLaren",
+        "lap_number": 59,
+        "lap_duration": 67.924,
+        "lap_duration_seconds": 67.924,
+        "lap_duration_min": "01:07:924"
+      },
+      "slowest_lap": {
+        "meeting_name": "Belgian Grand Prix",
+        "meeting_key": 1265,
+        "meeting_date_start": "2025-07-25T10:30:00+00:00",
+        "session_name": "Race",
+        "session_key": 9939,
+        "driver_name": "Fernando ALONSO",
+        "driver_number": 14,
+        "team_name": "Aston Martin",
+        "lap_number": 1,
+        "lap_duration": 219.048,
+        "lap_duration_seconds": 219.048,
+        "lap_duration_min": "03:39:048"
+      },
+      "fastest_laps_top": [
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 59,
+          "lap_duration": 67.924,
+          "lap_duration_seconds": 67.924,
+          "lap_duration_min": "01:07:924"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 60,
+          "lap_duration": 68.085,
+          "lap_duration_seconds": 68.085,
+          "lap_duration_min": "01:08:085"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 58,
+          "lap_duration": 68.157,
+          "lap_duration_seconds": 68.157,
+          "lap_duration_min": "01:08:157"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 61,
+          "lap_duration": 68.162,
+          "lap_duration_seconds": 68.162,
+          "lap_duration_min": "01:08:162"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 61,
+          "lap_duration": 68.272,
+          "lap_duration_seconds": 68.272,
+          "lap_duration_min": "01:08:272"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 56,
+          "lap_duration": 68.283,
+          "lap_duration_seconds": 68.283,
+          "lap_duration_min": "01:08:283"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 58,
+          "lap_duration": 68.326,
+          "lap_duration_seconds": 68.326,
+          "lap_duration_min": "01:08:326"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 62,
+          "lap_duration": 68.372,
+          "lap_duration_seconds": 68.372,
+          "lap_duration_min": "01:08:372"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 59,
+          "lap_duration": 68.435,
+          "lap_duration_seconds": 68.435,
+          "lap_duration_min": "01:08:435"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 65,
+          "lap_duration": 68.49,
+          "lap_duration_seconds": 68.49,
+          "lap_duration_min": "01:08:490"
+        }
+      ],
+      "slowest_laps_top": [
+        {
+          "meeting_name": "Belgian Grand Prix",
+          "meeting_key": 1265,
+          "meeting_date_start": "2025-07-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9939,
+          "driver_name": "Fernando ALONSO",
+          "driver_number": 14,
+          "team_name": "Aston Martin",
+          "lap_number": 1,
+          "lap_duration": 219.048,
+          "lap_duration_seconds": 219.048,
+          "lap_duration_min": "03:39:048"
+        },
+        {
+          "meeting_name": "Belgian Grand Prix",
+          "meeting_key": 1265,
+          "meeting_date_start": "2025-07-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9939,
+          "driver_name": "Kimi ANTONELLI",
+          "driver_number": 12,
+          "team_name": "Mercedes",
+          "lap_number": 1,
+          "lap_duration": 216.767,
+          "lap_duration_seconds": 216.767,
+          "lap_duration_min": "03:36:767"
+        },
+        {
+          "meeting_name": "Belgian Grand Prix",
+          "meeting_key": 1265,
+          "meeting_date_start": "2025-07-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9939,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Ferrari",
+          "lap_number": 1,
+          "lap_duration": 214.061,
+          "lap_duration_seconds": 214.061,
+          "lap_duration_min": "03:34:061"
+        },
+        {
+          "meeting_name": "Belgian Grand Prix",
+          "meeting_key": 1265,
+          "meeting_date_start": "2025-07-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9939,
+          "driver_name": "Carlos SAINZ",
+          "driver_number": 55,
+          "team_name": "Williams",
+          "lap_number": 1,
+          "lap_duration": 211.767,
+          "lap_duration_seconds": 211.767,
+          "lap_duration_min": "03:31:767"
+        },
+        {
+          "meeting_name": "Belgian Grand Prix",
+          "meeting_key": 1265,
+          "meeting_date_start": "2025-07-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9939,
+          "driver_name": "Lance STROLL",
+          "driver_number": 18,
+          "team_name": "Aston Martin",
+          "lap_number": 1,
+          "lap_duration": 209.494,
+          "lap_duration_seconds": 209.494,
+          "lap_duration_min": "03:29:494"
+        },
+        {
+          "meeting_name": "Belgian Grand Prix",
+          "meeting_key": 1265,
+          "meeting_date_start": "2025-07-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9939,
+          "driver_name": "Franco COLAPINTO",
+          "driver_number": 43,
+          "team_name": "Alpine",
+          "lap_number": 1,
+          "lap_duration": 207.915,
+          "lap_duration_seconds": 207.915,
+          "lap_duration_min": "03:27:915"
+        },
+        {
+          "meeting_name": "Belgian Grand Prix",
+          "meeting_key": 1265,
+          "meeting_date_start": "2025-07-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9939,
+          "driver_name": "Nico HULKENBERG",
+          "driver_number": 27,
+          "team_name": "Kick Sauber",
+          "lap_number": 1,
+          "lap_duration": 206.946,
+          "lap_duration_seconds": 206.946,
+          "lap_duration_min": "03:26:946"
+        },
+        {
+          "meeting_name": "Belgian Grand Prix",
+          "meeting_key": 1265,
+          "meeting_date_start": "2025-07-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9939,
+          "driver_name": "Pierre GASLY",
+          "driver_number": 10,
+          "team_name": "Alpine",
+          "lap_number": 1,
+          "lap_duration": 204.852,
+          "lap_duration_seconds": 204.852,
+          "lap_duration_min": "03:24:852"
+        },
+        {
+          "meeting_name": "Belgian Grand Prix",
+          "meeting_key": 1265,
+          "meeting_date_start": "2025-07-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9939,
+          "driver_name": "Oliver BEARMAN",
+          "driver_number": 87,
+          "team_name": "Haas F1 Team",
+          "lap_number": 1,
+          "lap_duration": 202.399,
+          "lap_duration_seconds": 202.399,
+          "lap_duration_min": "03:22:399"
+        },
+        {
+          "meeting_name": "Belgian Grand Prix",
+          "meeting_key": 1265,
+          "meeting_date_start": "2025-07-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9939,
+          "driver_name": "Esteban OCON",
+          "driver_number": 31,
+          "team_name": "Haas F1 Team",
+          "lap_number": 1,
+          "lap_duration": 201.836,
+          "lap_duration_seconds": 201.836,
+          "lap_duration_min": "03:21:836"
+        }
+      ],
+      "fastest_lap_by_meeting": [
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1254,
+          "meeting_date_start": "2025-03-14T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9693,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 43,
+          "lap_duration": 82.167,
+          "lap_duration_seconds": 82.167,
+          "lap_duration_min": "01:22:167"
+        },
+        {
+          "meeting_name": "Chinese Grand Prix",
+          "meeting_key": 1255,
+          "meeting_date_start": "2025-03-21T03:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9998,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Ferrari",
+          "lap_number": 41,
+          "lap_duration": 95.069,
+          "lap_duration_seconds": 95.069,
+          "lap_duration_min": "01:35:069"
+        },
+        {
+          "meeting_name": "Japanese Grand Prix",
+          "meeting_key": 1256,
+          "meeting_date_start": "2025-04-04T02:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 10006,
+          "driver_name": "Kimi ANTONELLI",
+          "driver_number": 12,
+          "team_name": "Mercedes",
+          "lap_number": 50,
+          "lap_duration": 90.965,
+          "lap_duration_seconds": 90.965,
+          "lap_duration_min": "01:30:965"
+        },
+        {
+          "meeting_name": "Bahrain Grand Prix",
+          "meeting_key": 1257,
+          "meeting_date_start": "2025-04-11T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 10014,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 36,
+          "lap_duration": 95.14,
+          "lap_duration_seconds": 95.14,
+          "lap_duration_min": "01:35:140"
+        },
+        {
+          "meeting_name": "Saudi Arabian Grand Prix",
+          "meeting_key": 1258,
+          "meeting_date_start": "2025-04-18T13:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 10022,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 41,
+          "lap_duration": 91.778,
+          "lap_duration_seconds": 91.778,
+          "lap_duration_min": "01:31:778"
+        },
+        {
+          "meeting_name": "Miami Grand Prix",
+          "meeting_key": 1259,
+          "meeting_date_start": "2025-05-02T16:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 10033,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 36,
+          "lap_duration": 89.746,
+          "lap_duration_seconds": 89.746,
+          "lap_duration_min": "01:29:746"
+        },
+        {
+          "meeting_name": "Emilia Romagna Grand Prix",
+          "meeting_key": 1260,
+          "meeting_date_start": "2025-05-16T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9987,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 58,
+          "lap_duration": 77.988,
+          "lap_duration_seconds": 77.988,
+          "lap_duration_min": "01:17:988"
+        },
+        {
+          "meeting_name": "Monaco Grand Prix",
+          "meeting_key": 1261,
+          "meeting_date_start": "2025-05-23T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9979,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 78,
+          "lap_duration": 73.221,
+          "lap_duration_seconds": 73.221,
+          "lap_duration_min": "01:13:221"
+        },
+        {
+          "meeting_name": "Spanish Grand Prix",
+          "meeting_key": 1262,
+          "meeting_date_start": "2025-05-30T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9971,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 61,
+          "lap_duration": 75.743,
+          "lap_duration_seconds": 75.743,
+          "lap_duration_min": "01:15:743"
+        },
+        {
+          "meeting_name": "Canadian Grand Prix",
+          "meeting_key": 1263,
+          "meeting_date_start": "2025-06-13T17:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9963,
+          "driver_name": "George RUSSELL",
+          "driver_number": 63,
+          "team_name": "Mercedes",
+          "lap_number": 63,
+          "lap_duration": 74.119,
+          "lap_duration_seconds": 74.119,
+          "lap_duration_min": "01:14:119"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 59,
+          "lap_duration": 67.924,
+          "lap_duration_seconds": 67.924,
+          "lap_duration_min": "01:07:924"
+        },
+        {
+          "meeting_name": "Belgian Grand Prix",
+          "meeting_key": 1265,
+          "meeting_date_start": "2025-07-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9939,
+          "driver_name": "Kimi ANTONELLI",
+          "driver_number": 12,
+          "team_name": "Mercedes",
+          "lap_number": 32,
+          "lap_duration": 104.861,
+          "lap_duration_seconds": 104.861,
+          "lap_duration_min": "01:44:861"
+        },
+        {
+          "meeting_name": "Hungarian Grand Prix",
+          "meeting_key": 1266,
+          "meeting_date_start": "2025-08-01T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9928,
+          "driver_name": "George RUSSELL",
+          "driver_number": 63,
+          "team_name": "Mercedes",
+          "lap_number": 45,
+          "lap_duration": 79.409,
+          "lap_duration_seconds": 79.409,
+          "lap_duration_min": "01:19:409"
+        },
+        {
+          "meeting_name": "Dutch Grand Prix",
+          "meeting_key": 1267,
+          "meeting_date_start": "2025-08-29T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9920,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 60,
+          "lap_duration": 72.271,
+          "lap_duration_seconds": 72.271,
+          "lap_duration_min": "01:12:271"
+        },
+        {
+          "meeting_name": "Italian Grand Prix",
+          "meeting_key": 1268,
+          "meeting_date_start": "2025-09-05T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9912,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 53,
+          "lap_duration": 80.901,
+          "lap_duration_seconds": 80.901,
+          "lap_duration_min": "01:20:901"
+        },
+        {
+          "meeting_name": "Azerbaijan Grand Prix",
+          "meeting_key": 1269,
+          "meeting_date_start": "2025-09-19T08:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9904,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 50,
+          "lap_duration": 103.388,
+          "lap_duration_seconds": 103.388,
+          "lap_duration_min": "01:43:388"
+        },
+        {
+          "meeting_name": "Singapore Grand Prix",
+          "meeting_key": 1270,
+          "meeting_date_start": "2025-10-03T09:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9896,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Ferrari",
+          "lap_number": 48,
+          "lap_duration": 93.808,
+          "lap_duration_seconds": 93.808,
+          "lap_duration_min": "01:33:808"
+        },
+        {
+          "meeting_name": "United States Grand Prix",
+          "meeting_key": 1271,
+          "meeting_date_start": "2025-10-17T17:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9888,
+          "driver_name": "Kimi ANTONELLI",
+          "driver_number": 12,
+          "team_name": "Mercedes",
+          "lap_number": 33,
+          "lap_duration": 97.577,
+          "lap_duration_seconds": 97.577,
+          "lap_duration_min": "01:37:577"
+        },
+        {
+          "meeting_name": "Mexico City Grand Prix",
+          "meeting_key": 1272,
+          "meeting_date_start": "2025-10-24T18:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9877,
+          "driver_name": "George RUSSELL",
+          "driver_number": 63,
+          "team_name": "Mercedes",
+          "lap_number": 50,
+          "lap_duration": 80.052,
+          "lap_duration_seconds": 80.052,
+          "lap_duration_min": "01:20:052"
+        },
+        {
+          "meeting_name": "São Paulo Grand Prix",
+          "meeting_key": 1273,
+          "meeting_date_start": "2025-11-07T14:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9869,
+          "driver_name": "Alexander ALBON",
+          "driver_number": 23,
+          "team_name": "Williams",
+          "lap_number": 59,
+          "lap_duration": 72.4,
+          "lap_duration_seconds": 72.4,
+          "lap_duration_min": "01:12:400"
+        },
+        {
+          "meeting_name": "Las Vegas Grand Prix",
+          "meeting_key": 1274,
+          "meeting_date_start": "2025-11-21T00:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9858,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 50,
+          "lap_duration": 93.365,
+          "lap_duration_seconds": 93.365,
+          "lap_duration_min": "01:33:365"
+        },
+        {
+          "meeting_name": "Qatar Grand Prix",
+          "meeting_key": 1275,
+          "meeting_date_start": "2025-11-28T13:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9850,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 48,
+          "lap_duration": 83.062,
+          "lap_duration_seconds": 83.062,
+          "lap_duration_min": "01:23:062"
+        },
+        {
+          "meeting_name": "Abu Dhabi Grand Prix",
+          "meeting_key": 1276,
+          "meeting_date_start": "2025-12-05T09:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9839,
+          "driver_name": "Charles LECLERC",
+          "driver_number": 16,
+          "team_name": "Ferrari",
+          "lap_number": 45,
+          "lap_duration": 86.725,
+          "lap_duration_seconds": 86.725,
+          "lap_duration_min": "01:26:725"
+        },
+        {
+          "meeting_name": "British Grand Prix",
+          "meeting_key": 1277,
+          "meeting_date_start": "2025-07-04T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9947,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 51,
+          "lap_duration": 89.337,
+          "lap_duration_seconds": 89.337,
+          "lap_duration_min": "01:29:337"
+        }
+      ],
+      "fastest_lap_by_driver": [
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Alexander ALBON",
+          "driver_number": 23,
+          "team_name": "Williams",
+          "lap_number": 9,
+          "lap_duration": 70.641,
+          "lap_duration_seconds": 70.641,
+          "lap_duration_min": "01:10:641"
+        },
+        {
+          "meeting_name": "São Paulo Grand Prix",
+          "meeting_key": 1273,
+          "meeting_date_start": "2025-11-07T14:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9869,
+          "driver_name": "Carlos SAINZ",
+          "driver_number": 55,
+          "team_name": "Williams",
+          "lap_number": 19,
+          "lap_duration": 73.683,
+          "lap_duration_seconds": 73.683,
+          "lap_duration_min": "01:13:683"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Charles LECLERC",
+          "driver_number": 16,
+          "team_name": "Ferrari",
+          "lap_number": 56,
+          "lap_duration": 68.765,
+          "lap_duration_seconds": 68.765,
+          "lap_duration_min": "01:08:765"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Esteban OCON",
+          "driver_number": 31,
+          "team_name": "Haas F1 Team",
+          "lap_number": 55,
+          "lap_duration": 69.55,
+          "lap_duration_seconds": 69.55,
+          "lap_duration_min": "01:09:550"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Fernando ALONSO",
+          "driver_number": 14,
+          "team_name": "Aston Martin",
+          "lap_number": 39,
+          "lap_duration": 69.935,
+          "lap_duration_seconds": 69.935,
+          "lap_duration_min": "01:09:935"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Franco COLAPINTO",
+          "driver_number": 43,
+          "team_name": "Alpine",
+          "lap_number": 44,
+          "lap_duration": 69.621,
+          "lap_duration_seconds": 69.621,
+          "lap_duration_min": "01:09:621"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Gabriel BORTOLETO",
+          "driver_number": 5,
+          "team_name": "Kick Sauber",
+          "lap_number": 60,
+          "lap_duration": 69.247,
+          "lap_duration_seconds": 69.247,
+          "lap_duration_min": "01:09:247"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "George RUSSELL",
+          "driver_number": 63,
+          "team_name": "Mercedes",
+          "lap_number": 47,
+          "lap_duration": 69.372,
+          "lap_duration_seconds": 69.372,
+          "lap_duration_min": "01:09:372"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Isack HADJAR",
+          "driver_number": 6,
+          "team_name": "Racing Bulls",
+          "lap_number": 40,
+          "lap_duration": 70.204,
+          "lap_duration_seconds": 70.204,
+          "lap_duration_min": "01:10:204"
+        },
+        {
+          "meeting_name": "Japanese Grand Prix",
+          "meeting_key": 1256,
+          "meeting_date_start": "2025-04-04T02:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 10006,
+          "driver_name": "Jack DOOHAN",
+          "driver_number": 7,
+          "team_name": "Alpine",
+          "lap_number": 47,
+          "lap_duration": 92.685,
+          "lap_duration_seconds": 92.685,
+          "lap_duration_min": "01:32:685"
+        },
+        {
+          "meeting_name": "São Paulo Grand Prix",
+          "meeting_key": 1273,
+          "meeting_date_start": "2025-11-07T14:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9869,
+          "driver_name": "Kimi ANTONELLI",
+          "driver_number": 12,
+          "team_name": "Mercedes",
+          "lap_number": 52,
+          "lap_duration": 73.123,
+          "lap_duration_seconds": 73.123,
+          "lap_duration_min": "01:13:123"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Lance STROLL",
+          "driver_number": 18,
+          "team_name": "Aston Martin",
+          "lap_number": 55,
+          "lap_duration": 69.214,
+          "lap_duration_seconds": 69.214,
+          "lap_duration_min": "01:09:214"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 61,
+          "lap_duration": 68.272,
+          "lap_duration_seconds": 68.272,
+          "lap_duration_min": "01:08:272"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Ferrari",
+          "lap_number": 53,
+          "lap_duration": 68.628,
+          "lap_duration_seconds": 68.628,
+          "lap_duration_min": "01:08:628"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Liam LAWSON",
+          "driver_number": 30,
+          "team_name": "Racing Bulls",
+          "lap_number": 58,
+          "lap_duration": 69.977,
+          "lap_duration_seconds": 69.977,
+          "lap_duration_min": "01:09:977"
+        },
+        {
+          "meeting_name": "São Paulo Grand Prix",
+          "meeting_key": 1273,
+          "meeting_date_start": "2025-11-07T14:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9869,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 56,
+          "lap_duration": 72.447,
+          "lap_duration_seconds": 72.447,
+          "lap_duration_min": "01:12:447"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Nico HULKENBERG",
+          "driver_number": 27,
+          "team_name": "Kick Sauber",
+          "lap_number": 57,
+          "lap_duration": 69.459,
+          "lap_duration_seconds": 69.459,
+          "lap_duration_min": "01:09:459"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Oliver BEARMAN",
+          "driver_number": 87,
+          "team_name": "Haas F1 Team",
+          "lap_number": 42,
+          "lap_duration": 69.96,
+          "lap_duration_seconds": 69.96,
+          "lap_duration_min": "01:09:960"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 59,
+          "lap_duration": 67.924,
+          "lap_duration_seconds": 67.924,
+          "lap_duration_min": "01:07:924"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Pierre GASLY",
+          "driver_number": 10,
+          "team_name": "Alpine",
+          "lap_number": 46,
+          "lap_duration": 70.151,
+          "lap_duration_seconds": 70.151,
+          "lap_duration_min": "01:10:151"
+        },
+        {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Yuki TSUNODA",
+          "driver_number": 22,
+          "team_name": "Red Bull Racing",
+          "lap_number": 62,
+          "lap_duration": 69.802,
+          "lap_duration_seconds": 69.802,
+          "lap_duration_min": "01:09:802"
+        }
+      ],
+      "records": {
+        "best_duration_sector_1": {
+          "meeting_name": "Austrian Grand Prix",
+          "meeting_key": 1264,
+          "meeting_date_start": "2025-06-27T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9955,
+          "driver_name": "Oscar PIASTRI",
+          "driver_number": 81,
+          "team_name": "McLaren",
+          "lap_number": 70,
+          "lap_duration": 70.782,
+          "metric": "duration_sector_1",
+          "metric_value": 17.082
+        },
+        "best_duration_sector_2": {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1254,
+          "meeting_date_start": "2025-03-14T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9693,
+          "driver_name": "Charles LECLERC",
+          "driver_number": 16,
+          "team_name": "Ferrari",
+          "lap_number": 46,
+          "lap_duration": 96.429,
+          "metric": "duration_sector_2",
+          "metric_value": 17.831
+        },
+        "best_duration_sector_3": {
+          "meeting_name": "São Paulo Grand Prix",
+          "meeting_key": 1273,
+          "meeting_date_start": "2025-11-07T14:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9869,
+          "driver_name": "George RUSSELL",
+          "driver_number": 63,
+          "team_name": "Mercedes",
+          "lap_number": 50,
+          "lap_duration": 73.349,
+          "metric": "duration_sector_3",
+          "metric_value": 16.536
+        },
+        "max_st_speed": {
+          "meeting_name": "Italian Grand Prix",
+          "meeting_key": 1268,
+          "meeting_date_start": "2025-09-05T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9912,
+          "driver_name": "Alexander ALBON",
+          "driver_number": 23,
+          "team_name": "Williams",
+          "lap_number": 15,
+          "lap_duration": 84.431,
+          "metric": "st_speed",
+          "metric_value": 364.0
+        },
+        "max_i1_speed": {
+          "meeting_name": "Belgian Grand Prix",
+          "meeting_key": 1265,
+          "meeting_date_start": "2025-07-25T10:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9939,
+          "driver_name": "Kimi ANTONELLI",
+          "driver_number": 12,
+          "team_name": "Mercedes",
+          "lap_number": 26,
+          "lap_duration": 107.83,
+          "metric": "i1_speed",
+          "metric_value": 352.0
+        },
+        "max_i2_speed": {
+          "meeting_name": "Italian Grand Prix",
+          "meeting_key": 1268,
+          "meeting_date_start": "2025-09-05T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9912,
+          "driver_name": "Liam LAWSON",
+          "driver_number": 30,
+          "team_name": "Racing Bulls",
+          "lap_number": 9,
+          "lap_duration": 88.824,
+          "metric": "i2_speed",
+          "metric_value": 347.0
+        },
+        "max_avg_speed": {
+          "meeting_name": "Italian Grand Prix",
+          "meeting_key": 1268,
+          "meeting_date_start": "2025-09-05T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9912,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 4,
+          "team_name": "McLaren",
+          "lap_number": 51,
+          "lap_duration": 81.315,
+          "metric": "avg_speed",
+          "metric_value": 259.6423841059603
+        },
+        "max_max_speed": {
+          "meeting_name": "Italian Grand Prix",
+          "meeting_key": 1268,
+          "meeting_date_start": "2025-09-05T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9912,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Ferrari",
+          "lap_number": 5,
+          "lap_duration": 83.942,
+          "metric": "max_speed",
+          "metric_value": 365.0
+        },
+        "max_drs_pct": {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1254,
+          "meeting_date_start": "2025-03-14T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9693,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 1,
+          "team_name": "Red Bull Racing",
+          "lap_number": 1,
+          "lap_duration": 119.704,
+          "metric": "drs_pct",
+          "metric_value": 1.0
+        },
+        "max_full_throttle_pct": {
+          "meeting_name": "Bahrain Grand Prix",
+          "meeting_key": 1257,
+          "meeting_date_start": "2025-04-11T11:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 10014,
+          "driver_name": "George RUSSELL",
+          "driver_number": 63,
+          "team_name": "Mercedes",
+          "lap_number": 46,
+          "lap_duration": 96.456,
+          "metric": "full_throttle_pct",
+          "metric_value": 1.0
+        },
+        "max_brake_events": {
+          "meeting_name": "Azerbaijan Grand Prix",
+          "meeting_key": 1269,
+          "meeting_date_start": "2025-09-19T08:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9904,
+          "driver_name": "Oliver BEARMAN",
+          "driver_number": 87,
+          "team_name": "Haas F1 Team",
+          "lap_number": 4,
+          "lap_duration": 177.318,
+          "metric": "brake_events",
+          "metric_value": 66.0
+        },
+        "max_hard_brake_events": {
+          "meeting_name": "Azerbaijan Grand Prix",
+          "meeting_key": 1269,
+          "meeting_date_start": "2025-09-19T08:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 9904,
+          "driver_name": "Oliver BEARMAN",
+          "driver_number": 87,
+          "team_name": "Haas F1 Team",
+          "lap_number": 4,
+          "lap_duration": 177.318,
+          "metric": "hard_brake_events",
+          "metric_value": 66.0
+        }
+      },
+      "laps_by_meeting_top": [
+        {
+          "meeting_key": 1261,
+          "meeting_name": "Monaco Grand Prix",
+          "laps_total": 1422
+        },
+        {
+          "meeting_key": 1266,
+          "meeting_name": "Hungarian Grand Prix",
+          "laps_total": 1366
+        },
+        {
+          "meeting_key": 1267,
+          "meeting_name": "Dutch Grand Prix",
+          "laps_total": 1362
+        },
+        {
+          "meeting_key": 1263,
+          "meeting_name": "Canadian Grand Prix",
+          "laps_total": 1344
+        },
+        {
+          "meeting_key": 1272,
+          "meeting_name": "Mexico City Grand Prix",
+          "laps_total": 1261
+        },
+        {
+          "meeting_key": 1273,
+          "meeting_name": "São Paulo Grand Prix",
+          "laps_total": 1248
+        },
+        {
+          "meeting_key": 1270,
+          "meeting_name": "Singapore Grand Prix",
+          "laps_total": 1226
+        },
+        {
+          "meeting_key": 1260,
+          "meeting_name": "Emilia Romagna Grand Prix",
+          "laps_total": 1205
+        },
+        {
+          "meeting_key": 1262,
+          "meeting_name": "Spanish Grand Prix",
+          "laps_total": 1201
+        },
+        {
+          "meeting_key": 1276,
+          "meeting_name": "Abu Dhabi Grand Prix",
+          "laps_total": 1156
+        }
+      ],
+      "laps_by_driver_top": [
+        {
+          "value": "George RUSSELL",
+          "count": 1417,
+          "share": 0.10419883814986396
+        },
+        {
+          "value": "Lando NORRIS",
+          "count": 1405,
+          "share": 0.1033164203250239
+        },
+        {
+          "value": "Esteban OCON",
+          "count": 1377,
+          "share": 0.10125744540039709
+        },
+        {
+          "value": "Oscar PIASTRI",
+          "count": 1367,
+          "share": 0.10052209721303038
+        },
+        {
+          "value": "Yuki TSUNODA",
+          "count": 1360,
+          "share": 0.10000735348187367
+        },
+        {
+          "value": "Max VERSTAPPEN",
+          "count": 1347,
+          "share": 0.09905140083829693
+        },
+        {
+          "value": "Oliver BEARMAN",
+          "count": 1346,
+          "share": 0.09897786601956027
+        },
+        {
+          "value": "Lewis HAMILTON",
+          "count": 1334,
+          "share": 0.0980954481947202
+        },
+        {
+          "value": "Charles LECLERC",
+          "count": 1330,
+          "share": 0.09780130891977351
+        },
+        {
+          "value": "Isack HADJAR",
+          "count": 1316,
+          "share": 0.0967718214574601
+        }
+      ],
+      "laps_by_team_top": [
+        {
+          "value": "McLaren",
+          "count": 2772,
+          "share": 0.10592281238058845
+        },
+        {
+          "value": "Haas F1 Team",
+          "count": 2723,
+          "share": 0.10405043943446694
+        },
+        {
+          "value": "Mercedes",
+          "count": 2700,
+          "share": 0.10317157050057317
+        },
+        {
+          "value": "Red Bull Racing",
+          "count": 2697,
+          "share": 0.1030569354222392
+        },
+        {
+          "value": "Ferrari",
+          "count": 2664,
+          "share": 0.10179594956056554
+        },
+        {
+          "value": "Racing Bulls",
+          "count": 2574,
+          "share": 0.09835689721054643
+        },
+        {
+          "value": "Alpine",
+          "count": 2550,
+          "share": 0.09743981658387467
+        },
+        {
+          "value": "Aston Martin",
+          "count": 2525,
+          "share": 0.09648452426442491
+        },
+        {
+          "value": "Williams",
+          "count": 2500,
+          "share": 0.09552923194497516
+        },
+        {
+          "value": "Kick Sauber",
+          "count": 2465,
+          "share": 0.09419182269774551
+        }
+      ],
+      "compound_usage": [
+        {
+          "value": "HARD",
+          "count": 10847,
+          "share": 0.41448223156285824
+        },
+        {
+          "value": "MEDIUM",
+          "count": 10713,
+          "share": 0.40936186473060754
+        },
+        {
+          "value": "SOFT",
+          "count": 3304,
+          "share": 0.12625143293847918
+        },
+        {
+          "value": "INTERMEDIATE",
+          "count": 1306,
+          "share": 0.04990447076805502
+        }
+      ],
+      "pit_out_lap_rate": 0.03118074130683989,
+      "telemetry_coverage": {
+        "rate": 1.0,
+        "count": 26170
+      },
+      "trajectory_coverage": {
+        "rate": 1.0,
+        "count": 26170
+      },
+      "top_values": {
+        "meeting_name": [
+          {
+            "value": "Monaco Grand Prix",
+            "count": 1422
+          },
+          {
+            "value": "Hungarian Grand Prix",
+            "count": 1366
+          },
+          {
+            "value": "Dutch Grand Prix",
+            "count": 1362
+          },
+          {
+            "value": "Canadian Grand Prix",
+            "count": 1344
+          },
+          {
+            "value": "Mexico City Grand Prix",
+            "count": 1261
+          }
+        ],
+        "meeting_key": [
+          {
+            "value": "1261",
+            "count": 1422
+          },
+          {
+            "value": "1266",
+            "count": 1366
+          },
+          {
+            "value": "1267",
+            "count": 1362
+          },
+          {
+            "value": "1263",
+            "count": 1344
+          },
+          {
+            "value": "1272",
+            "count": 1261
+          }
+        ],
+        "session_name": [
+          {
+            "value": "Race",
+            "count": 26170
+          }
+        ],
+        "driver_name": [
+          {
+            "value": "George RUSSELL",
+            "count": 1417
+          },
+          {
+            "value": "Lando NORRIS",
+            "count": 1405
+          },
+          {
+            "value": "Esteban OCON",
+            "count": 1377
+          },
+          {
+            "value": "Oscar PIASTRI",
+            "count": 1367
+          },
+          {
+            "value": "Yuki TSUNODA",
+            "count": 1360
+          }
+        ],
+        "driver_number": [
+          {
+            "value": "63",
+            "count": 1417
+          },
+          {
+            "value": "4",
+            "count": 1405
+          },
+          {
+            "value": "31",
+            "count": 1377
+          },
+          {
+            "value": "81",
+            "count": 1367
+          },
+          {
+            "value": "22",
+            "count": 1360
+          }
+        ],
+        "team_name": [
+          {
+            "value": "McLaren",
+            "count": 2772
+          },
+          {
+            "value": "Haas F1 Team",
+            "count": 2723
+          },
+          {
+            "value": "Mercedes",
+            "count": 2700
+          },
+          {
+            "value": "Red Bull Racing",
+            "count": 2697
+          },
+          {
+            "value": "Ferrari",
+            "count": 2664
+          }
+        ],
+        "circuit_speed_class": [
+          {
+            "value": "medium",
+            "count": 25942
+          },
+          {
+            "value": "high",
+            "count": 228
+          }
+        ],
+        "compound": [
+          {
+            "value": "HARD",
+            "count": 10847
+          },
+          {
+            "value": "MEDIUM",
+            "count": 10713
+          },
+          {
+            "value": "SOFT",
+            "count": 3304
+          },
+          {
+            "value": "INTERMEDIATE",
+            "count": 1306
+          }
+        ]
+      },
+      "top_values_pt": {
+        "circuit_speed_class": [
+          {
+            "value": "medium",
+            "count": 25942,
+            "value_pt": "media velocidade"
+          },
+          {
+            "value": "high",
+            "count": 228,
+            "value_pt": "alta velocidade"
+          }
+        ],
+        "compound": [
+          {
+            "value": "HARD",
+            "count": 10847,
+            "value_pt": "duro"
+          },
+          {
+            "value": "MEDIUM",
+            "count": 10713,
+            "value_pt": "medio"
+          },
+          {
+            "value": "SOFT",
+            "count": 3304,
+            "value_pt": "macio"
+          },
+          {
+            "value": "INTERMEDIATE",
+            "count": 1306,
+            "value_pt": "intermediario"
+          }
+        ]
+      },
+      "circuit_speed_class_most_common": "medium",
+      "circuit_speed_class_most_common_pt": "media velocidade",
+      "compound_most_common": "HARD",
+      "compound_most_common_pt": "duro"
+    },
+    "2026": {
+      "season": 2026,
+      "rows": 1878,
+      "columns_available": [
+        "air_temperature",
+        "avg_rpm",
+        "avg_speed",
+        "avg_throttle",
+        "brake_events",
+        "brake_pct",
+        "circuit_speed_class",
+        "compound",
+        "distance_traveled",
+        "driver_name",
+        "driver_number",
+        "drs_pct",
+        "duration_sector_1",
+        "duration_sector_2",
+        "duration_sector_3",
+        "full_throttle_pct",
+        "gear_changes",
+        "hard_brake_events",
+        "has_telemetry",
+        "has_trajectory",
+        "i1_speed",
+        "i2_speed",
+        "is_pit_out_lap",
+        "lap_duration",
+        "lap_number",
+        "max_rpm",
+        "max_speed",
+        "max_throttle",
+        "meeting_date_start",
+        "meeting_day",
+        "meeting_key",
+        "meeting_month",
+        "meeting_name",
+        "min_rpm",
+        "min_speed",
+        "min_throttle",
+        "rpm_std",
+        "season",
+        "session_key",
+        "session_name",
+        "speed_std",
+        "st_speed",
+        "stint_lap_end",
+        "stint_lap_start",
+        "stint_number",
+        "team_name",
+        "telemetry_points",
+        "throttle_std",
+        "track_temperature",
+        "trajectory_length",
+        "trajectory_points",
+        "trajectory_variation",
+        "tyre_age_at_lap",
+        "tyre_age_at_start",
+        "weather_date"
+      ],
+      "drivers_total": 21,
+      "teams_total": 11,
+      "meetings_total": 2,
+      "sessions": [
+        "Race"
+      ],
+      "meeting_date_start": {
+        "min": "2026-03-06T01:30:00+00:00",
+        "max": "2026-03-13T03:30:00+00:00"
+      },
+      "lap_duration_quantiles": {
+        "p01": 82.62224,
+        "p05": 82.989,
+        "p10": 83.5145,
+        "p25": 85.08850000000001,
+        "p50": 96.3815,
+        "p75": 98.84899999999999,
+        "p90": 101.95869999999998,
+        "p95": 116.10674999999996,
+        "p99": 149.97184000000001
+      },
+      "fastest_lap": {
+        "meeting_name": "Australian Grand Prix",
+        "meeting_key": 1279,
+        "meeting_date_start": "2026-03-06T01:30:00+00:00",
+        "session_name": "Race",
+        "session_key": 11234,
+        "driver_name": "Max VERSTAPPEN",
+        "driver_number": 3,
+        "team_name": "Red Bull Racing",
+        "lap_number": 42,
+        "lap_duration": 82.091,
+        "lap_duration_seconds": 82.091,
+        "lap_duration_min": "01:22:091"
+      },
+      "slowest_lap": {
+        "meeting_name": "Australian Grand Prix",
+        "meeting_key": 1279,
+        "meeting_date_start": "2026-03-06T01:30:00+00:00",
+        "session_name": "Race",
+        "session_key": 11234,
+        "driver_name": "Lance STROLL",
+        "driver_number": 18,
+        "team_name": "Aston Martin",
+        "lap_number": 33,
+        "lap_duration": 1168.144,
+        "lap_duration_seconds": 1168.144,
+        "lap_duration_min": "19:28:144"
+      },
+      "fastest_laps_top": [
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 3,
+          "team_name": "Red Bull Racing",
+          "lap_number": 42,
+          "lap_duration": 82.091,
+          "lap_duration_seconds": 82.091,
+          "lap_duration_min": "01:22:091"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 1,
+          "team_name": "McLaren",
+          "lap_number": 52,
+          "lap_duration": 82.358,
+          "lap_duration_seconds": 82.358,
+          "lap_duration_min": "01:22:358"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Kimi ANTONELLI",
+          "driver_number": 12,
+          "team_name": "Mercedes",
+          "lap_number": 56,
+          "lap_duration": 82.417,
+          "lap_duration_seconds": 82.417,
+          "lap_duration_min": "01:22:417"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Ferrari",
+          "lap_number": 54,
+          "lap_duration": 82.423,
+          "lap_duration_seconds": 82.423,
+          "lap_duration_min": "01:22:423"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 3,
+          "team_name": "Red Bull Racing",
+          "lap_number": 44,
+          "lap_duration": 82.453,
+          "lap_duration_seconds": 82.453,
+          "lap_duration_min": "01:22:453"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 3,
+          "team_name": "Red Bull Racing",
+          "lap_number": 46,
+          "lap_duration": 82.489,
+          "lap_duration_seconds": 82.489,
+          "lap_duration_min": "01:22:489"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Ferrari",
+          "lap_number": 55,
+          "lap_duration": 82.5,
+          "lap_duration_seconds": 82.5,
+          "lap_duration_min": "01:22:500"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 3,
+          "team_name": "Red Bull Racing",
+          "lap_number": 43,
+          "lap_duration": 82.52,
+          "lap_duration_seconds": 82.52,
+          "lap_duration_min": "01:22:520"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Ferrari",
+          "lap_number": 44,
+          "lap_duration": 82.529,
+          "lap_duration_seconds": 82.529,
+          "lap_duration_min": "01:22:529"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Ferrari",
+          "lap_number": 38,
+          "lap_duration": 82.536,
+          "lap_duration_seconds": 82.536,
+          "lap_duration_min": "01:22:536"
+        }
+      ],
+      "slowest_laps_top": [
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Lance STROLL",
+          "driver_number": 18,
+          "team_name": "Aston Martin",
+          "lap_number": 33,
+          "lap_duration": 1168.144,
+          "lap_duration_seconds": 1168.144,
+          "lap_duration_min": "19:28:144"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Fernando ALONSO",
+          "driver_number": 14,
+          "team_name": "Aston Martin",
+          "lap_number": 12,
+          "lap_duration": 1069.531,
+          "lap_duration_seconds": 1069.531,
+          "lap_duration_min": "17:49:531"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Valtteri BOTTAS",
+          "driver_number": 77,
+          "team_name": "Cadillac",
+          "lap_number": 11,
+          "lap_duration": 192.042,
+          "lap_duration_seconds": 192.042,
+          "lap_duration_min": "03:12:042"
+        },
+        {
+          "meeting_name": "Chinese Grand Prix",
+          "meeting_key": 1280,
+          "meeting_date_start": "2026-03-13T03:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11245,
+          "driver_name": "Kimi ANTONELLI",
+          "driver_number": 12,
+          "team_name": "Mercedes",
+          "lap_number": 11,
+          "lap_duration": 167.222,
+          "lap_duration_seconds": 167.222,
+          "lap_duration_min": "02:47:222"
+        },
+        {
+          "meeting_name": "Chinese Grand Prix",
+          "meeting_key": 1280,
+          "meeting_date_start": "2026-03-13T03:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11245,
+          "driver_name": "George RUSSELL",
+          "driver_number": 63,
+          "team_name": "Mercedes",
+          "lap_number": 11,
+          "lap_duration": 162.723,
+          "lap_duration_seconds": 162.723,
+          "lap_duration_min": "02:42:723"
+        },
+        {
+          "meeting_name": "Chinese Grand Prix",
+          "meeting_key": 1280,
+          "meeting_date_start": "2026-03-13T03:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11245,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Ferrari",
+          "lap_number": 11,
+          "lap_duration": 162.319,
+          "lap_duration_seconds": 162.319,
+          "lap_duration_min": "02:42:319"
+        },
+        {
+          "meeting_name": "Chinese Grand Prix",
+          "meeting_key": 1280,
+          "meeting_date_start": "2026-03-13T03:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11245,
+          "driver_name": "Charles LECLERC",
+          "driver_number": 16,
+          "team_name": "Ferrari",
+          "lap_number": 11,
+          "lap_duration": 161.733,
+          "lap_duration_seconds": 161.733,
+          "lap_duration_min": "02:41:733"
+        },
+        {
+          "meeting_name": "Chinese Grand Prix",
+          "meeting_key": 1280,
+          "meeting_date_start": "2026-03-13T03:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11245,
+          "driver_name": "Pierre GASLY",
+          "driver_number": 10,
+          "team_name": "Alpine",
+          "lap_number": 11,
+          "lap_duration": 158.639,
+          "lap_duration_seconds": 158.639,
+          "lap_duration_min": "02:38:639"
+        },
+        {
+          "meeting_name": "Chinese Grand Prix",
+          "meeting_key": 1280,
+          "meeting_date_start": "2026-03-13T03:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11245,
+          "driver_name": "Valtteri BOTTAS",
+          "driver_number": 77,
+          "team_name": "Cadillac",
+          "lap_number": 11,
+          "lap_duration": 156.783,
+          "lap_duration_seconds": 156.783,
+          "lap_duration_min": "02:36:783"
+        },
+        {
+          "meeting_name": "Chinese Grand Prix",
+          "meeting_key": 1280,
+          "meeting_date_start": "2026-03-13T03:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11245,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 3,
+          "team_name": "Red Bull Racing",
+          "lap_number": 45,
+          "lap_duration": 154.867,
+          "lap_duration_seconds": 154.867,
+          "lap_duration_min": "02:34:867"
+        }
+      ],
+      "fastest_lap_by_meeting": [
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 3,
+          "team_name": "Red Bull Racing",
+          "lap_number": 42,
+          "lap_duration": 82.091,
+          "lap_duration_seconds": 82.091,
+          "lap_duration_min": "01:22:091"
+        },
+        {
+          "meeting_name": "Chinese Grand Prix",
+          "meeting_key": 1280,
+          "meeting_date_start": "2026-03-13T03:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11245,
+          "driver_name": "Kimi ANTONELLI",
+          "driver_number": 12,
+          "team_name": "Mercedes",
+          "lap_number": 52,
+          "lap_duration": 95.275,
+          "lap_duration_seconds": 95.275,
+          "lap_duration_min": "01:35:275"
+        }
+      ],
+      "fastest_lap_by_driver": [
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Alexander ALBON",
+          "driver_number": 23,
+          "team_name": "Williams",
+          "lap_number": 35,
+          "lap_duration": 84.375,
+          "lap_duration_seconds": 84.375,
+          "lap_duration_min": "01:24:375"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Arvid LINDBLAD",
+          "driver_number": 41,
+          "team_name": "Racing Bulls",
+          "lap_number": 20,
+          "lap_duration": 84.182,
+          "lap_duration_seconds": 84.182,
+          "lap_duration_min": "01:24:182"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Carlos SAINZ",
+          "driver_number": 55,
+          "team_name": "Williams",
+          "lap_number": 51,
+          "lap_duration": 83.59,
+          "lap_duration_seconds": 83.59,
+          "lap_duration_min": "01:23:590"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Charles LECLERC",
+          "driver_number": 16,
+          "team_name": "Ferrari",
+          "lap_number": 37,
+          "lap_duration": 82.579,
+          "lap_duration_seconds": 82.579,
+          "lap_duration_min": "01:22:579"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Esteban OCON",
+          "driver_number": 31,
+          "team_name": "Haas F1 Team",
+          "lap_number": 24,
+          "lap_duration": 84.424,
+          "lap_duration_seconds": 84.424,
+          "lap_duration_min": "01:24:424"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Fernando ALONSO",
+          "driver_number": 14,
+          "team_name": "Aston Martin",
+          "lap_number": 14,
+          "lap_duration": 85.713,
+          "lap_duration_seconds": 85.713,
+          "lap_duration_min": "01:25:713"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Franco COLAPINTO",
+          "driver_number": 43,
+          "team_name": "Alpine",
+          "lap_number": 47,
+          "lap_duration": 82.926,
+          "lap_duration_seconds": 82.926,
+          "lap_duration_min": "01:22:926"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Gabriel BORTOLETO",
+          "driver_number": 5,
+          "team_name": "Audi",
+          "lap_number": 44,
+          "lap_duration": 83.257,
+          "lap_duration_seconds": 83.257,
+          "lap_duration_min": "01:23:257"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "George RUSSELL",
+          "driver_number": 63,
+          "team_name": "Mercedes",
+          "lap_number": 20,
+          "lap_duration": 82.67,
+          "lap_duration_seconds": 82.67,
+          "lap_duration_min": "01:22:670"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Isack HADJAR",
+          "driver_number": 6,
+          "team_name": "Red Bull Racing",
+          "lap_number": 8,
+          "lap_duration": 85.239,
+          "lap_duration_seconds": 85.239,
+          "lap_duration_min": "01:25:239"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Kimi ANTONELLI",
+          "driver_number": 12,
+          "team_name": "Mercedes",
+          "lap_number": 56,
+          "lap_duration": 82.417,
+          "lap_duration_seconds": 82.417,
+          "lap_duration_min": "01:22:417"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Lance STROLL",
+          "driver_number": 18,
+          "team_name": "Aston Martin",
+          "lap_number": 35,
+          "lap_duration": 85.41,
+          "lap_duration_seconds": 85.41,
+          "lap_duration_min": "01:25:410"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 1,
+          "team_name": "McLaren",
+          "lap_number": 52,
+          "lap_duration": 82.358,
+          "lap_duration_seconds": 82.358,
+          "lap_duration_min": "01:22:358"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Ferrari",
+          "lap_number": 54,
+          "lap_duration": 82.423,
+          "lap_duration_seconds": 82.423,
+          "lap_duration_min": "01:22:423"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Liam LAWSON",
+          "driver_number": 30,
+          "team_name": "Racing Bulls",
+          "lap_number": 46,
+          "lap_duration": 83.783,
+          "lap_duration_seconds": 83.783,
+          "lap_duration_min": "01:23:783"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 3,
+          "team_name": "Red Bull Racing",
+          "lap_number": 42,
+          "lap_duration": 82.091,
+          "lap_duration_seconds": 82.091,
+          "lap_duration_min": "01:22:091"
+        },
+        {
+          "meeting_name": "Chinese Grand Prix",
+          "meeting_key": 1280,
+          "meeting_date_start": "2026-03-13T03:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11245,
+          "driver_name": "Nico HULKENBERG",
+          "driver_number": 27,
+          "team_name": "Audi",
+          "lap_number": 38,
+          "lap_duration": 96.18,
+          "lap_duration_seconds": 96.18,
+          "lap_duration_min": "01:36:180"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Oliver BEARMAN",
+          "driver_number": 87,
+          "team_name": "Haas F1 Team",
+          "lap_number": 21,
+          "lap_duration": 84.02,
+          "lap_duration_seconds": 84.02,
+          "lap_duration_min": "01:24:020"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Pierre GASLY",
+          "driver_number": 10,
+          "team_name": "Alpine",
+          "lap_number": 55,
+          "lap_duration": 84.486,
+          "lap_duration_seconds": 84.486,
+          "lap_duration_min": "01:24:486"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Sergio PEREZ",
+          "driver_number": 11,
+          "team_name": "Cadillac",
+          "lap_number": 46,
+          "lap_duration": 86.07,
+          "lap_duration_seconds": 86.07,
+          "lap_duration_min": "01:26:070"
+        },
+        {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Valtteri BOTTAS",
+          "driver_number": 77,
+          "team_name": "Cadillac",
+          "lap_number": 7,
+          "lap_duration": 87.364,
+          "lap_duration_seconds": 87.364,
+          "lap_duration_min": "01:27:364"
+        }
+      ],
+      "records": {
+        "best_duration_sector_1": {
+          "meeting_name": "Chinese Grand Prix",
+          "meeting_key": 1280,
+          "meeting_date_start": "2026-03-13T03:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11245,
+          "driver_name": "Charles LECLERC",
+          "driver_number": 16,
+          "team_name": "Ferrari",
+          "lap_number": 55,
+          "lap_duration": 96.134,
+          "metric": "duration_sector_1",
+          "metric_value": 25.047
+        },
+        "best_duration_sector_2": {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Franco COLAPINTO",
+          "driver_number": 43,
+          "team_name": "Alpine",
+          "lap_number": 47,
+          "lap_duration": 82.926,
+          "metric": "duration_sector_2",
+          "metric_value": 17.38
+        },
+        "best_duration_sector_3": {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 1,
+          "team_name": "McLaren",
+          "lap_number": 52,
+          "lap_duration": 82.358,
+          "metric": "duration_sector_3",
+          "metric_value": 35.599
+        },
+        "max_st_speed": {
+          "meeting_name": "Chinese Grand Prix",
+          "meeting_key": 1280,
+          "meeting_date_start": "2026-03-13T03:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11245,
+          "driver_name": "Pierre GASLY",
+          "driver_number": 10,
+          "team_name": "Alpine",
+          "lap_number": 15,
+          "lap_duration": 98.883,
+          "metric": "st_speed",
+          "metric_value": 353.0
+        },
+        "max_i1_speed": {
+          "meeting_name": "Chinese Grand Prix",
+          "meeting_key": 1280,
+          "meeting_date_start": "2026-03-13T03:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11245,
+          "driver_name": "Max VERSTAPPEN",
+          "driver_number": 3,
+          "team_name": "Red Bull Racing",
+          "lap_number": 14,
+          "lap_duration": 99.573,
+          "metric": "i1_speed",
+          "metric_value": 309.0
+        },
+        "max_i2_speed": {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Esteban OCON",
+          "driver_number": 31,
+          "team_name": "Haas F1 Team",
+          "lap_number": 45,
+          "lap_duration": 86.221,
+          "metric": "i2_speed",
+          "metric_value": 325.0
+        },
+        "max_avg_speed": {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Lewis HAMILTON",
+          "driver_number": 44,
+          "team_name": "Ferrari",
+          "lap_number": 57,
+          "lap_duration": 82.637,
+          "metric": "avg_speed",
+          "metric_value": 230.4677966101695
+        },
+        "max_max_speed": {
+          "meeting_name": "Chinese Grand Prix",
+          "meeting_key": 1280,
+          "meeting_date_start": "2026-03-13T03:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11245,
+          "driver_name": "Sergio PEREZ",
+          "driver_number": 11,
+          "team_name": "Cadillac",
+          "lap_number": 15,
+          "lap_duration": 100.004,
+          "metric": "max_speed",
+          "metric_value": 352.0
+        },
+        "max_drs_pct": {
+          "meeting_name": "Australian Grand Prix",
+          "meeting_key": 1279,
+          "meeting_date_start": "2026-03-06T01:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11234,
+          "driver_name": "Lando NORRIS",
+          "driver_number": 1,
+          "team_name": "McLaren",
+          "lap_number": 2,
+          "lap_duration": 86.863,
+          "metric": "drs_pct",
+          "metric_value": 0.0
+        },
+        "max_full_throttle_pct": {
+          "meeting_name": "Chinese Grand Prix",
+          "meeting_key": 1280,
+          "meeting_date_start": "2026-03-13T03:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11245,
+          "driver_name": "Nico HULKENBERG",
+          "driver_number": 27,
+          "team_name": "Audi",
+          "lap_number": 6,
+          "lap_duration": 98.775,
+          "metric": "full_throttle_pct",
+          "metric_value": 0.8909574468085106
+        },
+        "max_brake_events": {
+          "meeting_name": "Chinese Grand Prix",
+          "meeting_key": 1280,
+          "meeting_date_start": "2026-03-13T03:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11245,
+          "driver_name": "Esteban OCON",
+          "driver_number": 31,
+          "team_name": "Haas F1 Team",
+          "lap_number": 13,
+          "lap_duration": 149.97,
+          "metric": "brake_events",
+          "metric_value": 45.0
+        },
+        "max_hard_brake_events": {
+          "meeting_name": "Chinese Grand Prix",
+          "meeting_key": 1280,
+          "meeting_date_start": "2026-03-13T03:30:00+00:00",
+          "session_name": "Race",
+          "session_key": 11245,
+          "driver_name": "Esteban OCON",
+          "driver_number": 31,
+          "team_name": "Haas F1 Team",
+          "lap_number": 13,
+          "lap_duration": 149.97,
+          "metric": "hard_brake_events",
+          "metric_value": 45.0
+        }
+      },
+      "laps_by_meeting_top": [
+        {
+          "meeting_key": 1279,
+          "meeting_name": "Australian Grand Prix",
+          "laps_total": 959
+        },
+        {
+          "meeting_key": 1280,
+          "meeting_name": "Chinese Grand Prix",
+          "laps_total": 919
+        }
+      ],
+      "laps_by_driver_top": [
+        {
+          "value": "Kimi ANTONELLI",
+          "count": 112,
+          "share": 0.10126582278481013
+        },
+        {
+          "value": "Pierre GASLY",
+          "count": 111,
+          "share": 0.1003616636528029
+        },
+        {
+          "value": "Charles LECLERC",
+          "count": 111,
+          "share": 0.1003616636528029
+        },
+        {
+          "value": "Liam LAWSON",
+          "count": 111,
+          "share": 0.1003616636528029
+        },
+        {
+          "value": "Lewis HAMILTON",
+          "count": 111,
+          "share": 0.1003616636528029
+        },
+        {
+          "value": "George RUSSELL",
+          "count": 111,
+          "share": 0.1003616636528029
+        },
+        {
+          "value": "Oliver BEARMAN",
+          "count": 111,
+          "share": 0.1003616636528029
+        },
+        {
+          "value": "Arvid LINDBLAD",
+          "count": 110,
+          "share": 0.09945750452079566
+        },
+        {
+          "value": "Esteban OCON",
+          "count": 109,
+          "share": 0.09855334538878843
+        },
+        {
+          "value": "Franco COLAPINTO",
+          "count": 109,
+          "share": 0.09855334538878843
+        }
+      ],
+      "laps_by_team_top": [
+        {
+          "value": "Mercedes",
+          "count": 223,
+          "share": 0.12239297475301866
+        },
+        {
+          "value": "Ferrari",
+          "count": 222,
+          "share": 0.12184412733260154
+        },
+        {
+          "value": "Racing Bulls",
+          "count": 221,
+          "share": 0.12129527991218442
+        },
+        {
+          "value": "Alpine",
+          "count": 220,
+          "share": 0.1207464324917673
+        },
+        {
+          "value": "Haas F1 Team",
+          "count": 220,
+          "share": 0.1207464324917673
+        },
+        {
+          "value": "Cadillac",
+          "count": 176,
+          "share": 0.09659714599341383
+        },
+        {
+          "value": "Red Bull Racing",
+          "count": 165,
+          "share": 0.09055982436882547
+        },
+        {
+          "value": "Williams",
+          "count": 164,
+          "share": 0.09001097694840834
+        },
+        {
+          "value": "Audi",
+          "count": 110,
+          "share": 0.06037321624588365
+        },
+        {
+          "value": "Aston Martin",
+          "count": 101,
+          "share": 0.05543358946212953
+        }
+      ],
+      "compound_usage": [
+        {
+          "value": "HARD",
+          "count": 1308,
+          "share": 0.7202643171806168
+        },
+        {
+          "value": "MEDIUM",
+          "count": 363,
+          "share": 0.1998898678414097
+        },
+        {
+          "value": "SOFT",
+          "count": 145,
+          "share": 0.07984581497797356
+        }
+      ],
+      "pit_out_lap_rate": 0.027156549520766772,
+      "telemetry_coverage": {
+        "rate": 1.0,
+        "count": 1878
+      },
+      "trajectory_coverage": {
+        "rate": 1.0,
+        "count": 1878
+      },
+      "top_values": {
+        "meeting_name": [
+          {
+            "value": "Australian Grand Prix",
+            "count": 959
+          },
+          {
+            "value": "Chinese Grand Prix",
+            "count": 919
+          }
+        ],
+        "meeting_key": [
+          {
+            "value": "1279",
+            "count": 959
+          },
+          {
+            "value": "1280",
+            "count": 919
+          }
+        ],
+        "session_name": [
+          {
+            "value": "Race",
+            "count": 1878
+          }
+        ],
+        "driver_name": [
+          {
+            "value": "Kimi ANTONELLI",
+            "count": 112
+          },
+          {
+            "value": "Pierre GASLY",
+            "count": 111
+          },
+          {
+            "value": "Charles LECLERC",
+            "count": 111
+          },
+          {
+            "value": "Liam LAWSON",
+            "count": 111
+          },
+          {
+            "value": "Lewis HAMILTON",
+            "count": 111
+          }
+        ],
+        "driver_number": [
+          {
+            "value": "12",
+            "count": 112
+          },
+          {
+            "value": "10",
+            "count": 111
+          },
+          {
+            "value": "16",
+            "count": 111
+          },
+          {
+            "value": "30",
+            "count": 111
+          },
+          {
+            "value": "44",
+            "count": 111
+          }
+        ],
+        "team_name": [
+          {
+            "value": "Mercedes",
+            "count": 223
+          },
+          {
+            "value": "Ferrari",
+            "count": 222
+          },
+          {
+            "value": "Racing Bulls",
+            "count": 221
+          },
+          {
+            "value": "Alpine",
+            "count": 220
+          },
+          {
+            "value": "Haas F1 Team",
+            "count": 220
+          }
+        ],
+        "circuit_speed_class": [
+          {
+            "value": "medium",
+            "count": 1829
+          },
+          {
+            "value": "high",
+            "count": 49
+          }
+        ],
+        "compound": [
+          {
+            "value": "HARD",
+            "count": 1308
+          },
+          {
+            "value": "MEDIUM",
+            "count": 363
+          },
+          {
+            "value": "SOFT",
+            "count": 145
+          }
+        ]
+      },
+      "top_values_pt": {
+        "circuit_speed_class": [
+          {
+            "value": "medium",
+            "count": 1829,
+            "value_pt": "media velocidade"
+          },
+          {
+            "value": "high",
+            "count": 49,
+            "value_pt": "alta velocidade"
+          }
+        ],
+        "compound": [
+          {
+            "value": "HARD",
+            "count": 1308,
+            "value_pt": "duro"
+          },
+          {
+            "value": "MEDIUM",
+            "count": 363,
+            "value_pt": "medio"
+          },
+          {
+            "value": "SOFT",
+            "count": 145,
+            "value_pt": "macio"
+          }
+        ]
+      },
+      "circuit_speed_class_most_common": "medium",
+      "circuit_speed_class_most_common_pt": "media velocidade",
+      "compound_most_common": "HARD",
+      "compound_most_common_pt": "duro"
+    }
+  }
+}

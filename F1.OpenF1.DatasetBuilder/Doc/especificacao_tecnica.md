@@ -133,8 +133,15 @@ api:
 Endpoints atuais:
 - `GET /health`: healthcheck simples da API, confirma que o serviço está respondendo (não valida dependências externas).
 - `GET /health/dependencies`: verifica dependências externas (MLflow, MinIO/S3 e OpenF1) e retorna status por dependência.
+- `GET /catalog/bronze`: lista registros da camada Bronze (dados crus, origem, path, sync opcional via `check_sync=true`); aceita `season` para filtrar.
+- `GET /catalog/silver`: lista registros da camada Silver (normalização, schema, nulls, path); aceita `season` para filtrar.
+- `GET /catalog/gold`: lista registros do Gold por volta (dataset por piloto); suporta `include_schema=true` e aceita `season` para filtrar.
 - `GET /gold/meetings`: lista meetings existentes no gold (meeting_key/meeting_name/sessions).
-- `POST /gold/questions`: responde perguntas usando o gold consolidado (pt-BR garantido).
+- `GET /gold/lap`: retorna dados por volta para todos os pilotos. Requer `season`, `lap_number` e `meeting_key` ou `meeting_name`. Inclui `lap_duration_min` (mm:ss:fff), `lap_duration_total` (hh:mm:ss:fff) e `lap_duration_gap` (hh:mm:ss:fff).
+- `GET /gold/laps/max`: retorna o número máximo de voltas para uma corrida/sessão.
+- `POST /gold/questions`: responde perguntas usando o gold consolidado (pt-BR garantido). Tenta DuckDB (LLM -> SQL -> execucao) antes do LLM narrativo. Summary inclui fastest/slowest, records, quantis e cobertura; perguntas sobre “volta mais rápida” são determinísticas. Se o LLM retornar “Sem dados no gold.”, tenta fallback web via DuckDuckGo (`WEB_FALLBACK_PROVIDER=disabled` para desligar). DuckDB pode ser desativado com `GOLD_QUESTIONS_DUCKDB=false`.
+- `GET /ui/gold-lap`: tela web para consulta do gold por temporada + meeting + lap_number (seleção de colunas e ordenação).
+- `GET /jobs`: lista jobs assíncronos recentes (id, status, tipo, datas, mensagem). Datas são UTC (ISO 8601 com timezone). Status possíveis: `queued`, `running`, `waiting`, `completed`, `failed`, `resumed`.
 - `POST /train/stint-delta-pace`: treino assincrono do modelo de delta de ritmo (com filtros, MLflow obrigatorio). (Machine Learning)
 - `POST /train/lap-time-regression`: treino assincrono de regressao de tempo de volta. (Machine Learning)
 - `POST /train/lap-time-ranking`: treino assincrono de ranking de lap time. (Machine Learning)
@@ -146,11 +153,13 @@ Endpoints atuais:
 - `POST /train/circuit-segmentation`: treino assincrono de segmentacao de circuitos. (Machine Learning)
 - `POST /driver-profiles`: gera relatorios por meeting. Campos: `season`, `meeting_key`, `session_name` (Race, Sprint ou all), `include_llm`, `llm_endpoint`.
 - `POST /driver-profiles/season`: gera relatorios por temporada (multiplas sessoes). Campos: `seasons`, `session_names`, `include_llm`, `llm_endpoint`, `drivers_include`, `drivers_exclude`.
-- `POST /import-season`: cria job assincrono por temporada. Campos: `season`, `session_name` (Race ou Sprint), `include_llm`, `llm_endpoint`, `resume_job_id` (opcional).
-- `POST /import-season/resume`: cria job assincrono a partir de um job anterior. Campos: `resume_job_id`, `include_llm` (opcional), `llm_endpoint` (opcional).
+- `POST /import-season`: cria job assincrono por temporada. Campos: `season`, `session_name` (Race ou Sprint), `include_llm`, `llm_endpoint`, `resume_job_id` (opcional). Se encontrar etapa futura, pausa com `status=waiting` e `next_meeting`.
+- `POST /import-season/resume`: cria job assincrono a partir de um job anterior. Campos: `resume_job_id`, `include_llm` (opcional), `llm_endpoint` (opcional). O job anterior passa para `status=resumed` e recebe `resumed_job_id`.
 - `POST /data-lake/sync`: sincroniza bronze/silver/gold com MinIO (upload/download).
 - `GET /jobs/{job_id}`: status do job.
 - `GET /jobs/{job_id}/logs?lines=200`: ultimas linhas do log do job.
+- `GET /mlflow/runs`: lista runs do MLflow com métricas, parâmetros e artefatos.
+- `GET /minio/objects`: lista objetos do MinIO/S3 (bucket, prefixo, tamanho, camada, URI).
 
 Detalhes do `/train/stint-delta-pace` (Machine Learning):
 Objetivo: treinar um modelo de regressao para prever o delta de ritmo entre stints usando o gold consolidado.
@@ -237,6 +246,7 @@ curl -X POST http://localhost:7077/import-season/resume \
   -H "Content-Type: application/json" \
   -d '{"resume_job_id":"SEU_JOB_ID","include_llm": true}'
 ```
+Observacao: o job anterior passa para `status=resumed` com `resumed_job_id`. Se encontrar etapa futura, o novo job pausa com `status=waiting` e `next_meeting`.
 
 Exemplo de health de dependencias:
 ```bash
@@ -271,6 +281,7 @@ Pipeline e consolidacao:
 - `build_openf1_dataset.py`
 - `process_meeting.py`
 - `consolidate_gold_dataset.py`
+- `update_season_summaries.py`
 - `batch_import_season.py`
 
 Modelagem e analytics:
@@ -300,6 +311,7 @@ Relatorios e LLM:
 - Silver: `f1_dataset/data/silver/season=.../meeting_key=.../session_key=.../driver_number=.../`.
 - Gold: `f1_dataset/data/gold/season=.../meeting_key=.../session_key=.../driver_number=.../dataset.parquet`.
 - Consolidado: `f1_dataset/data/gold/consolidated.parquet`.
+- Resumo temporadas: `f1_dataset/data/reports/season_summaries.json` (2023-2026).
 - Artefatos de relatorios: `f1_dataset/data/artifacts/modeling/driver_profiles`.
 
 ## 12. Observabilidade E Resiliencia
