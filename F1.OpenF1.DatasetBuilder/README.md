@@ -146,7 +146,7 @@ curl http://localhost:7077/health/dependencies
 ```bash
 curl http://localhost:7077/ui/gold-lap
 ```
-
+ 
 Exemplo de resposta do `/health/dependencies`:
 ```json
 {
