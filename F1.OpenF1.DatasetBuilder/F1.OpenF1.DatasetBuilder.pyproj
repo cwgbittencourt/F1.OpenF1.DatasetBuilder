@@ -1749,10 +1749,55 @@
     <Folder Include="f1_dataset\data\gold\season=2025\meeting_key=1277\session_key=9947\driver_number=6\" />
     <Folder Include="f1_dataset\data\gold\season=2025\meeting_key=1277\session_key=9947\driver_number=81\" />
     <Folder Include="f1_dataset\data\gold\season=2025\meeting_key=1277\session_key=9947\driver_number=87\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\driver_number=10\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\driver_number=11\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\driver_number=12\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\driver_number=14\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\driver_number=16\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\driver_number=18\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\driver_number=1\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\driver_number=23\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\driver_number=30\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\driver_number=31\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\driver_number=3\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\driver_number=41\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\driver_number=43\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\driver_number=44\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\driver_number=55\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\driver_number=5\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\driver_number=63\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\driver_number=6\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\driver_number=77\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1279\session_key=11234\driver_number=87\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1280\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1280\session_key=11245\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1280\session_key=11245\driver_number=10\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1280\session_key=11245\driver_number=11\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1280\session_key=11245\driver_number=12\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1280\session_key=11245\driver_number=14\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1280\session_key=11245\driver_number=16\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1280\session_key=11245\driver_number=18\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1280\session_key=11245\driver_number=27\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1280\session_key=11245\driver_number=30\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1280\session_key=11245\driver_number=31\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1280\session_key=11245\driver_number=3\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1280\session_key=11245\driver_number=41\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1280\session_key=11245\driver_number=43\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1280\session_key=11245\driver_number=44\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1280\session_key=11245\driver_number=55\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1280\session_key=11245\driver_number=63\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1280\session_key=11245\driver_number=6\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1280\session_key=11245\driver_number=77\" />
+    <Folder Include="f1_dataset\data\gold\season=2026\meeting_key=1280\session_key=11245\driver_number=87\" />
     <Folder Include="f1_dataset\data\logs\" />
     <Folder Include="f1_dataset\data\logs\jobs\" />
+    <Folder Include="f1_dataset\data\reports\" />
     <Folder Include="f1_dataset\src\" />
     <Folder Include="f1_dataset\src\api\" />
+    <Folder Include="f1_dataset\src\api\__pycache__\" />
     <Folder Include="f1_dataset\src\clients\" />
     <Folder Include="f1_dataset\src\clients\__pycache__\" />
     <Folder Include="f1_dataset\src\collectors\" />
